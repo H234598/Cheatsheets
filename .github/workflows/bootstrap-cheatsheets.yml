@@ -1,0 +1,93 @@
+name: Bootstrap complete cheatsheet collection
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/bootstrap-cheatsheets.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bootstrap-cheatsheets-main
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download and verify release payload
+        shell: bash
+        env:
+          PAYLOAD_URL: https://filebin.net/cheatsheets-v2-2-0-7f77ca60/Cheatsheets-Repo-2.2.0.tar.xz
+          PAYLOAD_SHA256: 7f77ca60fff5f3c5abd7a21916ec103cddd49a6b2e1de9fd20f2bb4fab9dd830
+        run: |
+          set -euo pipefail
+          curl --fail --show-error --silent --location \
+            --retry 4 --retry-delay 3 \
+            "$PAYLOAD_URL" \
+            --output /tmp/Cheatsheets-Repo-2.2.0.tar.xz
+          printf '%s  %s\n' \
+            "$PAYLOAD_SHA256" \
+            /tmp/Cheatsheets-Repo-2.2.0.tar.xz \
+            | sha256sum --check --strict -
+
+      - name: Replace repository content
+        shell: bash
+        run: |
+          set -euo pipefail
+          tar --extract --xz \
+            --file /tmp/Cheatsheets-Repo-2.2.0.tar.xz \
+            --directory .
+
+          rm --force .github/workflows/bootstrap-cheatsheets.yml
+          rmdir .github/workflows 2>/dev/null || true
+          rmdir .github 2>/dev/null || true
+
+      - name: Validate final repository
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          test -f README.md
+          test -f 00-START-HIER.md
+          test -f INDEX.md
+          test -f tools/Cheatsheetsync-git.ps1
+          test -f docs/Cheatsheetsync-git.md
+          test -f 10-Sicherheit-PKI/Thales-Luna-Network-HSM-A750-Premium-Spickzettel.md
+          test -f SHA256SUMS.txt
+
+          markdown_count="$(find . -type f -name '*.md' -not -path './.git/*' | wc -l | tr -d ' ')"
+          test "$markdown_count" -eq 107
+
+          sha256sum --check --strict SHA256SUMS.txt
+          grep --fixed-strings --quiet 'status: fertig' BUILD-REPORT.yaml
+          grep --fixed-strings --quiet 'version: 2.2.0' BUILD-REPORT.yaml
+
+      - name: Commit and push final tree
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add --all
+
+          if git diff --cached --quiet; then
+            echo 'No repository changes to commit.'
+            exit 0
+          fi
+
+          git commit -m 'Publish complete cheatsheet collection v2.2.0'
+          git push origin HEAD:main
