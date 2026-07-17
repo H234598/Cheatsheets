@@ -1,7 +1,7 @@
 ---
-title: Premium-Spickzettel – README
+title: Cheatheets – README
 aliases:
-- Premium-Spickzettel Gesamtausgabe 2026-07-17
+- Premium-Spickzettel
 - Cheatsheets README
 created: '2026-07-17'
 modified: '2026-07-17'
@@ -11,10 +11,11 @@ tags:
 - readme
 - premium-spickzettel
 - obsidian
+- Cheatsheets
 version: 2.1.0
 pages: 86
 ---
-# Premium-Spickzettel – Gesamtausgabe 2026-07-17
+# Cheatsheets
 
 Diese Sammlung ist ein Obsidian-kompatibler IT-Referenz-Vault mit **86 Fachseiten in 12 Kategorien**. Die Fachseiten umfassen **45,118 Zeilen** beziehungsweise **1035.2 KiB Markdown**.
 
@@ -27,12 +28,3 @@ Diese Sammlung ist ein Obsidian-kompatibler IT-Referenz-Vault mit **86 Fachseite
 - [Manifest](MANIFEST.md)
 - [Qualitätsprüfung](QUALITAETSPRUEFUNG.md)
 - [Changelog](CHANGELOG.md)
-
-## Inhalt
-
-- vollständige Premium-Spickzettel I & II als Markdown-/Obsidian-Vault;
-- überarbeitete Altseiten aus „Premium Spickzettel I“;
-- neue Ergänzung: **Thales Luna Network HSM A750**;
-- Kategorienindizes, Gesamtindex, Gesamtband, Manifest und Prüfsummen.
-
-> Befehle und Konfigurationen vor produktiver Nutzung an lokale Version, Rechte, Pfade und Richtlinien anpassen.
