@@ -4,7 +4,7 @@ from pathlib import Path
 
 from conftest import manifest_row, write_manifest, write_page
 from content_index import build_content_index, parse_headings
-from content_model import advance_fence_state, page_id_from_path
+from content_model import advance_fence_state, normalize_posix_path, page_id_from_path
 
 
 def make_repository(root: Path) -> None:
@@ -78,3 +78,7 @@ def test_page_id_is_stable_and_path_sensitive() -> None:
     assert page_id_from_path(Path("01-Test/Alpha.md")) != page_id_from_path(
         Path("01-Test/Beta.md")
     )
+
+
+def test_normalization_preserves_dot_directories() -> None:
+    assert normalize_posix_path(Path(".github/README.md")) == ".github/README.md"

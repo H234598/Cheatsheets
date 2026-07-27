@@ -76,7 +76,10 @@ def normalize_key(value: str) -> str:
 
 
 def normalize_posix_path(path: str | Path | PurePosixPath) -> str:
-    return unicodedata.normalize("NFC", PurePosixPath(path).as_posix()).lstrip("./")
+    value = unicodedata.normalize("NFC", PurePosixPath(path).as_posix())
+    while value.startswith("./"):
+        value = value[2:]
+    return value.lstrip("/")
 
 
 def slugify(value: str) -> str:
