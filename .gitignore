@@ -1,0 +1,26 @@
+# Generierte Webausgaben
+/build/
+/site/
+/mkdocs.generated.yml
+/.mkdocs.generated.yml
+
+# Python
+/.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Node und Browsertests
+/node_modules/
+/playwright-report/
+/test-results/
+
+# Betriebssystem und Editoren
+.DS_Store
+Thumbs.db
+*.swp
+*.tmp
