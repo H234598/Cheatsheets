@@ -1,0 +1,3 @@
+# Exakt gepinnte Testabhängigkeiten. Aktualisierung ausschließlich per Review-PR.
+PyYAML==6.0.2
+pytest==8.4.1
