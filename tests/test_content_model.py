@@ -82,3 +82,14 @@ def test_page_id_is_stable_and_path_sensitive() -> None:
 
 def test_normalization_preserves_dot_directories() -> None:
     assert normalize_posix_path(Path(".github/README.md")) == ".github/README.md"
+
+
+def test_generated_paths_map_landing_and_category_index(tmp_path: Path) -> None:
+    make_repository(tmp_path)
+    index = build_content_index(tmp_path)
+    category = next(
+        page for page in index.pages.values() if page.page_type == "category-index"
+    )
+    assert category.generated_path.as_posix() == "01-Test/index.md"
+    alpha = index.page_for_path(tmp_path / "01-Test" / "Alpha.md")
+    assert alpha is not None and alpha.title == "Alpha"

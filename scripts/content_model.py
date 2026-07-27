@@ -184,6 +184,8 @@ class PageRecord:
     def generated_path(self) -> PurePosixPath:
         if self.page_type == "root-landing":
             return PurePosixPath("index.md")
+        if self.page_type == "category-index":
+            return self.relative_path.parent / "index.md"
         return self.relative_path
 
     @property
@@ -300,6 +302,12 @@ class ContentIndex:
         ]
 
     def page_for_path(self, value: str | Path | PurePosixPath) -> PageRecord | None:
-        normalized = normalize_posix_path(value).casefold()
+        path = Path(value)
+        if path.is_absolute():
+            try:
+                path = path.resolve().relative_to(self.root.resolve())
+            except ValueError:
+                return None
+        normalized = normalize_posix_path(path).casefold()
         page_id = self.by_relative_path.get(normalized)
         return self.pages.get(page_id) if page_id else None

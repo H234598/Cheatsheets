@@ -5,8 +5,8 @@ Dieser Fortschrittsnachweis wird mit jeder Planphase aktualisiert. Verbindliche 
 | Phase | Status | Nachweis |
 |---|---|---|
 | 0A – Sicherheitsbaseline | ✅ umgesetzt | PR #1, Merge `fdf24c369dded98a63af046c174d29d5636c080b` |
-| 0B – Inventur und Baseline | ✅ umgesetzt | Contentmodell, strukturierter Validator, Tests und Contentmodelldokumentation |
-| 1 – Linkmodell und Callouts | ⬜ offen | – |
+| 0B – Inventur und Baseline | ✅ umgesetzt | PR #2, Merge `48f2a518f52e4d595a0887bd2de3ee45fcc3f19a`, 8 Tests |
+| 1 – Linkmodell und Callouts | 🚧 im Review | PR #3, 21 Tests |
 | 2 – MkDocs-Basis | ⬜ offen | – |
 | 3 – Navigation, Indizes und Suche | ⬜ offen | – |
 | 4 – ADHS-freundliche Oberfläche | ⬜ offen | – |
