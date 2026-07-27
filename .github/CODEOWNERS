@@ -1,0 +1,11 @@
+* @H234598
+
+/.github/ @H234598
+/scripts/ @H234598
+/tests/ @H234598
+/web/ @H234598
+/config/ @H234598
+/mkdocs.yml @H234598
+/requirements*.in @H234598
+/requirements*.txt @H234598
+/package*.json @H234598
