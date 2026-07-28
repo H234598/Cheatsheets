@@ -9,7 +9,9 @@
           {{ page.meta.web_category_title }}
         </a>
       {% endif %}
-      <span>ca. {{ page.meta.web_minutes }} Min. Lesezeit</span>
+      {% if page.meta.web_minutes is defined and page.meta.web_minutes is not none %}
+        <span>ca. {{ page.meta.web_minutes }} Min. Lesezeit</span>
+      {% endif %}
       {% if page.meta.reviewed %}
         <span>Geprüft: {{ page.meta.reviewed }}</span>
       {% endif %}
