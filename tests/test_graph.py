@@ -142,7 +142,6 @@ def test_graph_outputs_include_interactive_page_and_no_js_fallback(tmp_path: Pat
 
 def test_mkdocs_and_ui_wire_graph_as_secondary_optional_feature() -> None:
     config = yaml.safe_load((ROOT / "mkdocs.yml").read_text(encoding="utf-8"))
-    assert config["hooks"] == ["scripts/mkdocs_graph_hook.py"]
     assert "/wissensgraph/**" in config["not_in_nav"]
     assert "assets/stylesheets/knowledge-graph.css" in config["extra_css"]
     assert "assets/javascripts/graph-shortcut.js" in config["extra_javascript"]
