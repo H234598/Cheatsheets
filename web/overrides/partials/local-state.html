@@ -2,6 +2,7 @@
   {% set offline_mode = config.extra and config.extra.offline_mode %}
   {% set categories_target = 'kategorien/index.html' if offline_mode else 'kategorien/' %}
   {% set index_target = 'index/gesamt.html' if offline_mode else 'index/gesamt/' %}
+  {% set graph_target = 'wissensgraph/index.html' if offline_mode else 'wissensgraph/' %}
   <section class="cheat-home-actions" aria-labelledby="cheat-home-actions-title">
     <h2 id="cheat-home-actions-title">Schnellstart</h2>
     <div class="cheat-action-grid">
@@ -18,6 +19,10 @@
         <span>Gesamtindex, Tags und lokale Filter verwenden</span>
       </a>
     </div>
+    <p class="cheat-home-secondary">
+      <a href="{{ graph_target | url }}">Wissensgraph erkunden</a>
+      <span> – Kategorien, Tags und Querverweise als optionale Sekundäransicht.</span>
+    </p>
   </section>
 
   <section
