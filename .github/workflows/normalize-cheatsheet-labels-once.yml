@@ -155,6 +155,29 @@ jobs:
           print('Heading-Parser und Anker an Python-Markdown/MkDocs angeglichen.')
           PY
 
+      - name: Gesamtband und Manifestformat normalisieren
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          combined = Path('Cheatsheet-Gesamtband.md')
+          combined_text = combined.read_text(encoding='utf-8')
+          combined_text = '\n'.join(
+              line.rstrip(' \t') for line in combined_text.splitlines()
+          ) + '\n'
+          combined.write_text(combined_text, encoding='utf-8', newline='\n')
+
+          generator = Path('scripts/build_manifest.py')
+          generator_text = generator.read_text(encoding='utf-8')
+          generator_text = generator_text.replace(
+              '    lines.append("\\n")\n    return "".join(lines)\n',
+              '    return "".join(lines)\n',
+          )
+          generator.write_text(generator_text, encoding='utf-8', newline='\n')
+          print('Trailing Whitespace und Manifestabschluss normalisiert.')
+          PY
+
       - name: Kanonische Manifeste aktualisieren
         run: python scripts/build_manifest.py --update-committed
 
