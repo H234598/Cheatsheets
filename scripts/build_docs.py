@@ -119,7 +119,10 @@ def _transform_page(page: PageRecord, index: ContentIndex) -> str:
         page.source_path,
         index.root,
         index=index,
-        tolerate_issues=False,
+        # Sammeldokumente enthalten naturgemäß wiederholte Abschnittsnamen.
+        # Fachseiten bleiben fail-closed; nur Downloadartefakte markieren solche
+        # internen Mehrdeutigkeiten sichtbar, statt den gesamten Webbuild zu stoppen.
+        tolerate_issues=page.page_type == "download-only",
     )
     converted = convert_obsidian_callouts_for_web(converted)
     after_fences = fenced_segment_hashes(converted)
@@ -208,7 +211,6 @@ def build_docs(
         for page in pages:
             target = staging / page.generated_path.as_posix()
             atomic_write_text(target, _transform_page(page, index))
-
         for asset in _asset_paths(root):
             relative = asset.relative_to(root)
             target = staging / relative
