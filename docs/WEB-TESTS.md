@@ -36,9 +36,12 @@ for name in MANIFEST.csv MANIFEST.md BUILD-REPORT.yaml SHA256SUMS.txt; do
 done
 
 python scripts/build_site.py \
-  --check \
   --strict \
   --site-url https://example.invalid/Cheatsheets/
+
+python scripts/validate_pages_artifact.py \
+  --site-dir site \
+  --report build/reports/pages-artifact.json
 
 git diff --exit-code
 git status --short
@@ -56,6 +59,7 @@ git status --short
 | Sicherheitsprüfung | hochpräzisen Secrets, privaten Schlüsselblöcken, aktivem Raw HTML oder externen Laufzeitassets |
 | Kanonische Metadaten | jeder byteweisen Abweichung von Manifesten, Buildreport oder Prüfsummen |
 | Strict-Build | MkDocs-Warnungen, unvollständigem Webbaum oder Buildfehlern |
+| Pages-Artefakt | fehlenden Pflichtseiten, Symlinks, Hardlinks, Sonderdateien, Case-Kollisionen oder Größenüberschreitung |
 | Quelldiff | Änderungen an versionierten Dateien durch den Build |
 
 ## Workflow-Policy
@@ -74,7 +78,7 @@ git status --short
 - Diagnoseartefakte werden mit `if: always()` hochgeladen;
 - Pages-Actions und Environments sind im Validate-Workflow verboten.
 
-Die Policy prüft auch sich selbst über `tests/test_workflows.py`.
+Die Policy prüft auch sich selbst über `tests/test_workflows.py`. Der Pages-Workflow besitzt zusätzlich einen eigenen strukturierten Vertrag in `tests/test_pages_workflow.py`. Dieser erzwingt Trigger, Jobtrennung, minimale Rechte, dynamische Basis-URL, genau einen Site-Build, Environment und Deploymentoutput.
 
 ## Sicherheitsprüfung
 
@@ -96,7 +100,7 @@ Der Scanner trennt zwei Aufgaben:
 
 ### Warnungen und Informationen
 
-Nicht allowlistetes, aber nicht aktiv gefährliches Raw HTML wird als Warnung protokolliert. Private Beispielnetze und interne Hostnamensuffixe erscheinen als Informationsbefund. Sie blockieren Phase 5A nicht, bleiben aber im JSON-Bericht reviewbar.
+Nicht allowlistetes, aber nicht aktiv gefährliches Raw HTML wird als Warnung protokolliert. Private Beispielnetze und interne Hostnamensuffixe erscheinen als Informationsbefund. Sie blockieren den Build nicht, bleiben aber im JSON-Bericht reviewbar.
 
 ## Kanonische Metadaten
 
@@ -113,6 +117,23 @@ Die erwarteten Dateien entstehen unter `build/reports/expected-metadata/` und we
 
 Dadurch müssen Änderungen an Fachseiten, Kategorieindizes, Dateinamen, Frontmatter, Zeilenzahlen oder Dateigrößen immer gemeinsam mit den generatorisch aktualisierten kanonischen Metadaten reviewt werden.
 
+## Reales Pages-Artefakt im Pull Request
+
+Die Validate-Pipeline verwendet keinen zweiten temporären Build mehr. Sie erzeugt `site/` genau einmal mit einer vollständigen Project-Page-Test-URL und prüft anschließend genau diesen Baum mit `validate_pages_artifact.py`.
+
+Der Validator kontrolliert:
+
+- `index.html` und `404.html`;
+- reguläres Wurzelverzeichnis;
+- keine Symlinks;
+- keine Hardlinks;
+- keine Sonderdateien;
+- keine Case-insensitiven Pfadkollisionen;
+- Gesamtgröße unter 1.000.000.000 Bytes;
+- deterministischen Baum-SHA-256.
+
+Die Tests unter `tests/test_pages_artifact.py` decken gültige Artefakte, fehlende Pflichtseiten, Symlink-/Hardlinkfälle, Größenlimit und JSON-Bericht ab.
+
 ## Diagnoseartefakt
 
 Der Workflow erzeugt `validation-reports-<run-id>` mit:
@@ -126,6 +147,7 @@ build/reports/
 ├── links.txt
 ├── security.json
 ├── metadata-diff.patch
+├── pages-artifact.json
 └── expected-metadata/
 ```
 
@@ -133,4 +155,4 @@ Die Berichte enthalten keine vollständigen erkannten Secrets. Secretfunde werde
 
 ## Browser- und Accessibility-Tests
 
-Phase 5A prüft Python, MkDocs und statische Verträge. Reale Browserläufe mit JavaScript aus, 320-Pixel-Viewport, Tastatursteuerung, axe und Performancebudgets folgen in Phase 7 und werden dort als zusätzliche Gates eingebunden.
+Phase 5B prüft Python, MkDocs, Workflowverträge und das vollständige statische Pages-Artefakt. Reale Browserläufe mit JavaScript aus, 320-Pixel-Viewport, Tastatursteuerung, axe und Performancebudgets folgen in Phase 7 und werden dort als zusätzliche Gates eingebunden.
