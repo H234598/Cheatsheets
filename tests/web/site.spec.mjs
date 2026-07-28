@@ -301,7 +301,7 @@ test("Downloadartefakte sind lokal erreichbar und die 404-Seite antwortet korrek
     new URL("downloads/", configuredBaseUrl(testInfo)).href,
   );
   expect(downloads?.status()).toBe(200);
-  const artifact = page.locator('a[href*="downloads/files/"]').first();
+  const artifact = page.locator('a[download][href^="files/"]').first();
   await expect(artifact).toBeVisible();
   const href = await artifact.getAttribute("href");
   const artifactResponse = await request.get(new URL(href, page.url()).href);
@@ -315,5 +315,10 @@ test("Downloadartefakte sind lokal erreichbar und die 404-Seite antwortet korrek
   await expect(
     page.getByRole("heading", { name: "Seite nicht gefunden", level: 1 }),
   ).toBeVisible();
-  await expect(page.getByRole("link", { name: "Zur Startseite" })).toBeVisible();
+  const homeLink = page.getByRole("link", { name: "Zur Startseite" });
+  await expect(homeLink).toBeVisible();
+  const homeHref = await homeLink.getAttribute("href");
+  expect(new URL(homeHref, page.url()).href).toBe(configuredBaseUrl(testInfo));
+  await homeLink.click();
+  await expect(page).toHaveURL(configuredBaseUrl(testInfo));
 });
