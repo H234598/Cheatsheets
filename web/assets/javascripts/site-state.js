@@ -325,9 +325,13 @@
     const now = Date.now();
     if (!force && now - lastProgressWrite < 500) return;
     lastProgressWrite = now;
+
+    const currentRatio = readingRatio();
+    const existing = state.progress[currentPageId];
+    const advances = !existing || currentRatio >= existing.ratio;
     state.progress[currentPageId] = {
-      ratio: readingRatio(),
-      section: currentSection(),
+      ratio: Math.max(existing?.ratio || 0, currentRatio),
+      section: advances ? currentSection() : existing.section,
       updatedAt: new Date(now).toISOString(),
     };
     pruneProgress();
