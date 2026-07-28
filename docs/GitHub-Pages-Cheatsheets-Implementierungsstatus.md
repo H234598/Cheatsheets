@@ -9,7 +9,7 @@ Dieser Fortschrittsnachweis wird mit jeder Planphase aktualisiert. Verbindliche 
 | 1 – Linkmodell und Callouts | ✅ umgesetzt | PR #3, Merge `7fcccdca800b60dc2fee55de1b5e3b99614e1c3c`, 21 Tests |
 | 2 – MkDocs-Basis | ✅ umgesetzt | PR #4, Merge `81ef6b66abb64116d153d8558ea6a230eee676e9`, 26 Tests |
 | 3 – Navigation, Indizes und Suche | ✅ umgesetzt | PR #6, Merge `7db8f713aca07e67b481f9fbcb00553f6a555495`; CodeRabbit und qlty grün, drei Reviewregressionen ergänzt |
-| 4 – ADHS-freundliche Oberfläche | 🚧 in Umsetzung | Branch `agent/adhs-ui`; progressive UI, lokale Zustände, Filter, Fokusmodus und Tastaturhilfe |
+| 4 – ADHS-freundliche Oberfläche | 🚧 im Review | PR #7; progressive UI, lokale Zustände, Filter, Fokusmodus und Tastaturhilfe |
 | 5A – PR-CI | ⬜ offen | – |
 | 5B – Pages-Deployment | ⬜ offen | – |
 | 6 – Downloads und Provenienz | ⬜ offen | – |
@@ -29,7 +29,7 @@ Vor dem Merge wurden zusätzlich behoben:
 
 ## Laufende Phase 4
 
-Die kanonischen Markdown-Dateien bleiben unverändert. Der generierte Webbaum erhält stabile UI-Metadaten und ein geprüftes Page-ID-Migrationsregister. Die Oberfläche ergänzt progressiv:
+PR #7 ergänzt die Oberfläche progressiv; die kanonischen Markdown-Dateien bleiben unverändert. Der generierte Webbaum erhält stabile UI-Metadaten und ein geprüftes Page-ID-Migrationsregister. Die Oberfläche ergänzt:
 
 - drei primäre Startaktionen;
 - lokale Favoriten, zuletzt gelesen und Lesefortschritt;
