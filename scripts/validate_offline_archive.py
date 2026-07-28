@@ -8,7 +8,8 @@ from pathlib import Path
 import sys
 from typing import Sequence
 
-from build_offline import OfflineBuildError, inspect_offline_zip, read_regular_file
+from build_offline import inspect_offline_zip, read_regular_file
+from download_model import DownloadBuildError
 from io_utils import UnsafePathError, atomic_write_text, ensure_within, stable_json_dumps
 
 
@@ -64,7 +65,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             f"Baumhash {report['tree_sha256']}."
         )
         return 0
-    except (OfflineBuildError, UnsafePathError, OSError, ValueError) as exc:
+    except (DownloadBuildError, UnsafePathError, OSError, ValueError) as exc:
         print(f"Offline-HTML-Prüfung fehlgeschlagen: {exc}", file=sys.stderr)
         return 2
 
