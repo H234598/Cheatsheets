@@ -1,5 +1,25 @@
 # GitHub Pages – Betrieb, Deployment und Rollback
 
+## Produktiver Status
+
+Die Zielumgebung wurde am 2026-07-28 durch den Betreiber vollständig in Betrieb genommen und bestätigt:
+
+```text
+Pages-Quelle:  GitHub Actions
+Custom Domain: https://cheatsheets.telacore.org/
+HTTPS:         erzwungen
+DNS:           aktiv
+Alias-Domains: HTTPS-Redirect auf die kanonische Domain
+```
+
+Die kanonische Domain bleibt ausschließlich:
+
+```text
+cheatsheets.telacore.org
+```
+
+Zusätzliche Namen wie `cheat.telacore.org` werden nicht als zweite GitHub-Pages-Custom-Domain eingetragen. Sie werden vor GitHub durch einen permanenten HTTPS-Redirect auf die kanonische Domain geführt; Pfad und Query-String bleiben dabei erhalten.
+
 ## Zielarchitektur
 
 Die Webseite wird ausschließlich aus einem GitHub-Actions-Artefakt veröffentlicht. Weder `build/` noch `site/` werden nach `main` committed.
@@ -13,8 +33,10 @@ Pages / build
           ├── Checkout ohne persistente Credentials
           ├── Python 3.12 und gepinnte Abhängigkeiten
           ├── vollständige Validierung
-          ├── genau ein Strict-Build nach site/
-          ├── Artefaktprüfung
+          ├── genau ein zentraler Gesamtbuild
+          ├── Online-Site und Offline-HTML
+          ├── unabhängige Offline-ZIP-Prüfung
+          ├── Pages-Artefaktprüfung
           └── Upload als github-pages-Artefakt
           │
           ▼
@@ -26,10 +48,10 @@ Pages / deploy
           └── actions/deploy-pages
           │
           ▼
-veröffentlichte page_url
+https://cheatsheets.telacore.org/
 ```
 
-Ein fehlgeschlagener Build erzeugt kein Deployment.
+Ein fehlgeschlagener Build oder ein fehlerhaftes Offlinepaket erzeugt kein Deployment.
 
 ## Workflow
 
@@ -81,7 +103,7 @@ permissions:
   id-token: write
 ```
 
-Der Deploymentjob checkt das Repository nicht erneut aus und führt keinen Build aus. Er veröffentlicht ausschließlich das vom erfolgreichen Buildjob erzeugte Pages-Artefakt.
+Der Deploymentjob checkt das Repository nicht erneut aus und führt keinen Build oder Offline-Export aus. Er veröffentlicht ausschließlich das vom erfolgreichen Buildjob erzeugte Pages-Artefakt.
 
 ## Dynamische Site-URL
 
@@ -98,14 +120,13 @@ python scripts/build_site.py \
   --site-url "${SITE_URL%/}/"
 ```
 
-Dadurch funktionieren:
+Damit nennen Online-Site, Downloadseite, Provenienz und Offline-Manifest dieselbe kanonische URL. Seit Aktivierung der Custom Domain liefert GitHub:
 
-- die anfängliche Project Page unter `/Cheatsheets/`;
-- eine spätere Root-Custom-Domain;
-- eine Domain mit Unterpfad;
-- lokale Test-URLs.
+```text
+https://cheatsheets.telacore.org/
+```
 
-Die Markdownquellen enthalten keine fest codierte Domain und keinen fest codierten Repository-Unterpfad.
+Die Markdownquellen enthalten keine fest codierte Domain und keinen fest codierten Repository-Unterpfad. Project-Page-URLs bleiben Bestandteil der Pull-Request-Testmatrix, nicht der produktiven Konfiguration.
 
 ## Validierung vor dem Upload
 
@@ -118,9 +139,39 @@ Der Buildjob führt dieselben Kernprüfungen wie die Pull-Request-CI aus:
 5. interne Links und Callouts;
 6. Secrets, Raw HTML und externe Laufzeitassets;
 7. bytegleiche kanonische Metadaten;
-8. genau einen Strict-MkDocs-Build;
-9. Pages-Artefaktprüfung;
-10. unveränderte versionierte Arbeitskopie.
+8. genau einen zentralen Strict-Gesamtbuild;
+9. unabhängige Offline-ZIP-Prüfung;
+10. Pages-Artefaktprüfung;
+11. unveränderte versionierte Arbeitskopie.
+
+Der zentrale Gesamtbuild erzeugt intern zwei MkDocs-Ausgaben:
+
+- Online mit Verzeichnis-URLs;
+- Offline mit dateibasierten `.html`-URLs.
+
+Das ist kein doppelter Pages-Build: Nur der Onlinebaum wird nach `site/` geschrieben. Die Offlineausgabe wird in einem temporären Buildbereich geprüft und ausschließlich als verifiziertes `Cheatsheets-Offline-HTML.zip` in den finalen Downloadsatz übernommen.
+
+### Offline-Archiv
+
+Vor dem Pages-Upload führt der Workflow aus:
+
+```bash
+python scripts/validate_offline_archive.py \
+  --archive site/downloads/files/Cheatsheets-Offline-HTML.zip \
+  --report build/reports/offline.json
+```
+
+Der Validator prüft unabhängig vom Generator:
+
+- ZIP-Pfade, Reihenfolge, Dateitypen und Rechte;
+- normalisierte Zeitstempel aus `SOURCE_DATE_EPOCH`;
+- Größen- und Eintragslimits;
+- Offline-Manifest, Einzelhashes, Prüfsummendatei und Baumhash;
+- alle lokalen HTML-/CSS-Referenzen und Fragmente;
+- keine externen Laufzeitassets;
+- keine Symlinks, Hardlinks, Sonderdateien oder Case-Kollisionen.
+
+### Pages-Artefakt
 
 Das fertige Verzeichnis `site/` wird durch `scripts/validate_pages_artifact.py` geprüft auf:
 
@@ -134,26 +185,55 @@ Das fertige Verzeichnis `site/` wird durch `scripts/validate_pages_artifact.py` 
 - maximale Gesamtgröße von 1.000.000.000 Bytes;
 - deterministischen Baum-SHA-256.
 
-Der Bericht liegt während des Builds unter:
+Berichte:
 
 ```text
+build/reports/offline.json
 build/reports/pages-artifact.json
 ```
 
-## Einmalige Repositoryeinstellung
+## Repository- und Environmenteinstellungen
 
-Die Pages-Veröffentlichungsquelle muss im Repository auf **GitHub Actions** stehen. Der Workflow verwendet keine Veröffentlichung aus einem Branch oder einem `/docs`-Verzeichnis.
+Produktiv bestätigt:
 
-Nach dem ersten erfolgreichen Merge ist zu prüfen:
+- Repository → Settings → Pages → Source: **GitHub Actions**;
+- Custom Domain: `cheatsheets.telacore.org`;
+- Environment: `github-pages`;
+- Deployment ausschließlich aus dem erfolgreichen `build`-Job;
+- HTTPS aktiv und erzwungen.
 
-- Repository → Settings → Pages;
-- Source: GitHub Actions;
-- Environment `github-pages` vorhanden;
-- Deployment ausschließlich von `main`;
-- optional erforderlicher Reviewer für das Environment;
-- erfolgreiche `page_url` im Deploymentjob.
+Weiterhin empfohlen:
 
-Die verfügbare Connector-Schnittstelle verändert diese Repositoryeinstellung nicht automatisch. Der Workflow ist so gebaut, dass `actions/configure-pages` die vorhandene Pages-Konfiguration ausliest und die tatsächliche Basis-URL an den Build übergibt.
+- Deployment-Branch-Regel des Environments auf `main` begrenzen;
+- `telacore.org` im GitHub-Konto per TXT-Challenge verifiziert lassen;
+- keine Wildcard-DNS-Einträge auf GitHub Pages richten;
+- Alias-Subdomains einzeln und vor GitHub als Redirect konfigurieren.
+
+In der Actions-basierten Architektur wird keine `CNAME`-Datei im Repository benötigt. `configure-pages.outputs.base_url` bleibt die einzige URL-Autorität.
+
+## DNS- und Aliasmodell
+
+Kanonischer DNS-Eintrag:
+
+```text
+cheatsheets.telacore.org  CNAME  h234598.github.io
+```
+
+Zusätzliche Aliasnamen erhalten keinen weiteren GitHub-Pages-Eintrag. Sie benötigen:
+
+1. einen DNS-Eintrag beim vorgeschalteten Proxy oder Redirectdienst;
+2. ein Zertifikat für den Alias;
+3. einen permanenten HTTP-Redirect auf `https://cheatsheets.telacore.org`;
+4. Erhalt von Pfad und Query-String.
+
+Kontrolle:
+
+```bash
+curl -I https://cheat.telacore.org/
+curl -I 'https://cheat.telacore.org/05-Netzwerk-Sicherheit/?ansicht=kurz'
+```
+
+Erwartet wird ein permanenter Redirect mit entsprechendem `Location`-Header auf der kanonischen Domain.
 
 ## Lokale Project-Page-Prüfung
 
@@ -166,41 +246,58 @@ export SOURCE_DATE_EPOCH="$(git show -s --format=%ct HEAD)"
 
 python scripts/build_site.py \
   --strict \
-  --site-url https://example.invalid/Cheatsheets/
+  --site-url http://127.0.0.1:4173/Cheatsheets/
+
+python scripts/validate_offline_archive.py \
+  --archive site/downloads/files/Cheatsheets-Offline-HTML.zip \
+  --extract build/offline-site \
+  --report build/reports/offline.json \
+  --force
 
 python scripts/validate_pages_artifact.py \
   --site-dir site \
   --report build/reports/pages-artifact.json
 ```
 
-## Abnahme nach dem ersten Deployment
+Die Pull-Request-CI startet danach Online- und Offline-Testserver und führt zusätzlich einen No-JavaScript-`file://`-Test des entpackten Pakets aus.
 
-Nach dem ersten erfolgreichen `main`-Lauf werden mindestens geprüft:
+## Produktive Abnahme
+
+Folgende Punkte sind durch den Betreiber am 2026-07-28 als erfüllt bestätigt:
 
 - Buildjob grün;
 - Deploymentjob grün;
-- ausgegebene `page_url` verwendet HTTPS;
-- Startseite liefert die erwartete Site;
-- mindestens eine tiefe Fachseite ist erreichbar;
+- Pages-Quelle GitHub Actions;
+- Custom Domain unter HTTPS erreichbar;
+- mindestens eine tiefe Fachseite erreichbar;
 - Kategorie-, Gesamt- und Tagindex funktionieren;
-- `404.html` ist im Artefakt vorhanden;
-- keine Quelldatei oder Buildausgabe wurde nach `main` committed.
+- HTTPS wird erzwungen;
+- Alias-Weiterleitungen funktionieren;
+- keine Buildausgabe wurde nach `main` committed.
 
-Reale HTTP- und Browserprüfungen werden in Phase 7 automatisiert. Phase 5B bestätigt zunächst die GitHub-Pages-Veröffentlichung und ihre URL.
+Die automatisierten Phase-7-Browsertests prüfen weiterhin Online-Navigation, 404, Downloads, Accessibility, Mobilansicht und fremde Laufzeitrequests bei jedem Pull Request.
 
-## Custom Domain
+## Offlinepaket im Betrieb
 
-Eine Custom Domain wird später ausschließlich in den GitHub-Pages-Einstellungen und beim DNS-Anbieter konfiguriert. Die Buildpipeline benötigt dafür keine Markdownänderung.
+Öffentlicher Download:
 
-In dieser Actions-basierten Architektur wird keine `CNAME`-Datei als Buildquelle gepflegt. `configure-pages.outputs.base_url` bleibt die einzige URL-Autorität.
+```text
+https://cheatsheets.telacore.org/downloads/files/Cheatsheets-Offline-HTML.zip
+```
 
-Vor der Umschaltung:
+Nutzung:
 
-1. Domaininhaberschaft und DNS-Ziel verifizieren;
-2. Custom Domain in GitHub Pages eintragen;
-3. HTTPS-Aktivierung abwarten und erzwingen;
-4. Pages-Workflow manuell auslösen;
-5. Startseite, tiefe Seite, Suche, Assets und 404 erneut prüfen.
+```text
+ZIP entpacken → index.html öffnen
+```
+
+oder für vollständige lokale Suche und UI:
+
+```bash
+python offline-server.py
+```
+
+Das Paket wird nicht separat hochgeladen oder versioniert. Es ist Bestandteil desselben Pages-Artefakts und derselben Downloadmanifeste wie die Online-Site.
 
 ## Rollback
 
@@ -212,9 +309,11 @@ Empfohlenes Verfahren:
 2. vollständige Validate-Gates abwarten;
 3. Revert mergen;
 4. Pages-Workflow veröffentlicht aus dem wiederhergestellten Commit;
-5. `page_url` und repräsentative Seiten prüfen.
+5. kanonische URL und repräsentative Seiten prüfen.
 
 Ist ausschließlich die Workflowdefinition defekt, wird `.github/workflows/pages.yml` in einem kleinen Infrastruktur-PR auf den letzten grünen Stand zurückgesetzt.
+
+Ist ausschließlich Offline-HTML defekt, kann die optionale Integration in einem kleinen Revert entfernt werden. Online-Site, bestehende Basisdownloads und Deploymentarchitektur bleiben davon unabhängig nutzbar.
 
 ## Fehlerdiagnose
 
@@ -227,7 +326,21 @@ Prüfen:
 - Repository erlaubt GitHub Actions;
 - Workflow läuft auf `main` oder manuell, nicht aus einem Pull Request.
 
-### Artefaktprüfung schlägt fehl
+### Offlineprüfung schlägt fehl
+
+Prüfen:
+
+- `build/reports/offline.json` beziehungsweise das Buildlog;
+- `OFFLINE-MANIFEST.json` und `OFFLINE-SHA256SUMS.txt`;
+- root-relative oder noch verzeichnisbasierte Links in Offline-Templates;
+- externe Styles, Skripte, Bilder oder Preload-Ziele;
+- ZIP-Zeitstempel und `SOURCE_DATE_EPOCH`;
+- Symlinks, Hardlinks oder Case-Kollisionen;
+- vorhandene Fragment-ID im Ziel-HTML.
+
+Der Validator extrahiert im Produktivworkflow nicht. Im PR-Workflow wird ausschließlich nach `build/offline-site` und über einen markierten atomaren Verzeichnistausch extrahiert.
+
+### Pages-Artefaktprüfung schlägt fehl
 
 Der JSON-Bericht nennt einen stabilen Fehlercode:
 
@@ -243,7 +356,7 @@ Der JSON-Bericht nennt einen stabilen Fehlercode:
 
 Prüfen:
 
-- Buildjob und Pages-Artefakt waren grün;
+- Buildjob, Offline-ZIP und Pages-Artefakt waren grün;
 - `deploy` besitzt `pages: write` und `id-token: write`;
 - Environment heißt exakt `github-pages`;
 - Environment-Regeln erlauben den `main`-Branch;
