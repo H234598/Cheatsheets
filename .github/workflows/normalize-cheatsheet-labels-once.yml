@@ -1,0 +1,161 @@
+name: Normalize cheatsheet labels once
+
+on:
+  push:
+    branches:
+      - agent/normalize-cheatsheet-labels
+
+permissions:
+  contents: write
+
+concurrency:
+  group: normalize-cheatsheet-labels-once
+  cancel-in-progress: false
+
+jobs:
+  normalize:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Repository auschecken
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      - name: Python einrichten
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            requirements-docs.txt
+            requirements-test.txt
+
+      - name: Abhängigkeiten installieren
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-docs.txt -r requirements-test.txt
+          python -m pip check
+
+      - name: Bezeichnung und Pfade deterministisch normalisieren
+        shell: bash
+        run: |
+          python - <<'PY'
+          from __future__ import annotations
+
+          from pathlib import Path
+          import re
+          import subprocess
+
+          root = Path.cwd()
+          workflow = Path('.github/workflows/normalize-cheatsheet-labels-once.yml')
+          label_pattern = re.compile(
+              'premium' + r'(?:[ \t]+|[-\u2010-\u2015\u2212]+)' + 'spickzettel',
+              re.IGNORECASE,
+          )
+
+          def replacement(match: re.Match[str]) -> str:
+              return 'Cheatsheet' if match.group(0)[:1].isupper() else 'cheatsheet'
+
+          def tracked_paths() -> list[Path]:
+              raw = subprocess.check_output(['git', 'ls-files', '-z'])
+              return [Path(item) for item in raw.decode('utf-8').split('\0') if item]
+
+          changed_files = 0
+          replacement_count = 0
+          for relative in tracked_paths():
+              if relative == workflow:
+                  continue
+              path = root / relative
+              if not path.is_file():
+                  continue
+              data = path.read_bytes()
+              if b'\0' in data:
+                  continue
+              try:
+                  text = data.decode('utf-8')
+              except UnicodeDecodeError:
+                  continue
+              updated, count = label_pattern.subn(replacement, text)
+              if count:
+                  path.write_bytes(updated.encode('utf-8'))
+                  changed_files += 1
+                  replacement_count += count
+
+          renamed_paths = 0
+          for relative in sorted(tracked_paths(), key=lambda item: (len(item.parts), item.as_posix()), reverse=True):
+              if relative == workflow:
+                  continue
+              new_parts = tuple(label_pattern.sub(replacement, part) for part in relative.parts)
+              renamed = Path(*new_parts)
+              if renamed == relative:
+                  continue
+              source = root / relative
+              target = root / renamed
+              if target.exists():
+                  raise SystemExit(f'Zielpfad existiert bereits: {renamed}')
+              target.parent.mkdir(parents=True, exist_ok=True)
+              subprocess.run(['git', 'mv', '--', relative.as_posix(), renamed.as_posix()], check=True)
+              renamed_paths += 1
+
+          print(f'Inhaltsersetzungen: {replacement_count} in {changed_files} Dateien')
+          print(f'Umbenannte Pfade: {renamed_paths}')
+          PY
+
+      - name: Kanonische Manifeste aktualisieren
+        run: python scripts/build_manifest.py --update-committed
+
+      - name: Vollständig prüfen
+        shell: bash
+        run: |
+          python -m compileall -q scripts tests
+          python -m pytest -q
+          python scripts/build_manifest.py --check
+          python scripts/build_site.py --check --site-url https://example.invalid/Cheatsheets/
+          git diff --check
+          python - <<'PY'
+          from __future__ import annotations
+
+          from pathlib import Path
+          import re
+          import subprocess
+
+          pattern = re.compile(
+              'premium' + r'(?:[ \t]+|[-\u2010-\u2015\u2212]+)' + 'spickzettel',
+              re.IGNORECASE,
+          )
+          failures: list[str] = []
+          raw = subprocess.check_output(['git', 'ls-files', '-z']).decode('utf-8')
+          for item in (entry for entry in raw.split('\0') if entry):
+              path = Path(item)
+              if any(pattern.search(part) for part in path.parts):
+                  failures.append(f'Pfad: {item}')
+              if not path.is_file():
+                  continue
+              data = path.read_bytes()
+              if b'\0' in data:
+                  continue
+              try:
+                  text = data.decode('utf-8')
+              except UnicodeDecodeError:
+                  continue
+              for number, line in enumerate(text.splitlines(), start=1):
+                  if pattern.search(line):
+                      failures.append(f'Inhalt: {item}:{number}')
+          if failures:
+              raise SystemExit('\n'.join(failures))
+          print('Nulltreffer-Prüfung für Bezeichnung und Pfade erfolgreich.')
+          PY
+
+      - name: Einmaligen Workflow entfernen und Änderungen veröffentlichen
+        shell: bash
+        run: |
+          rm -- .github/workflows/normalize-cheatsheet-labels-once.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git status --short
+          git commit -m "refactor(content): Cheatsheet-Bezeichnung vereinheitlichen"
+          git push origin HEAD:agent/normalize-cheatsheet-labels
+          legacy_branch="agent/remove-$(printf '%s' 'premium')-$(printf '%s' 'spickzettel')"
+          git push origin --delete "$legacy_branch" || true
