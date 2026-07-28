@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import re
 import shutil
 import subprocess
 
@@ -124,8 +125,9 @@ def test_corrupt_local_state_is_discarded_without_disabling_working_storage() ->
 
 def test_favorite_limits_keep_the_most_recent_entries_consistently() -> None:
     site_state = (JS_DIR / "site-state.js").read_text(encoding="utf-8")
+    newest_slice = re.compile(r"\.slice\(\s*-MAX_FAVORITES\s*,?\s*\)")
 
-    assert site_state.count("slice(-MAX_FAVORITES)") >= 3
+    assert len(newest_slice.findall(site_state)) >= 3
     assert ".slice(0, MAX_FAVORITES)" not in site_state
 
 
