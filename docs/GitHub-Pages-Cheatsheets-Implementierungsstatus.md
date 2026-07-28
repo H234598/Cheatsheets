@@ -12,7 +12,7 @@ Dieser Fortschrittsnachweis wird mit jeder Planphase aktualisiert. Verbindliche 
 | 4 – ADHS-freundliche Oberfläche | ✅ umgesetzt | PR #7, Merge `0682c7f8e508d56b60d8d8e72024121e1bcd815d`; CodeRabbit und qlty grün |
 | 5A – PR-CI | ✅ umgesetzt | PR #9, Merge `69c72997eed4fc0ac831eba696bac12b3a2f69b9`; 78 Tests und alle Gates grün |
 | 5B – Pages-Deployment | ⚠️ technisch umgesetzt | PR #11, Merge `59724c5256a5bed001164fe908dacff2d01fb11a`; 90 Tests und Artefaktprüfung grün, produktive `page_url` noch extern zu bestätigen |
-| 6 – Downloads und Provenienz | 🚧 abnahmebereit | PR #12; 95 Tests, vollständiger Downloadsatz und Pages-Artefakt grün |
+| 6 – Downloads und Provenienz | 🚧 abnahmebereit | PR #12; 108 Tests, Downloadsatz, Reviews und Pages-Artefakt grün |
 | 7 – Browser, Accessibility und Performance | ⬜ offen | – |
 | 8 – optionale Erweiterungen | ⬜ offen | – |
 
@@ -108,15 +108,15 @@ Phase 6 erzeugt einen vollständigen Downloadsatz aus demselben Checkout und `SO
 - JSON- und CSV-Downloadmanifest;
 - eine aus den geprüften Datensätzen erzeugte Download-Landingpage.
 
-Der Quell-ZIP verwendet stabile Reihenfolge, feste Rechte, `ZIP_STORED` und den Commitzeitpunkt. `.git`, `.github`, `.obsidian`, Buildausgaben, Tests und Entwicklungszustände sind ausgeschlossen. Symlink-Inhaltsassets blockieren fail-closed.
+Der Quell-ZIP verwendet stabile Reihenfolge, feste Rechte, `ZIP_STORED` und den Commitzeitpunkt. `.git`, `.github`, `.obsidian`, Buildausgaben, Tests und Entwicklungszustände sind ausgeschlossen. Nur Git-getrackte Inhaltsassets dürfen in das Archiv gelangen; unerwartete Dateien und Symlinks unter Kategorien, `assets/` oder `media/` blockieren fail-closed. Archivnamen werden vor der Prüfung plattformübergreifend normalisiert; Traversal-, Laufwerks-, UNC-, Steuerzeichen- und leere Punktpfade sind verboten.
 
 Das Gesamt-Markdown verwendet die kanonische Kategorienreihenfolge, stabile Page-ID-Anker und präfixierte Abschnittsanker. Codefences werden vor und nach der Linkkonvertierung gehasht.
 
-Der zentrale Site-Build erzeugt die Downloads vor MkDocs, schreibt die Landingpage mit realen Größen und Hashes und kopiert die Artefakte erst nach erfolgreichem HTML-Build nach `site/downloads/files/`. Dadurch bleiben rohe `.md`-Downloads unverändert herunterladbar und werden nicht versehentlich als HTML-Seiten gerendert.
+Der zentrale Site-Build erzeugt den Contentindex einmalig und reicht ihn an Download- und Webbuild weiter. Die Commitauflösung ist ebenfalls zentralisiert. Downloads entstehen vor MkDocs; die Landingpage verwendet reale Größen und Hashes. Die Artefakte werden erst nach erfolgreichem HTML-Build nach `site/downloads/files/` kopiert. Dadurch bleiben rohe `.md`-Downloads unverändert herunterladbar und werden nicht versehentlich als HTML-Seiten gerendert.
 
-Der vollständige GitHub-Actions-Lauf `30334654750` auf Head `77a603435f5db79d47891ad6bb469330649135d2` bestätigte:
+Der vollständige GitHub-Actions-Lauf `30335873825` auf Head `d72d931da20d40c7b9caab1e9431613b3a6b92e5` bestätigte:
 
-- **95 von 95 Tests bestanden**;
+- **108 von 108 Tests bestanden**;
 - zwölf Kategorien, 86 Fachseiten und 116 Markdownseiten;
 - null Contentfehler und null Contentwarnungen;
 - null Linkfehler und null Linkwarnungen;
@@ -125,13 +125,14 @@ Der vollständige GitHub-Actions-Lauf `30334654750` auf Head `77a603435f5db79d47
 - vollständiger Strict-MkDocs-Build einschließlich Downloads;
 - Pages-Artefakt mit 180 regulären Dateien und 25.016.928 Bytes;
 - keine Symlinks, Hardlinks, Sonderdateien oder Case-Kollisionen;
-- Artefakt-Baum-SHA-256 `daeb8fe09bc1117e718f55da198806ae30d0ff9ef5d120f420bcb9dd1f3b1878`;
+- Artefakt-Baum-SHA-256 `14d151084acf39285e003529f3c05571214ce9eea6914107d1d94f39243f20d0`;
 - versionierte Arbeitskopie nach dem Build unverändert;
-- qlty grün und keine offenen Review-Threads.
+- qlty und CodeRabbit grün;
+- alle fünf Reviewbefunde behoben und keine offenen Review-Threads.
 
-CodeRabbit wird auf dem finalen Head bis zum Endzustand geprüft. Die Statuspflege selbst erzeugt einen neuen Commit; deshalb muss der vollständige Validate-Lauf anschließend noch einmal auf dem endgültigen Head grün sein.
+Der vollständige Site-Build schreibt sein Protokoll zusätzlich nach `build/reports/build-site.txt`, sodass späte Integrationsfehler im Diagnoseartefakt vollständig verfügbar bleiben. Die vorliegende Statuspflege erzeugt einen neuen Head; dieser muss dieselbe Validate- und Reviewabnahme erneut vollständig bestehen, bevor PR #12 gemergt wird.
 
-Eine Phase wird erst nach grünen Gates, ohne offene Review-Threads und nach verifiziertem Merge als vollständig umgesetzt markiert.
+Eine Phase wird erst nach veröffentlichten Dateien, grünen Tests und PR-Gates, ohne offene Review-Threads und nach verifiziertem Merge als vollständig umgesetzt markiert.
 
 ## Verbindliche Ausgangsstände
 
@@ -143,7 +144,7 @@ Die drei Stände wurden vor Beginn erneut gegen die jeweiligen Default-Branches 
 
 ## Pflegekonvention
 
-- Eine Phase wird erst als umgesetzt markiert, wenn ihre Dateien veröffentlicht, ihre Tests grün und die PR-Gates abgeschlossen sind.
+- Eine Phase wird erst als umgesetzt markiert, wenn ihre Dateien veröffentlicht, ihre Tests und PR-Gates grün, keine Review-Threads offen und der Merge verifiziert ist.
 - Der Nachweis nennt PR, Merge-Commit und die wichtigsten ausführbaren Prüfungen.
 - Noch nicht implementierte optionale Bestandteile bleiben sichtbar offen; sie werden nicht stillschweigend aus dem Plan entfernt.
 - Neue Erkenntnisse ändern nicht rückwirkend die kanonischen Markdown-Fachinhalte, sondern werden als eigene Content- oder Infrastrukturänderung umgesetzt.
