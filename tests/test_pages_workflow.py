@@ -86,20 +86,16 @@ def test_build_uses_pinned_actions_and_nonpersistent_checkout() -> None:
     build_steps = steps(build)
     actions = uses(build)
 
-    assert any(item.startswith(CHECKOUT) for item in actions)
-    assert any(item.startswith(SETUP_PYTHON) for item in actions)
-    assert any(item.startswith(CONFIGURE_PAGES) for item in actions)
-    assert any(item.startswith(UPLOAD_PAGES) for item in actions)
+    assert CHECKOUT in actions
+    assert SETUP_PYTHON in actions
+    assert CONFIGURE_PAGES in actions
+    assert UPLOAD_PAGES in actions
 
-    checkout = next(item for item in build_steps if str(item.get("uses", "")).startswith(CHECKOUT))
+    checkout = next(item for item in build_steps if item.get("uses") == CHECKOUT)
     assert checkout["with"] == {"fetch-depth": "1", "persist-credentials": "false"}
-    python = next(
-        item for item in build_steps if str(item.get("uses", "")).startswith(SETUP_PYTHON)
-    )
+    python = next(item for item in build_steps if item.get("uses") == SETUP_PYTHON)
     assert python["with"]["python-version"] == "3.12"
-    configure = next(
-        item for item in build_steps if str(item.get("uses", "")).startswith(CONFIGURE_PAGES)
-    )
+    configure = next(item for item in build_steps if item.get("uses") == CONFIGURE_PAGES)
     assert configure["id"] == "pages"
 
 
@@ -115,9 +111,7 @@ def test_site_is_built_once_with_configured_base_url_and_validated() -> None:
     assert "python scripts/validate_pages_artifact.py" in text
     assert "--site-dir site" in text
 
-    upload = next(
-        item for item in steps(build) if str(item.get("uses", "")).startswith(UPLOAD_PAGES)
-    )
+    upload = next(item for item in steps(build) if item.get("uses") == UPLOAD_PAGES)
     assert upload["with"] == {"path": "site"}
 
 
@@ -127,7 +121,7 @@ def test_deploy_job_uses_only_the_pinned_pages_deployment_action() -> None:
     assert isinstance(deploy, dict)
     deploy_steps = steps(deploy)
 
-    assert uses(deploy) == [f"{DEPLOY_PAGES} # v5.0.0"]
+    assert uses(deploy) == [DEPLOY_PAGES]
     assert deploy_steps[0]["id"] == "deployment"
     assert "git push" not in text
     assert "secrets." not in text
