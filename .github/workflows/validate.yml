@@ -80,6 +80,7 @@ jobs:
           node --check web/assets/javascripts/filters.js
           node --check web/assets/javascripts/accessibility.js
           node --check web/assets/javascripts/mermaid-loader.js
+          node --check web/assets/javascripts/offline-navigation.js
           node --check playwright.config.mjs
           node --check tests/web/site.spec.mjs
           node --check tests/web/offline.spec.mjs
