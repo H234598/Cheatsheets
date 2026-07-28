@@ -113,6 +113,12 @@
       const categories = Array.isArray(categoryPayload) ? categoryPayload : [];
       const tags = Array.isArray(tagPayload) ? tagPayload : [];
       const searchable = new Map(pages.map((page) => [page.id, searchableText(page)]));
+      const pagesForTag = new Map(
+        tags.map((tag) => [
+          String(tag.id || ""),
+          new Set(Array.isArray(tag.pages) ? tag.pages : []),
+        ]),
+      );
       let visibleLimit = PAGE_BATCH;
       let scheduled = false;
       let lastMatches = [];
@@ -124,9 +130,8 @@
         const query = normalizedText(queryInput.value);
         if (query && !searchable.get(page.id)?.includes(query)) return false;
         if (categorySelect.value && page.category !== categorySelect.value) return false;
-        if (tagSelect.value) {
-          const normalizedTags = (page.tags || []).map(normalizedText);
-          if (!normalizedTags.includes(tagSelect.value)) return false;
+        if (tagSelect.value && !pagesForTag.get(tagSelect.value)?.has(page.id)) {
+          return false;
         }
         if (timeSelect.value) {
           const maximumMinutes = Number(timeSelect.value);
@@ -187,6 +192,11 @@
       render();
     } catch (exception) {
       console.warn("Cheatsheet-Filter konnten nicht initialisiert werden.", exception);
+      panel.hidden = false;
+      form.hidden = true;
+      results.hidden = true;
+      if (count) count.hidden = true;
+      if (more) more.hidden = true;
       if (error) {
         error.hidden = false;
         error.textContent =
