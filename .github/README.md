@@ -43,21 +43,22 @@ Die Pipeline führt in dieser Reihenfolge aus:
 6. Link- und Calloutvalidierung;
 7. Secret-, Raw-HTML- und Laufzeitassetprüfung;
 8. reproduzierbare Erzeugung der erwarteten kanonischen Metadaten;
-9. vollständigen Strict-MkDocs-Build unter einem Project-Page-Unterpfad;
-10. Prüfung, dass der Build keine versionierten Quelldateien verändert hat.
+9. byteweiser, blockierender Vergleich der kanonischen Metadaten;
+10. vollständigen Strict-MkDocs-Build unter einem Project-Page-Unterpfad;
+11. Prüfung, dass der Build keine versionierten Quelldateien verändert hat.
 
 Diagnoseberichte werden auch bei einem fehlgeschlagenen Schritt als normales Actions-Artefakt hochgeladen und nach 14 Tagen gelöscht. Der PR-Workflow enthält keine Pages-Actions, kein Environment und keine Secrets.
 
-## Metadatendrift
+## Kanonische Metadaten
 
-Bis zum separaten Metadaten-/Content-PR wird Drift von:
+Die folgenden Dateien werden bei jedem Lauf reproduzierbar neu erzeugt und byteweise mit dem eingecheckten Stand verglichen:
 
 - `MANIFEST.csv`;
 - `MANIFEST.md`;
 - `BUILD-REPORT.yaml`;
-- `SHA256SUMS.txt`
+- `SHA256SUMS.txt`.
 
-als `metadata-diff.patch` dokumentiert, aber noch nicht als eigenes CI-Gate blockiert. Die eigentliche Web- und Contentvalidierung bleibt blockierend. Nach der bewussten kanonischen Aktualisierung wird der Diffvergleich auf einen Fehler bei jeder Abweichung umgestellt.
+Jede Abweichung ist ein blockierender Fehler und wird zusätzlich als `metadata-diff.patch` im Diagnoseartefakt gespeichert. Änderungen an Fachseiten, Kategorieindizes, Dateinamen oder Frontmatter müssen deshalb immer gemeinsam mit den generatorisch aktualisierten Metadaten reviewt werden.
 
 ## Sicherheitsberichte
 
