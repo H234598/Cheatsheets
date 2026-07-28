@@ -4,6 +4,7 @@ import csv
 import hashlib
 import json
 from pathlib import Path
+import subprocess
 import zipfile
 
 import pytest
@@ -13,6 +14,7 @@ from conftest import manifest_row, write_manifest, write_page
 from content_index import build_content_index
 from download_metadata import render_landing_page
 from download_model import ARTIFACT_ORDER, DownloadBuildError
+from download_sources import canonical_archive_name
 from io_utils import BUILD_SENTINEL
 
 COMMIT = "a" * 40
@@ -76,6 +78,8 @@ def make_download_repository(root: Path) -> tuple[Path, Path]:
     (root / ".obsidian" / "workspace.json").write_text("{}\n", encoding="utf-8")
     (root / ".github" / "workflows").mkdir(parents=True)
     (root / ".github" / "private.yml").write_text("secret: false\n", encoding="utf-8")
+    subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+    subprocess.run(["git", "add", "--all"], cwd=root, check=True)
     return alpha, beta
 
 
@@ -243,6 +247,26 @@ def test_downloads_are_copied_to_site_and_landing_page_uses_verified_hashes(
     assert f"Quellcommit | `{COMMIT}`" in landing
 
 
+def test_untracked_content_asset_is_rejected(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    make_download_repository(tmp_path)
+    monkeypatch.setenv("SOURCE_DATE_EPOCH", str(EPOCH))
+    (tmp_path / "01-Test" / "private.pem").write_text(
+        "not-for-publication\n", encoding="utf-8"
+    )
+
+    with pytest.raises(DownloadBuildError, match="nicht Git-getracktes Inhaltsasset"):
+        build_downloads(
+            tmp_path,
+            tmp_path / "build" / "downloads",
+            source_commit=COMMIT,
+            strict=True,
+            force=True,
+        )
+
+
 def test_content_asset_symlink_is_rejected(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -265,3 +289,28 @@ def test_content_asset_symlink_is_rejected(
             strict=True,
             force=True,
         )
+
+
+@pytest.mark.parametrize(
+    "name",
+    [
+        "",
+        "/absolute/file.txt",
+        "//server/share/file.txt",
+        r"\\server\share\file.txt",
+        r"C:\temp\file.txt",
+        "C:relative.txt",
+        "assets/../../startup.bat",
+        r"assets/..\..\startup.bat",
+        "assets//file.txt",
+        "assets/./file.txt",
+        "assets/\x00file.txt",
+    ],
+)
+def test_unsafe_archive_names_are_rejected(name: str) -> None:
+    with pytest.raises(DownloadBuildError):
+        canonical_archive_name(name)
+
+
+def test_windows_separators_are_canonicalized_before_archive_validation() -> None:
+    assert canonical_archive_name(r"assets\icons\cheat.png") == "assets/icons/cheat.png"
