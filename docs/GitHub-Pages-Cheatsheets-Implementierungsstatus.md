@@ -8,9 +8,9 @@ Dieser Fortschrittsnachweis wird mit jeder Planphase aktualisiert. Verbindliche 
 | 0B – Inventur und Baseline | ✅ umgesetzt | PR #2, Merge `48f2a518f52e4d595a0887bd2de3ee45fcc3f19a`, 8 Tests |
 | 1 – Linkmodell und Callouts | ✅ umgesetzt | PR #3, Merge `7fcccdca800b60dc2fee55de1b5e3b99614e1c3c`, 21 Tests |
 | 2 – MkDocs-Basis | ✅ umgesetzt | PR #4, Merge `81ef6b66abb64116d153d8558ea6a230eee676e9`, 26 Tests |
-| 3 – Navigation, Indizes und Suche | ✅ umgesetzt | PR #6, Merge `7db8f713aca07e67b481f9fbcb00553f6a555495`; CodeRabbit und qlty grün, drei Reviewregressionen ergänzt |
-| 4 – ADHS-freundliche Oberfläche | 🚧 im Review | PR #7; progressive UI, lokale Zustände, Filter, Fokusmodus und Tastaturhilfe |
-| 5A – PR-CI | ⬜ offen | – |
+| 3 – Navigation, Indizes und Suche | ✅ umgesetzt | PR #6, Merge `7db8f713aca07e67b481f9fbcb00553f6a555495`; CodeRabbit und qlty grün |
+| 4 – ADHS-freundliche Oberfläche | ✅ umgesetzt | PR #7, Merge `0682c7f8e508d56b60d8d8e72024121e1bcd815d`; CodeRabbit und qlty grün |
+| 5A – PR-CI | 🚧 im Review | PR #9; schreibgeschützte CI, Workflowpolicy, Securityscanner, Diagnoseartefakte und Dependabot |
 | 5B – Pages-Deployment | ⬜ offen | – |
 | 6 – Downloads und Provenienz | ⬜ offen | – |
 | 7 – Browser, Accessibility und Performance | ⬜ offen | – |
@@ -27,17 +27,66 @@ Vor dem Merge wurden zusätzlich behoben:
 - abweichende Unicode-Normalisierung zwischen Sortierung und Alphabetüberschrift;
 - zunächst fehlende Verkabelung der Generatoren mit dem tatsächlichen Gesamtbuild.
 
-## Laufende Phase 4
+## Abgeschlossene Phase 4
 
-PR #7 ergänzt die Oberfläche progressiv; die kanonischen Markdown-Dateien bleiben unverändert. Der generierte Webbaum erhält stabile UI-Metadaten und ein geprüftes Page-ID-Migrationsregister. Die Oberfläche ergänzt:
+PR #7 ergänzt die Oberfläche progressiv; die kanonischen Markdown-Dateien bleiben unverändert. Umgesetzt wurden:
 
 - drei primäre Startaktionen;
-- lokale Favoriten, zuletzt gelesen und Lesefortschritt;
-- Fokusmodus;
+- lokale Favoriten, zuletzt gelesen und monotoner Lesefortschritt;
+- Fokusmodus mit sichtbarem Ausstieg auf allen Seitentypen;
 - lokale Kategorie-, Tag-, Text- und Zeitfilter;
 - Tastaturhilfe mit lokal abschaltbaren Kürzeln;
-- robuste Fallbacks bei deaktiviertem JavaScript oder nicht verfügbarem `localStorage`;
+- robuste Fallbacks bei deaktiviertem JavaScript, beschädigtem Zustand oder nicht verfügbarem `localStorage`;
 - responsive, reizreduzierte Karten-, Fokus- und Dialogdarstellung.
+
+Vor dem Merge wurden fünf konkrete Reviewbefunde behoben und mit Regressionstests abgesichert:
+
+- Favoritenkappung behält konsistent die neuesten Einträge;
+- native Semantik generischer Tabellen bleibt erhalten;
+- lokale Vorschau verwendet eine same-origin Sitewurzel;
+- Enter im Filterformular lädt die Seite nicht neu;
+- optionale Lesezeit erzeugt keine leere Beschriftung.
+
+## Parallele Inhaltsvereinheitlichung
+
+PR #8 wurde unabhängig vom Phasenstrang als repositoryweite Inhalts- und Dateinamenvereinheitlichung gemergt:
+
+```text
+05b8d7469ba8c1129ddfde016e43852f88bfc499
+```
+
+Der PR ersetzt die bisherige Zusatzbezeichnung durch **Cheatsheet**, benennt die betroffenen Dateien und Links um und regeneriert die kanonischen Metadaten. Er behebt zugleich die im ersten Phase-5A-Lauf sichtbar gewordenen Baseline-Linkprobleme:
+
+- Kategorieindizes verweisen eindeutig auf den Root-Gesamtindex;
+- die Thales-Inhaltsmarke verwendet `Java JCA/JCE`;
+- der mobile AMD-Unterabschnitt besitzt einen eindeutigen Titel.
+
+Der anschließend eröffnete PR #10 wurde deshalb ohne Merge und mit leerem Diff geschlossen.
+
+## Laufende Phase 5A
+
+PR #9 wurde nach den Merges von PR #7 und PR #8 erneut ohne alte Branchhistorie exakt auf dem aktuellen `main` aufgebaut. Der Diff enthält ausschließlich CI-, Security-, Test-, Konfigurations- und Dokumentationsdateien.
+
+Enthalten sind:
+
+- `.github/workflows/validate.yml` für Pull Requests, `main` und manuelle Läufe;
+- ausschließlich `contents: read`, keine Secrets, kein Environment und kein Deployment;
+- vollständige Commit-SHA-Pins mit Versionskommentaren;
+- fester Runner `ubuntu-24.04`, Python 3.12, Timeouts und Concurrency;
+- Workflow-Selbstvalidierung;
+- Unit-, Integrations-, Content-, Link-, Sicherheits- und Strict-MkDocs-Gates;
+- Diagnoseartefakte auch nach Fehlern;
+- Dependabot für GitHub Actions und Python;
+- hochpräziser Secret-/Raw-HTML-/Laufzeitasset-Scanner mit exakten, hashgebundenen Ausnahmen.
+
+Die frühe Pipeline hat ihre Aufgabe erfüllt und reale Fehler sichtbar gemacht. Behoben wurden bereits:
+
+- falscher Modulimport im Securityscanner;
+- strukturierte Prüfung von Checkout-Credentials, Pythonversion und `if: always()`;
+- spröder UI-Vertragstest;
+- vollständige Linkdiagnostik als JSON und Text.
+
+Der letzte Lauf auf dem alten Inhaltsstand erreichte 71 bestandene Tests und ein grünes Contentmodell, bevor er die inzwischen durch PR #8 behobenen Baseline-Links meldete. Der neu aufgebaute Head muss nun die vollständige Pipeline auf dem aktuellen `main` erneut durchlaufen.
 
 Eine Phase wird erst nach grünen Gates, ohne offene Review-Threads und nach verifiziertem Merge als vollständig umgesetzt markiert.
 
@@ -56,5 +105,6 @@ Die drei Stände wurden vor Beginn erneut gegen die jeweiligen Default-Branches 
 - Noch nicht implementierte optionale Bestandteile bleiben sichtbar offen; sie werden nicht stillschweigend aus dem Plan entfernt.
 - Neue Erkenntnisse ändern nicht rückwirkend die kanonischen Markdown-Fachinhalte, sondern werden als eigene Content- oder Infrastrukturänderung umgesetzt.
 - Behauptete Integrationen werden im Diff und durch Integrationsprüfungen nachgewiesen; reine Standalone-Generatoren gelten nicht als abgeschlossene Phase.
+- Nach parallelen `main`-Änderungen werden offene Infrastruktur-PRs neu auf dem aktuellen Merge-Commit aufgebaut, statt veraltete Inhalte zurückzuspielen.
 
 **Letzte Pflege:** 2026-07-28
