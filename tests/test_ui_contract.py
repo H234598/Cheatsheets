@@ -46,6 +46,8 @@ def test_templates_keep_progressive_controls_hidden_without_javascript() -> None
     assert "data-page-id=" in page_meta
     assert "hidden" in page_meta
     assert local_state.count('class="cheat-action-card"') == 3
+    assert 'href="#direkteinstieg"' in local_state
+    assert 'href="#cheatsheets"' not in local_state
     assert "data-cheat-keyboard-open" in local_state
     assert "data-cheat-filter-panel" in local_state
     assert "<noscript>" in local_state
