@@ -27,6 +27,10 @@ BANNED_TEXT_PATTERNS = {
         "Checkout-Credentials dürfen nicht persistent bleiben",
     ),
     "WF005": (re.compile(r"\$\{\{\s*secrets\."), "Validierung darf keine Secrets verwenden"),
+    "WF006": (
+        re.compile(r"\bnpx\s+(?!--no-install\b)"),
+        "npx darf keine nicht lokal installierten Pakete nachladen",
+    ),
 }
 REQUIRED_VALIDATE_TRIGGERS = {"pull_request", "push", "workflow_dispatch"}
 ALLOWED_VALIDATE_PERMISSIONS = {"contents": "read"}
@@ -34,6 +38,18 @@ DEPLOY_ACTIONS = {
     "actions/configure-pages",
     "actions/upload-pages-artifact",
     "actions/deploy-pages",
+}
+REQUIRED_VALIDATE_COMMANDS = {
+    "WF055": ("npm ci --ignore-scripts", "npm ci --ignore-scripts fehlt"),
+    "WF056": (
+        "npx --no-install playwright install --with-deps chromium",
+        "reproduzierbare Chromium-Installation fehlt",
+    ),
+    "WF057": (
+        "python scripts/validate_web_budgets.py",
+        "Webbudget- und Laufzeitassetprüfung fehlt",
+    ),
+    "WF058": ("npm run test:web", "blockierende Browser- und Accessibility-Tests fehlen"),
 }
 
 
@@ -230,7 +246,9 @@ def _validate_validate_workflow(relative: str, payload: dict[str, Any]) -> list[
 
     checkout_seen = False
     python_seen = False
+    node_seen = False
     upload_seen = False
+    run_commands: list[str] = []
     for job_name, raw_job in _mapping(payload.get("jobs")).items():
         job = _mapping(raw_job)
         if job.get("environment") is not None:
@@ -257,6 +275,7 @@ def _validate_validate_workflow(relative: str, payload: dict[str, Any]) -> list[
             uses = str(step.get("uses", ""))
             action = uses.split("@", 1)[0]
             values = _string_mapping(step.get("with"))
+            run_commands.append(str(step.get("run", "")))
             if action == "actions/checkout":
                 checkout_seen = True
                 if values.get("persist-credentials") != "false":
@@ -276,6 +295,17 @@ def _validate_validate_workflow(relative: str, payload: dict[str, Any]) -> list[
                             "error",
                             "WF048",
                             "CI muss Python 3.12 verwenden",
+                            relative,
+                        )
+                    )
+            elif action == "actions/setup-node":
+                node_seen = True
+                if values.get("node-version") != "24":
+                    issues.append(
+                        WorkflowIssue(
+                            "error",
+                            "WF054",
+                            "Browser-CI muss Node.js 24 verwenden",
                             relative,
                         )
                     )
@@ -305,8 +335,15 @@ def _validate_validate_workflow(relative: str, payload: dict[str, Any]) -> list[
         issues.append(WorkflowIssue("error", "WF050", "Checkout-Schritt fehlt", relative))
     if not python_seen:
         issues.append(WorkflowIssue("error", "WF051", "Python-Setup fehlt", relative))
+    if not node_seen:
+        issues.append(WorkflowIssue("error", "WF053", "Node.js-Setup fehlt", relative))
     if not upload_seen:
         issues.append(WorkflowIssue("error", "WF052", "Diagnostik-Upload fehlt", relative))
+
+    combined_commands = "\n".join(run_commands)
+    for code, (needle, message) in REQUIRED_VALIDATE_COMMANDS.items():
+        if needle not in combined_commands:
+            issues.append(WorkflowIssue("error", code, message, relative))
     return issues
 
 
@@ -383,7 +420,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         for issue in issues:
             print(f"- {issue.format()}")
         return 1
-    print("Workflowvalidierung erfolgreich: minimale Rechte und unveränderliche Action-Pins.")
+    print(
+        "Workflowvalidierung erfolgreich: minimale Rechte, unveränderliche Action-Pins "
+        "und reproduzierbare Browsergates."
+    )
     return 0
 
 
