@@ -12,17 +12,25 @@ def write_minimal_site(root: Path, *, html: str | None = None) -> Path:
     site = root / "site"
     (site / "assets" / "javascripts").mkdir(parents=True)
     (site / "assets" / "stylesheets").mkdir(parents=True)
-    for name in ("site-state.js", "filters.js", "mermaid-loader.js"):
+    for name in (
+        "site-state.js",
+        "filters.js",
+        "accessibility.js",
+        "mermaid-loader.js",
+    ):
         (site / "assets" / "javascripts" / name).write_text(
             'console.log("fixture");\n', encoding="utf-8"
         )
-    (site / "assets" / "stylesheets" / "extra.css").write_text(
-        "body { max-width: 100%; }\n", encoding="utf-8"
-    )
+    for name in ("extra.css", "accessibility.css"):
+        (site / "assets" / "stylesheets" / name).write_text(
+            "body { max-width: 100%; }\n", encoding="utf-8"
+        )
     payload = html or (
         "<!doctype html><html lang=\"de\"><head>"
         '<link rel="stylesheet" href="assets/stylesheets/extra.css">'
+        '<link rel="stylesheet" href="assets/stylesheets/accessibility.css">'
         '<script src="assets/javascripts/site-state.js"></script>'
+        '<script src="assets/javascripts/accessibility.js"></script>'
         "</head><body><h1>Fixture</h1></body></html>\n"
     )
     (site / "index.html").write_text(payload, encoding="utf-8")
