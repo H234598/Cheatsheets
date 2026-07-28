@@ -67,5 +67,6 @@ extra_css:
 
 extra_javascript:
   - assets/javascripts/site-state.js
+  - assets/javascripts/preferences.js
   - assets/javascripts/filters.js
   - assets/javascripts/mermaid-loader.js
