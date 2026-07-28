@@ -5,9 +5,7 @@ from __future__ import annotations
 
 import argparse
 import importlib.util
-import os
 from pathlib import Path
-import re
 import subprocess
 import sys
 import tempfile
@@ -16,7 +14,7 @@ from typing import Any, Sequence
 import yaml
 
 from build_docs import BuildDocsError, build_docs, source_tree_hashes
-from build_downloads import DownloadBuildError, build_downloads, copy_downloads_to_site
+from build_downloads import build_downloads, copy_downloads_to_site
 from build_navigation import (
     NavigationError,
     build_navigation,
@@ -26,6 +24,7 @@ from build_navigation import (
 )
 from content_index import build_content_index
 from download_metadata import write_landing_page
+from download_model import DownloadBuildError, detect_source_commit
 from io_utils import (
     UnsafePathError,
     atomic_write_text,
@@ -93,28 +92,6 @@ def resolve_site_url(root: Path, requested: str | None) -> str:
         return normalize_site_url(configured)
     except NavigationError as exc:
         raise BuildSiteError(str(exc)) from exc
-
-
-def detect_source_commit(root: Path) -> str:
-    """Ermittle den Quellcommit reproduzierbar aus CI oder dem lokalen Checkout."""
-
-    github_sha = os.environ.get("GITHUB_SHA", "").strip()
-    if re.fullmatch(r"[0-9a-fA-F]{40}", github_sha):
-        return github_sha.lower()
-
-    try:
-        completed = subprocess.run(
-            ["git", "-C", str(root), "rev-parse", "HEAD"],
-            check=True,
-            capture_output=True,
-            text=True,
-            timeout=5,
-        )
-    except (FileNotFoundError, subprocess.CalledProcessError, subprocess.TimeoutExpired):
-        return "unknown"
-
-    candidate = completed.stdout.strip()
-    return candidate.lower() if re.fullmatch(r"[0-9a-fA-F]{40}", candidate) else "unknown"
 
 
 def write_generated_config(
@@ -249,9 +226,11 @@ def build_site(
     configured_site_url = resolve_site_url(root, site_url)
     source_commit = detect_source_commit(root)
     before = source_tree_hashes(root)
+    index = build_content_index(root)
     download_result = build_downloads(
         root,
         output.parent / "downloads",
+        index=index,
         source_commit=source_commit,
         strict=strict,
         force=force,
@@ -259,6 +238,7 @@ def build_site(
     docs_result = build_docs(
         root,
         output,
+        index=index,
         strict=strict,
         force=force,
         site_url=configured_site_url,
