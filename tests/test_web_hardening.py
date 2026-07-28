@@ -42,7 +42,7 @@ def test_base_path_is_canonicalized_and_rejects_unsafe_values() -> None:
         "/Cheatsheets/../private/",
         "/Cheatsheets/?debug=1",
         "/Cheatsheets/#fragment",
-        r"\Cheatsheets\",
+        "\\Cheatsheets\\",
     ):
         with pytest.raises(SiteServerError):
             normalize_base_path(value)
