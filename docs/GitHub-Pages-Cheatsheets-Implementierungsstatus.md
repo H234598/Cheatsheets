@@ -10,8 +10,8 @@ Dieser Fortschrittsnachweis wird mit jeder Planphase aktualisiert. Verbindliche 
 | 2 – MkDocs-Basis | ✅ umgesetzt | PR #4, Merge `81ef6b66abb64116d153d8558ea6a230eee676e9`, 26 Tests |
 | 3 – Navigation, Indizes und Suche | ✅ umgesetzt | PR #6, Merge `7db8f713aca07e67b481f9fbcb00553f6a555495`; CodeRabbit und qlty grün |
 | 4 – ADHS-freundliche Oberfläche | ✅ umgesetzt | PR #7, Merge `0682c7f8e508d56b60d8d8e72024121e1bcd815d`; CodeRabbit und qlty grün |
-| 5A – PR-CI | 🚧 abnahmebereit | PR #9; 78 Tests, sämtliche Validierungsgates, CodeRabbit und qlty grün auf dem vorletzten Head |
-| 5B – Pages-Deployment | ⬜ offen | – |
+| 5A – PR-CI | ✅ umgesetzt | PR #9, Merge `69c72997eed4fc0ac831eba696bac12b3a2f69b9`; 78 Tests und alle Gates grün |
+| 5B – Pages-Deployment | 🚧 im Review | Branch `agent/pages-deployment`; getrennte Build-/Deploy-Jobs, Artefaktvalidator und Betriebsrunbook |
 | 6 – Downloads und Provenienz | ⬜ offen | – |
 | 7 – Browser, Accessibility und Performance | ⬜ offen | – |
 | 8 – optionale Erweiterungen | ⬜ offen | – |
@@ -63,11 +63,11 @@ Der PR ersetzt die bisherige Zusatzbezeichnung durch **Cheatsheet**, benennt die
 
 Der anschließend eröffnete PR #10 wurde deshalb ohne Merge und mit leerem Diff geschlossen.
 
-## Phase 5A – Abnahmestand
+## Abgeschlossene Phase 5A
 
-PR #9 wurde nach den Merges von PR #7 und PR #8 erneut ohne alte Branchhistorie exakt auf dem aktuellen `main` aufgebaut. Der Diff enthält ausschließlich CI-, Security-, Test-, Konfigurations- und Dokumentationsdateien.
+PR #9 wurde nach den Merges von PR #7 und PR #8 ohne alte Branchhistorie exakt auf den damaligen `main`-Stand aufgebaut. Der Diff enthielt ausschließlich CI-, Security-, Test-, Konfigurations- und Dokumentationsdateien.
 
-Enthalten sind:
+Umgesetzt wurden:
 
 - `.github/workflows/validate.yml` für Pull Requests, `main` und manuelle Läufe;
 - ausschließlich `contents: read`, keine Secrets, kein Environment und kein Deployment;
@@ -80,7 +80,7 @@ Enthalten sind:
 - Dependabot für GitHub Actions und Python;
 - hochpräziser Secret-/Raw-HTML-/Laufzeitasset-Scanner mit exakten, hashgebundenen Ausnahmen.
 
-Die frühe Pipeline hat ihre Aufgabe erfüllt und reale Fehler sichtbar gemacht. Behoben wurden:
+Die Pipeline hat während ihrer Einführung reale Fehler sichtbar gemacht. Behoben wurden:
 
 - falscher Modulimport im Securityscanner;
 - strukturierte Prüfung von Checkout-Credentials, Pythonversion und `if: always()`;
@@ -88,7 +88,7 @@ Die frühe Pipeline hat ihre Aufgabe erfüllt und reale Fehler sichtbar gemacht.
 - vollständige Linkdiagnostik als JSON und Text;
 - zunächst nur diagnostischer Metadatenvergleich wurde nach PR #8 in ein hartes Gate überführt.
 
-Der vollständige GitHub-Actions-Lauf `30324826697` auf Head `af5751dc8b34b18019f42c39bb11aa0c2d20d3f0` bestätigte:
+Der vollständige GitHub-Actions-Lauf `30324962948` auf dem finalen PR-Head `52db970bd5d8c13e9d96d371ae8bf33aac92cb42` bestätigte:
 
 - **78 von 78 Tests bestanden**;
 - zwölf Kategorien und 86 Fachseiten;
@@ -102,7 +102,38 @@ Der vollständige GitHub-Actions-Lauf `30324826697` auf Head `af5751dc8b34b18019
 - CodeRabbit und qlty grün;
 - keine offenen Review-Threads.
 
-Die vorliegende Statuspflege erzeugt einen neuen Head. Dieser muss denselben vollständigen Validate-Lauf und die externen Reviewchecks nochmals erfolgreich abschließen, bevor PR #9 gemergt wird.
+PR #9 wurde anschließend per Squash unter folgendem Commit gemergt:
+
+```text
+69c72997eed4fc0ac831eba696bac12b3a2f69b9
+```
+
+## Laufende Phase 5B
+
+Phase 5B ergänzt `.github/workflows/pages.yml` mit zwei strikt getrennten Jobs:
+
+1. `build` liest Inhalte, validiert das Repository, ermittelt die tatsächliche Pages-Basis-URL und erzeugt `site/` genau einmal;
+2. `deploy` benötigt den erfolgreichen Build und veröffentlicht ausschließlich dessen Pages-Artefakt im Environment `github-pages`.
+
+Sicherheits- und Betriebsmerkmale:
+
+- Trigger nur bei Push nach `main` und manuell;
+- keine Pull-Request-Veröffentlichung;
+- leere globale Berechtigungen;
+- Buildjob: `contents: read`, `pages: write`;
+- Deploymentjob: `pages: write`, `id-token: write`;
+- vollständige Action-SHA-Pins mit Versionskommentaren;
+- dynamische `site_url` aus `configure-pages.outputs.base_url`;
+- genau ein zentraler Strict-Build;
+- kein Checkout und kein Build im Deploymentjob;
+- `needs: build` und Environment `github-pages`;
+- kein direktes Pushen oder manuelles Austauschen von Artefakten.
+
+Neu ist `scripts/validate_pages_artifact.py`. Das Modul blockiert fehlende `index.html`/`404.html`, Symlinks, Hardlinks, Sonderdateien, Case-Kollisionen und ein überschrittenes Größenlimit. Es erzeugt zusätzlich einen deterministischen Baum-SHA-256 und einen JSON-Bericht.
+
+Die Workflow- und Artefaktverträge werden durch `tests/test_pages_workflow.py` und `tests/test_pages_artifact.py` geprüft. Betrieb, Erstaktivierung, Custom Domain, Fehlerdiagnose und Rollback sind in `docs/WEB-WARTUNG.md` dokumentiert.
+
+Der Pull Request muss zunächst die vorhandene Validate-Pipeline, CodeRabbit und qlty bestehen. Nach dem Merge wird der erstmals auf `main` laufende Pages-Workflow bis zum tatsächlichen Deployment und zur ausgegebenen `page_url` verifiziert.
 
 Eine Phase wird erst nach grünen Gates, ohne offene Review-Threads und nach verifiziertem Merge als vollständig umgesetzt markiert.
 
