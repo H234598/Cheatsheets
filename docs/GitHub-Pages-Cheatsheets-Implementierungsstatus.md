@@ -10,7 +10,7 @@ Dieser Fortschrittsnachweis wird mit jeder Planphase aktualisiert. Verbindliche 
 | 2 – MkDocs-Basis | ✅ umgesetzt | PR #4, Merge `81ef6b66abb64116d153d8558ea6a230eee676e9`, 26 Tests |
 | 3 – Navigation, Indizes und Suche | ✅ umgesetzt | PR #6, Merge `7db8f713aca07e67b481f9fbcb00553f6a555495`; CodeRabbit und qlty grün |
 | 4 – ADHS-freundliche Oberfläche | ✅ umgesetzt | PR #7, Merge `0682c7f8e508d56b60d8d8e72024121e1bcd815d`; CodeRabbit und qlty grün |
-| 5A – PR-CI | 🚧 im Review | PR #9; schreibgeschützte CI, Workflowpolicy, Securityscanner, Diagnoseartefakte und Dependabot |
+| 5A – PR-CI | 🚧 abnahmebereit | PR #9; 78 Tests, sämtliche Validierungsgates, CodeRabbit und qlty grün auf dem vorletzten Head |
 | 5B – Pages-Deployment | ⬜ offen | – |
 | 6 – Downloads und Provenienz | ⬜ offen | – |
 | 7 – Browser, Accessibility und Performance | ⬜ offen | – |
@@ -63,7 +63,7 @@ Der PR ersetzt die bisherige Zusatzbezeichnung durch **Cheatsheet**, benennt die
 
 Der anschließend eröffnete PR #10 wurde deshalb ohne Merge und mit leerem Diff geschlossen.
 
-## Laufende Phase 5A
+## Phase 5A – Abnahmestand
 
 PR #9 wurde nach den Merges von PR #7 und PR #8 erneut ohne alte Branchhistorie exakt auf dem aktuellen `main` aufgebaut. Der Diff enthält ausschließlich CI-, Security-, Test-, Konfigurations- und Dokumentationsdateien.
 
@@ -75,18 +75,34 @@ Enthalten sind:
 - fester Runner `ubuntu-24.04`, Python 3.12, Timeouts und Concurrency;
 - Workflow-Selbstvalidierung;
 - Unit-, Integrations-, Content-, Link-, Sicherheits- und Strict-MkDocs-Gates;
+- byteweiser, blockierender Vergleich der kanonischen Metadaten;
 - Diagnoseartefakte auch nach Fehlern;
 - Dependabot für GitHub Actions und Python;
 - hochpräziser Secret-/Raw-HTML-/Laufzeitasset-Scanner mit exakten, hashgebundenen Ausnahmen.
 
-Die frühe Pipeline hat ihre Aufgabe erfüllt und reale Fehler sichtbar gemacht. Behoben wurden bereits:
+Die frühe Pipeline hat ihre Aufgabe erfüllt und reale Fehler sichtbar gemacht. Behoben wurden:
 
 - falscher Modulimport im Securityscanner;
 - strukturierte Prüfung von Checkout-Credentials, Pythonversion und `if: always()`;
-- spröder UI-Vertragstest;
-- vollständige Linkdiagnostik als JSON und Text.
+- spröde beziehungsweise unvollständige Test-Fixtures;
+- vollständige Linkdiagnostik als JSON und Text;
+- zunächst nur diagnostischer Metadatenvergleich wurde nach PR #8 in ein hartes Gate überführt.
 
-Der letzte Lauf auf dem alten Inhaltsstand erreichte 71 bestandene Tests und ein grünes Contentmodell, bevor er die inzwischen durch PR #8 behobenen Baseline-Links meldete. Der neu aufgebaute Head muss nun die vollständige Pipeline auf dem aktuellen `main` erneut durchlaufen.
+Der vollständige GitHub-Actions-Lauf `30324826697` auf Head `af5751dc8b34b18019f42c39bb11aa0c2d20d3f0` bestätigte:
+
+- **78 von 78 Tests bestanden**;
+- zwölf Kategorien und 86 Fachseiten;
+- null Contentfehler und null Contentwarnungen;
+- null Linkfehler und null Linkwarnungen;
+- null Securityfehler, -warnungen oder Informationsbefunde;
+- bytegleiche kanonische Metadaten, `metadata-diff.patch` leer;
+- vollständiger Strict-MkDocs-Build erfolgreich;
+- versionierte Arbeitskopie nach dem Build unverändert;
+- Diagnoseartefakt erfolgreich erzeugt;
+- CodeRabbit und qlty grün;
+- keine offenen Review-Threads.
+
+Die vorliegende Statuspflege erzeugt einen neuen Head. Dieser muss denselben vollständigen Validate-Lauf und die externen Reviewchecks nochmals erfolgreich abschließen, bevor PR #9 gemergt wird.
 
 Eine Phase wird erst nach grünen Gates, ohne offene Review-Threads und nach verifiziertem Merge als vollständig umgesetzt markiert.
 
