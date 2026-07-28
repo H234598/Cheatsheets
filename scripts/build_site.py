@@ -5,7 +5,9 @@ from __future__ import annotations
 
 import argparse
 import importlib.util
+import os
 from pathlib import Path
+import re
 import subprocess
 import sys
 import tempfile
@@ -14,6 +16,13 @@ from typing import Any, Sequence
 import yaml
 
 from build_docs import BuildDocsError, build_docs, source_tree_hashes
+from build_navigation import (
+    NavigationError,
+    build_navigation,
+    load_publication_config,
+    normalize_site_url,
+    validate_publication_config,
+)
 from content_index import build_content_index
 from io_utils import (
     UnsafePathError,
@@ -71,6 +80,41 @@ def _load_base_config(root: Path) -> dict[str, Any]:
     return loaded
 
 
+def resolve_site_url(root: Path, requested: str | None) -> str:
+    """Bestimme die einzige wirksame Site-URL und validiere sie vollständig."""
+
+    config = _load_base_config(root)
+    configured = requested or str(config.get("site_url") or "").strip()
+    if not configured:
+        raise BuildSiteError("Eine vollständige --site-url ist erforderlich")
+    try:
+        return normalize_site_url(configured)
+    except NavigationError as exc:
+        raise BuildSiteError(str(exc)) from exc
+
+
+def detect_source_commit(root: Path) -> str:
+    """Ermittle den Quellcommit reproduzierbar aus CI oder dem lokalen Checkout."""
+
+    github_sha = os.environ.get("GITHUB_SHA", "").strip()
+    if re.fullmatch(r"[0-9a-fA-F]{40}", github_sha):
+        return github_sha.lower()
+
+    try:
+        completed = subprocess.run(
+            ["git", "-C", str(root), "rev-parse", "HEAD"],
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+    except (FileNotFoundError, subprocess.CalledProcessError, subprocess.TimeoutExpired):
+        return "unknown"
+
+    candidate = completed.stdout.strip()
+    return candidate.lower() if re.fullmatch(r"[0-9a-fA-F]{40}", candidate) else "unknown"
+
+
 def write_generated_config(
     root: Path,
     config_path: Path,
@@ -78,20 +122,17 @@ def write_generated_config(
     docs_dir: Path,
     site_dir: Path,
     site_url: str | None,
+    nav: list[dict[str, object]] | None = None,
 ) -> dict[str, Any]:
     """Schreibe eine strukturierte temporäre MkDocs-Konfiguration."""
 
     config = _load_base_config(root)
-    configured_url = site_url or str(config.get("site_url") or "").strip()
-    if not configured_url:
-        raise BuildSiteError("Eine vollständige --site-url ist erforderlich")
-    if not configured_url.endswith("/"):
-        configured_url += "/"
-
-    config["site_url"] = configured_url
+    config["site_url"] = resolve_site_url(root, site_url)
     config["docs_dir"] = str(docs_dir.resolve())
     config["site_dir"] = str(site_dir.resolve())
     config["strict"] = True
+    if nav is not None:
+        config["nav"] = nav
 
     theme = config.setdefault("theme", {})
     if not isinstance(theme, dict):
@@ -173,6 +214,10 @@ def _dry_run(root: Path, max_pages: int | None, verbose: bool) -> int:
             publishable,
             key=lambda page: page.generated_path.as_posix().casefold(),
         )[:max_pages]
+    if not errors:
+        publication = load_publication_config(root)
+        validate_publication_config(publication, index)
+        build_navigation(index)
     if verbose:
         for page in publishable:
             print(f"PLAN {page.relative_path.as_posix()} -> {page.generated_path.as_posix()}")
@@ -199,8 +244,17 @@ def build_site(
     config_path = config_path or (root / "build" / "mkdocs.generated.yml")
     config_path = config_path if config_path.is_absolute() else root / config_path
 
+    configured_site_url = resolve_site_url(root, site_url)
+    source_commit = detect_source_commit(root)
     before = source_tree_hashes(root)
-    docs_result = build_docs(root, output, strict=strict, force=force)
+    docs_result = build_docs(
+        root,
+        output,
+        strict=strict,
+        force=force,
+        site_url=configured_site_url,
+        source_commit=source_commit,
+    )
 
     with staged_directory(
         site_dir,
@@ -212,7 +266,8 @@ def build_site(
             config_path,
             docs_dir=docs_result.output,
             site_dir=staging_site,
-            site_url=site_url,
+            site_url=configured_site_url,
+            nav=docs_result.navigation,
         )
         run_mkdocs(config_path)
         _assert_site(staging_site)
@@ -253,9 +308,15 @@ def main(argv: Sequence[str] | None = None) -> int:
                 strict=args.strict,
                 force=args.force,
             )
-        print(f"Build erfolgreich: {pages} Seiten und {assets} Assets.")
+        print(f"Build erfolgreich: {pages} Quellseiten und {assets} Assets.")
         return 0
-    except (BuildDocsError, BuildSiteError, UnsafePathError, ValueError) as exc:
+    except (
+        BuildDocsError,
+        BuildSiteError,
+        NavigationError,
+        UnsafePathError,
+        ValueError,
+    ) as exc:
         print(f"Build fehlgeschlagen: {exc}", file=sys.stderr)
         return 2
 
