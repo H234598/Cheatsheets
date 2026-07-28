@@ -44,7 +44,6 @@ PUBLISH_ROLES = {
     "root-index",
     "root-readme",
     "maintenance",
-    "download-only",
 }
 SOURCE_EXCLUDED_PARTS = {
     ".git",
@@ -176,10 +175,6 @@ def _transform_page(page: PageRecord, index: ContentIndex) -> str:
         page.source_path,
         index.root,
         index=index,
-        # Sammeldokumente enthalten naturgemäß wiederholte Abschnittsnamen.
-        # Fachseiten bleiben fail-closed; nur Downloadartefakte markieren solche
-        # internen Mehrdeutigkeiten sichtbar, statt den gesamten Webbuild zu stoppen.
-        tolerate_issues=page.page_type == "download-only",
     )
     converted = convert_obsidian_callouts_for_web(converted)
     after_fences = fenced_segment_hashes(converted)
