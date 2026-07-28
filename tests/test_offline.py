@@ -3,6 +3,7 @@ from __future__ import annotations
 import io
 import json
 from pathlib import Path
+import stat
 import zipfile
 
 import pytest
@@ -16,6 +17,8 @@ from build_offline import (
     OfflineBuildError,
     _augment_integrity_files,
     _copy_and_rewrite_docs,
+    _entry_payloads,
+    inspect_offline_zip,
     render_offline_zip,
     validate_offline_tree,
     validate_offline_zip,
@@ -25,6 +28,7 @@ from conftest import manifest_row, write_manifest, write_page
 from content_index import build_content_index
 
 COMMIT = "b" * 40
+EPOCH = 1767225601
 
 
 def make_index(root: Path):
@@ -58,31 +62,54 @@ def make_index(root: Path):
     return build_content_index(root)
 
 
-def make_site(root: Path, *, root_relative: bool = False) -> Path:
+def make_site(
+    root: Path,
+    *,
+    root_relative: bool = False,
+    external_runtime: bool = False,
+    missing_fragment: bool = False,
+) -> Path:
     site = root / "site"
     (site / "assets").mkdir(parents=True)
+    stylesheet = "https://cdn.invalid/app.css" if external_runtime else "assets/app.css"
     (site / "assets" / "app.css").write_text(
         "body { background-image: url('../image.png'); }\n", encoding="utf-8"
     )
     (site / "image.png").write_bytes(b"image")
     href = "/Alpha.html" if root_relative else "Alpha.html"
+    fragment = "fehlt" if missing_fragment else "alpha"
     (site / "index.html").write_text(
-        f'<!doctype html><html><head><link rel="stylesheet" href="assets/app.css"></head>'
-        f'<body><h1>Start</h1><a href="{href}">Alpha</a></body></html>\n',
+        '<!doctype html><html><head>'
+        '<link rel="canonical" href="https://cheatsheets.example.invalid/">'
+        f'<link rel="stylesheet" href="{stylesheet}"></head>'
+        f'<body><h1 id="start">Start</h1><a href="{href}#{fragment}">Alpha</a>'
+        '<a href="https://github.com/example/repo">Quellrepository</a></body></html>\n',
         encoding="utf-8",
     )
     (site / "Alpha.html").write_text(
         '<!doctype html><html><body><h1 id="alpha">Alpha</h1>'
-        '<a href="index.html">Start</a></body></html>\n',
+        '<a href="index.html#start">Start</a></body></html>\n',
         encoding="utf-8",
     )
     (site / "404.html").write_text(
-        '<!doctype html><html><body><h1>404</h1></body></html>\n',
+        '<!doctype html><html><body><h1>404</h1>'
+        '<a href="index.html#start">Start</a></body></html>\n',
         encoding="utf-8",
     )
     (site / OFFLINE_README_NAME).write_text("Offline\n", encoding="utf-8")
     (site / OFFLINE_SERVER_NAME).write_text("print('server')\n", encoding="utf-8")
     return site
+
+
+def make_archive(site: Path, monkeypatch: pytest.MonkeyPatch) -> tuple[bytes, str]:
+    monkeypatch.setenv("SOURCE_DATE_EPOCH", str(EPOCH))
+    entries = _entry_payloads(site)
+    augmented, tree_sha = _augment_integrity_files(
+        entries,
+        source_commit=COMMIT,
+        online_site_url="https://cheatsheets.telacore.org/",
+    )
+    return render_offline_zip(augmented), tree_sha
 
 
 def test_offline_config_uses_file_urls_and_explicit_mode(tmp_path: Path) -> None:
@@ -160,43 +187,64 @@ def test_generated_data_is_rewritten_to_relative_html_urls(tmp_path: Path) -> No
     assert not (target / ".cheatsheets-build-root").exists()
 
 
-def test_offline_tree_accepts_relative_links_and_rejects_root_relative(
+def test_copy_rejects_symlinked_generated_input(tmp_path: Path) -> None:
+    index = make_index(tmp_path)
+    docs = tmp_path / "generated-docs"
+    docs.mkdir()
+    external = tmp_path / "external.json"
+    external.write_text("{}\n", encoding="utf-8")
+    try:
+        (docs / "linked.json").symlink_to(external)
+    except (NotImplementedError, OSError) as exc:
+        pytest.skip(f"Symlinks werden nicht unterstützt: {exc}")
+
+    with pytest.raises(OfflineBuildError, match="Symlink"):
+        _copy_and_rewrite_docs(
+            docs,
+            tmp_path / "offline-docs",
+            index,
+            "https://example.invalid/Cheatsheets/",
+        )
+
+
+def test_offline_tree_allows_external_anchors_but_blocks_runtime_assets(
     tmp_path: Path,
 ) -> None:
     valid = make_site(tmp_path / "valid")
     report = validate_offline_tree(valid)
     assert report["files"] >= 7
-    assert report["references"] >= 3
+    assert report["references"] >= 5
+    assert report["external_links"] >= 2
 
-    invalid = make_site(tmp_path / "invalid", root_relative=True)
+    runtime = make_site(tmp_path / "runtime", external_runtime=True)
+    with pytest.raises(OfflineBuildError, match="Externes Laufzeitasset"):
+        validate_offline_tree(runtime)
+
+
+def test_offline_tree_rejects_root_relative_and_missing_fragment(tmp_path: Path) -> None:
+    root_relative = make_site(tmp_path / "root-relative", root_relative=True)
     with pytest.raises(OfflineBuildError, match="Root-relativer Link"):
-        validate_offline_tree(invalid)
+        validate_offline_tree(root_relative)
+
+    missing_fragment = make_site(tmp_path / "missing-fragment", missing_fragment=True)
+    with pytest.raises(OfflineBuildError, match="Fehlender Offlineanker"):
+        validate_offline_tree(missing_fragment)
 
 
 def test_offline_zip_is_deterministic_sorted_and_self_describing(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("SOURCE_DATE_EPOCH", "1767225601")
-    entries = {
-        "index.html": b"<h1>Offline</h1>\n",
-        OFFLINE_README_NAME: b"Offline lesen\n",
-        OFFLINE_SERVER_NAME: b"print('server')\n",
-    }
-    augmented, tree_sha = _augment_integrity_files(
-        entries,
-        source_commit=COMMIT,
-        online_site_url="https://example.invalid/Cheatsheets/",
-    )
-    first = render_offline_zip(augmented)
-    second = render_offline_zip(augmented)
+    site = make_site(tmp_path)
+    first, tree_sha = make_archive(site, monkeypatch)
+    second, _ = make_archive(site, monkeypatch)
 
     assert first == second
-    validate_offline_zip(first, augmented)
     with zipfile.ZipFile(io.BytesIO(first)) as archive:
-        assert archive.namelist() == sorted(augmented, key=str.casefold)
-        assert OFFLINE_MANIFEST_NAME in archive.namelist()
-        assert OFFLINE_CHECKSUMS_NAME in archive.namelist()
+        payloads = {name: archive.read(name) for name in archive.namelist()}
+    validate_offline_zip(first, payloads)
+    with zipfile.ZipFile(io.BytesIO(first)) as archive:
+        assert archive.namelist() == sorted(archive.namelist(), key=str.casefold)
         manifest = json.loads(archive.read(OFFLINE_MANIFEST_NAME))
         assert manifest["source_commit"] == COMMIT
         assert manifest["tree_sha256"] == tree_sha
@@ -204,4 +252,55 @@ def test_offline_zip_is_deterministic_sorted_and_self_describing(
         for info in archive.infolist():
             assert info.compress_type == zipfile.ZIP_STORED
             assert (info.external_attr >> 16) & 0o777 == 0o644
+            assert stat.S_ISREG(info.external_attr >> 16)
             assert info.date_time[-1] % 2 == 0
+
+
+def test_independent_archive_inspection_validates_and_extracts(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    payload, tree_sha = make_archive(make_site(tmp_path / "source"), monkeypatch)
+    extracted = tmp_path / "build" / "offline-site"
+
+    report = inspect_offline_zip(payload, extract_to=extracted, force=True)
+
+    assert report["source_commit"] == COMMIT
+    assert report["tree_sha256"] == tree_sha
+    assert report["files"] > 7
+    assert report["references"] >= 5
+    assert (extracted / "index.html").is_file()
+    assert (extracted / ".cheatsheets-build-root").is_file()
+
+
+def test_independent_archive_inspection_rejects_tampered_manifest(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    payload, _ = make_archive(make_site(tmp_path), monkeypatch)
+    with zipfile.ZipFile(io.BytesIO(payload)) as archive:
+        entries = {name: archive.read(name) for name in archive.namelist()}
+    manifest = json.loads(entries[OFFLINE_MANIFEST_NAME])
+    manifest["files"][0]["sha256"] = "0" * 64
+    entries[OFFLINE_MANIFEST_NAME] = (
+        json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+    ).encode("utf-8")
+    tampered = render_offline_zip(entries)
+
+    with pytest.raises(OfflineBuildError, match="Manifest stimmt nicht"):
+        inspect_offline_zip(tampered)
+
+
+def test_independent_archive_inspection_rejects_traversal_entry(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("SOURCE_DATE_EPOCH", str(EPOCH))
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w", compression=zipfile.ZIP_STORED) as archive:
+        info = zipfile.ZipInfo("../escape.html", date_time=(2026, 1, 1, 0, 0, 0))
+        info.create_system = 3
+        info.external_attr = (stat.S_IFREG | 0o644) << 16
+        archive.writestr(info, b"escape")
+
+    with pytest.raises(OfflineBuildError):
+        inspect_offline_zip(buffer.getvalue())
