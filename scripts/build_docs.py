@@ -16,6 +16,12 @@ from pathlib import Path
 import shutil
 from typing import Iterable
 
+from build_navigation import (
+    NavigationResult,
+    load_publication_config,
+    validate_publication_config,
+    write_navigation_outputs,
+)
 from callouts import convert_obsidian_callouts_for_web
 from content_index import build_content_index
 from content_model import CATEGORY_RE, ContentIndex, FenceState, PageRecord, advance_fence_state
@@ -54,6 +60,9 @@ class BuildDocsResult:
     pages: int
     assets: int
     source_hashes: dict[str, str]
+    navigation: list[dict[str, object]]
+    generated_markdown_pages: int
+    data_files: int
 
 
 def fenced_segment_hashes(text: str) -> tuple[str, ...]:
@@ -158,6 +167,8 @@ def build_docs(
     strict: bool = True,
     force: bool = False,
     max_pages: int | None = None,
+    site_url: str = "https://example.invalid/Cheatsheets/",
+    source_commit: str = "unknown",
 ) -> BuildDocsResult:
     """Erzeuge die vollständige Webquellkopie atomar.
 
@@ -179,6 +190,9 @@ def build_docs(
         suffix = f"\n… und {len(errors) - 25} weitere" if len(errors) > 25 else ""
         raise BuildDocsError(f"Contentmodell ist ungültig:\n{preview}{suffix}")
 
+    publication = load_publication_config(root)
+    validate_publication_config(publication, index)
+
     pages = sorted(
         (page for page in index.pages.values() if page.page_type in PUBLISH_ROLES),
         key=lambda page: page.generated_path.as_posix().casefold(),
@@ -189,6 +203,7 @@ def build_docs(
     before = source_tree_hashes(root)
     allowed_root = output.parent.resolve()
     asset_count = 0
+    navigation_result: NavigationResult | None = None
     with staged_directory(output, allowed_root=allowed_root, force=force) as staging:
         for page in pages:
             target = staging / page.generated_path.as_posix()
@@ -202,15 +217,26 @@ def build_docs(
             asset_count += 1
 
         _write_generated_support(staging, root)
+        navigation_result = write_navigation_outputs(
+            staging,
+            index,
+            site_url=site_url,
+            source_commit=source_commit,
+        )
         mark_generated_root(staging)
 
     after = source_tree_hashes(root)
     if before != after:
         raise BuildDocsError("Der Build hat kanonische Quelldateien verändert")
+    if navigation_result is None:
+        raise BuildDocsError("Navigation und Suchmetadaten wurden nicht erzeugt")
 
     return BuildDocsResult(
         output=output,
         pages=len(pages),
         assets=asset_count,
         source_hashes=before,
+        navigation=navigation_result.nav,
+        generated_markdown_pages=navigation_result.generated_markdown_pages,
+        data_files=navigation_result.data_files,
     )
