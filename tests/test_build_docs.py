@@ -3,6 +3,7 @@ from __future__ import annotations
 from argparse import Namespace
 import json
 from pathlib import Path
+import subprocess
 
 import pytest
 import yaml
@@ -119,6 +120,8 @@ def make_build_repository(root: Path) -> tuple[Path, Path]:
         "  custom_dir: web/overrides\n",
         encoding="utf-8",
     )
+    subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+    subprocess.run(["git", "add", "--all"], cwd=root, check=True)
     return alpha, image
 
 
@@ -182,7 +185,7 @@ def test_build_docs_transforms_only_generated_copy(
     assert "[[Beta#Details|Lehrbeispiel]]" in generated
     assert "> [!danger] Nur Syntax" in generated
     assert 'web_page_id: "p_' in generated
-    assert "web_page_type: \"reference\"" in generated
+    assert 'web_page_type: "reference"' in generated
     assert "web_minutes:" in generated
     assert 'web_source_path: "01-Test/Alpha.md"' in generated
     assert fenced_segment_hashes(alpha.read_text(encoding="utf-8")) == fenced_segment_hashes(
@@ -261,6 +264,7 @@ def test_build_site_runs_mkdocs_with_generated_navigation_and_data(
     assert (tmp_path / "build" / "docs" / "data" / "page-id-aliases.json").is_file()
     assert (tmp_path / "site" / "index.html").is_file()
     assert (tmp_path / "site" / "404.html").is_file()
+    assert (tmp_path / "site" / "downloads" / "files" / "Cheatsheets-Quellen.zip").is_file()
     assert (tmp_path / "site" / BUILD_SENTINEL).is_file()
 
 
