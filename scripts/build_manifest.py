@@ -17,7 +17,9 @@ from dataclasses import dataclass
 import difflib
 import hashlib
 import io
+import os
 from pathlib import Path
+import stat
 import sys
 from typing import Sequence
 
@@ -33,6 +35,7 @@ CANONICAL_FILES = (
     "BUILD-REPORT.yaml",
     "SHA256SUMS.txt",
 )
+READ_CHUNK_SIZE = 1024 * 1024
 
 
 class ManifestBuildError(RuntimeError):
@@ -58,10 +61,13 @@ def ordered_records(index: ContentIndex) -> list[ManifestRecord]:
                 )
             records.append(ManifestRecord(number, category.title, page))
             number += 1
-    if {record.page.page_id for record in records} != {
-        page.page_id for page in index.reference_pages
-    }:
-        raise ManifestBuildError("Manifestreihenfolge deckt nicht alle Fachseiten exakt einmal ab")
+
+    page_ids = [record.page.page_id for record in records]
+    expected_ids = {page.page_id for page in index.reference_pages}
+    if len(page_ids) != len(set(page_ids)) or set(page_ids) != expected_ids:
+        raise ManifestBuildError(
+            "Manifestreihenfolge deckt nicht alle Fachseiten exakt einmal ab"
+        )
     return records
 
 
@@ -112,7 +118,8 @@ def render_manifest_markdown(records: list[ManifestRecord]) -> str:
         f"pages: {len(records)}\n",
         "---\n\n",
         "# Manifest\n\n",
-        "Diese Datei wird deterministisch aus den realen Fachseiten, ihren Kategorieindizes und dem strukturierten Frontmatter erzeugt.\n\n",
+        "Diese Datei wird deterministisch aus den realen Fachseiten, ihren "
+        "Kategorieindizes und dem strukturierten Frontmatter erzeugt.\n\n",
         f"- **Fachseiten:** {len(records)}\n",
         f"- **Zeilen:** {total_lines}\n",
         f"- **Bytes:** {total_bytes}\n\n",
@@ -213,7 +220,9 @@ def generate_metadata(root: Path) -> dict[str, bytes]:
     ]
     if blocking:
         preview = "\n".join(issue.format() for issue in blocking[:25])
-        raise ManifestBuildError(f"Contentmodell ist außerhalb des Manifests ungültig:\n{preview}")
+        raise ManifestBuildError(
+            f"Contentmodell ist außerhalb des Manifests ungültig:\n{preview}"
+        )
     records = ordered_records(index)
     generated = {
         "MANIFEST.csv": render_manifest_csv(records).encode("utf-8"),
@@ -247,14 +256,59 @@ def _diff_text(name: str, expected: bytes, actual: bytes) -> str:
     )
 
 
+def _read_regular_file_no_follow(path: Path, root: Path) -> bytes:
+    """Lese eine kanonische Datei nur als unveränderte reguläre Datei.
+
+    Symlinks werden vor dem Öffnen abgelehnt. ``O_NOFOLLOW`` verhindert auf
+    unterstützten Systemen zusätzlich einen Austausch gegen einen Symlink
+    zwischen ``lstat`` und ``open``. Der Inode-Abgleich schützt auch Plattformen
+    ohne ``O_NOFOLLOW`` vor einem unbemerkten Dateiaustausch vor dem Lesen.
+    """
+
+    root = root.resolve()
+    if path.parent.resolve() != root:
+        raise ManifestBuildError(f"Pfad liegt außerhalb der Repositorywurzel: {path}")
+
+    before = path.lstat()
+    if stat.S_ISLNK(before.st_mode):
+        raise ManifestBuildError(f"{path.name}: symbolischer Link ist unzulässig")
+    if not stat.S_ISREG(before.st_mode):
+        raise ManifestBuildError(f"{path.name}: kein regulärer Dateieintrag")
+
+    flags = os.O_RDONLY | getattr(os, "O_BINARY", 0)
+    flags |= getattr(os, "O_CLOEXEC", 0)
+    flags |= getattr(os, "O_NOFOLLOW", 0)
+    descriptor = os.open(path, flags)
+    try:
+        opened = os.fstat(descriptor)
+        if not stat.S_ISREG(opened.st_mode):
+            raise ManifestBuildError(f"{path.name}: kein regulärer geöffneter Eintrag")
+        if (before.st_dev, before.st_ino) != (opened.st_dev, opened.st_ino):
+            raise ManifestBuildError(
+                f"{path.name}: Dateieintrag wurde während der Prüfung ausgetauscht"
+            )
+
+        chunks: list[bytes] = []
+        while chunk := os.read(descriptor, READ_CHUNK_SIZE):
+            chunks.append(chunk)
+        return b"".join(chunks)
+    finally:
+        os.close(descriptor)
+
+
 def check_metadata(root: Path, generated: dict[str, bytes]) -> list[str]:
     differences: list[str] = []
+    root = root.resolve()
     for name in CANONICAL_FILES:
         path = root / name
-        if not path.is_file():
+        try:
+            actual = _read_regular_file_no_follow(path, root)
+        except FileNotFoundError:
             differences.append(f"{name}: Datei fehlt\n")
             continue
-        actual = path.read_bytes()
+        except (ManifestBuildError, OSError) as exc:
+            differences.append(f"{name}: unsicherer Dateieintrag: {exc}\n")
+            continue
         if actual != generated[name]:
             differences.append(_diff_text(name, generated[name], actual))
     return differences
@@ -292,7 +346,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         if not args.update_committed:
             target = ensure_within(target, root)
         write_metadata(target, generated)
-        mode = "kanonisch aktualisiert" if args.update_committed else f"nach {target} geschrieben"
+        mode = (
+            "kanonisch aktualisiert"
+            if args.update_committed
+            else f"nach {target} geschrieben"
+        )
         print(f"Metadaten {mode}: {', '.join(CANONICAL_FILES)}")
         return 0
     except (ManifestBuildError, OSError, ValueError) as exc:
