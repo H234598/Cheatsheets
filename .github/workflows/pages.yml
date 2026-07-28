@@ -1,0 +1,124 @@
+name: Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+
+    permissions:
+      contents: read
+      pages: write
+
+    steps:
+      - name: Repository auschecken
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Python einrichten
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            requirements-docs.txt
+            requirements-test.txt
+
+      - name: GitHub Pages konfigurieren
+        id: pages
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+
+      - name: Abhängigkeiten installieren
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check \
+            -r requirements-docs.txt \
+            -r requirements-test.txt
+          python -m pip check
+
+      - name: Deterministische Quellzeit setzen
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/reports
+          echo "SOURCE_DATE_EPOCH=$(git show -s --format=%ct HEAD)" >> "$GITHUB_ENV"
+
+      - name: Quellen und Buildwerkzeuge validieren
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/validate_workflows.py \
+            --report build/reports/workflows.json
+          python -m compileall -q scripts tests
+          python -m pytest -q \
+            --junitxml=build/reports/pytest.xml
+          python scripts/validate_content.py \
+            --report build/reports/content.json
+          python scripts/validate_links.py \
+            --report build/reports/links.json
+          python scripts/validate_security.py \
+            --report build/reports/security.json
+          python scripts/build_manifest.py --check
+
+      - name: Pages-Site einmalig und streng bauen
+        env:
+          SITE_URL: ${{ steps.pages.outputs.base_url }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/build_site.py \
+            --strict \
+            --site-url "${SITE_URL%/}/"
+
+      - name: Pages-Artefakt validieren
+        run: >-
+          python scripts/validate_pages_artifact.py
+          --site-dir site
+          --report build/reports/pages-artifact.json
+
+      - name: Unveränderte Quellarbeitskopie bestätigen
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+          git status --short
+
+      - name: Pages-Artefakt hochladen
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: GitHub Pages veröffentlichen
+        id: deployment
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0
