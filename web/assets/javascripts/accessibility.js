@@ -17,6 +17,43 @@
     }
   }
 
+  function isEditable(target) {
+    return (
+      target instanceof HTMLElement &&
+      (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName))
+    );
+  }
+
+  function keyboardHelpEnabled() {
+    const toggle = document.querySelector("[data-cheat-shortcuts-toggle]");
+    return !toggle || toggle.checked;
+  }
+
+  function openKeyboardHelpFromCapture(event) {
+    const helpKey = event.key === "?" || (event.key === "/" && event.shiftKey);
+    if (
+      !helpKey ||
+      event.ctrlKey ||
+      event.altKey ||
+      event.metaKey ||
+      isEditable(event.target) ||
+      !keyboardHelpEnabled()
+    ) {
+      return;
+    }
+
+    const dialog = document.querySelector("[data-cheat-keyboard-dialog]");
+    if (!dialog || dialog.hasAttribute("open")) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    if (typeof dialog.showModal === "function") dialog.showModal();
+    else dialog.setAttribute("open", "");
+  }
+
+  document.addEventListener("keydown", openKeyboardHelpFromCapture, {
+    capture: true,
+  });
+
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", enhanceScrollableRegions, {
       once: true,
