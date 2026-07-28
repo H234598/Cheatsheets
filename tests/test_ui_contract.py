@@ -48,10 +48,12 @@ def test_templates_keep_progressive_controls_hidden_without_javascript() -> None
     assert local_state.count('class="cheat-action-card"') == 3
     assert 'href="#direkteinstieg"' in local_state
     assert 'href="#cheatsheets"' not in local_state
-    assert "data-cheat-keyboard-open" in local_state
+    assert "data-cheat-keyboard-open" not in local_state
     assert "data-cheat-filter-panel" in local_state
     assert "<noscript>" in local_state
-    assert "cheat-global-help" in keyboard
+    assert "cheat-global-tools" in keyboard
+    assert "data-cheat-focus" in keyboard
+    assert "data-cheat-keyboard-open" in keyboard
     assert "data-cheat-shortcuts-toggle" in keyboard
     assert "<dialog" in keyboard
 
