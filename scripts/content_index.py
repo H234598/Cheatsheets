@@ -51,7 +51,7 @@ ROOT_ROLES = {
     "MANIFEST.md": "maintenance",
     "QUALITAETSPRUEFUNG.md": "maintenance",
     "CHANGELOG.md": "maintenance",
-    "Premium-Spickzettel-Gesamtband.md": "download-only",
+    "Cheatsheet-Gesamtband.md": "download-only",
 }
 KNOWN_STATUS = {"fertig", "entwurf", "review", "archiviert"}
 
@@ -107,7 +107,7 @@ def _strip_heading_markup(value: str) -> tuple[str, str | None]:
     if explicit:
         value = value[: explicit.start()]
     value = re.sub(r"\s+#+\s*$", "", value).strip()
-    return re.sub(r"[`*_~]", "", value).strip(), explicit_id
+    return re.sub(r"[`*~]", "", value).strip(), explicit_id
 
 
 def parse_headings(

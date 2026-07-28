@@ -9,7 +9,7 @@ type: index
 status: fertig
 tags:
 - index
-- premium-spickzettel
+- cheatsheet
 - 08-ki
 pages: 6
 ---
@@ -19,16 +19,16 @@ pages: 6
 > Prompts, Tokenökonomie, Flottenmanagement sowie Codex, Claude und Gemini.
 
 **Umfang:** 6 Spickzettel · 96.0 KiB Quelltext  
-[[00-START-HIER|← Startseite]] · [[INDEX|Gesamtindex]]
+[[00-START-HIER|← Startseite]] · [[/INDEX|Gesamtindex]]
 
 ## Seiten
 
-- [[08-KI/Claude-Premium-Spickzettel|Anthropic Claude – Premium-Spickzettel]] — 610 Zeilen · 16.3 KiB · `#ki`, `#anthropic`, `#claude`, `#claude-code`, `#coding-agent`
-- [[08-KI/Gemini-Premium-Spickzettel|Google Gemini – Premium-Spickzettel]] — 510 Zeilen · 14.6 KiB · `#ki`, `#google`, `#gemini`, `#api`, `#coding-agent`
-- [[08-KI/KI-Flottenmanagement-Premium-Spickzettel|KI-Flottenmanagement – Premium-Spickzettel]] — 701 Zeilen · 15.9 KiB · `#ki`, `#llmops`, `#governance`, `#agents`, `#routing`
-- [[08-KI/KI-Prompts-Premium-Spickzettel|KI-Prompts – Premium-Spickzettel]] — 703 Zeilen · 16.9 KiB · `#ki`, `#llm`, `#prompting`, `#prompt-engineering`, `#productivity`
-- [[08-KI/KI-Token-sparen-Premium-Spickzettel|KI-Token sparen – Premium-Spickzettel]] — 596 Zeilen · 13.8 KiB · `#ki`, `#llm`, `#tokens`, `#kosten`, `#caching`
-- [[08-KI/Codex-Premium-Spickzettel|OpenAI Codex – Premium-Spickzettel]] — 698 Zeilen · 18.5 KiB · `#ki`, `#openai`, `#codex`, `#coding-agent`, `#cli`
+- [[08-KI/Claude-Cheatsheet|Anthropic Claude – Cheatsheet]] — 610 Zeilen · 16.3 KiB · `#ki`, `#anthropic`, `#claude`, `#claude-code`, `#coding-agent`
+- [[08-KI/Gemini-Cheatsheet|Google Gemini – Cheatsheet]] — 510 Zeilen · 14.6 KiB · `#ki`, `#google`, `#gemini`, `#api`, `#coding-agent`
+- [[08-KI/KI-Flottenmanagement-Cheatsheet|KI-Flottenmanagement – Cheatsheet]] — 701 Zeilen · 15.9 KiB · `#ki`, `#llmops`, `#governance`, `#agents`, `#routing`
+- [[08-KI/KI-Prompts-Cheatsheet|KI-Prompts – Cheatsheet]] — 703 Zeilen · 16.9 KiB · `#ki`, `#llm`, `#prompting`, `#prompt-engineering`, `#productivity`
+- [[08-KI/KI-Token-sparen-Cheatsheet|KI-Token sparen – Cheatsheet]] — 596 Zeilen · 13.8 KiB · `#ki`, `#llm`, `#tokens`, `#kosten`, `#caching`
+- [[08-KI/Codex-Cheatsheet|OpenAI Codex – Cheatsheet]] — 698 Zeilen · 18.5 KiB · `#ki`, `#openai`, `#codex`, `#coding-agent`, `#cli`
 
 ## Verwandte Bereiche
 

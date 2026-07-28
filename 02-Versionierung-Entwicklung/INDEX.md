@@ -9,7 +9,7 @@ type: index
 status: fertig
 tags:
 - index
-- premium-spickzettel
+- cheatsheet
 - 02-versionierung-entwicklung
 pages: 12
 ---
@@ -19,22 +19,22 @@ pages: 12
 > Git-Plattformen, Programmiersprachen, Buildsysteme, Rails, Flutter, Buildsysteme und Neovim.
 
 **Umfang:** 12 Spickzettel · 137.3 KiB Quelltext  
-[[00-START-HIER|← Startseite]] · [[INDEX|Gesamtindex]]
+[[00-START-HIER|← Startseite]] · [[/INDEX|Gesamtindex]]
 
 ## Seiten
 
-- [[02-Versionierung-Entwicklung/Flutter-Premium-Spickzettel|Flutter – Premium-Spickzettel]] — 434 Zeilen · 9.8 KiB · `#flutter`, `#dart`, `#mobile`, `#web`, `#desktop`
-- [[02-Versionierung-Entwicklung/Git-Premium-Spickzettel|Git – Premium-Spickzettel]] — 686 Zeilen · 14.3 KiB · `#git`, `#version-control`, `#development`, `#cli`, `#devops`
-- [[02-Versionierung-Entwicklung/GitHub-Premium-Spickzettel|GitHub – Premium-Spickzettel]] — 425 Zeilen · 9.6 KiB · `#github`, `#git`, `#pull-request`, `#actions`, `#devops`
-- [[02-Versionierung-Entwicklung/GitLab-Premium-Spickzettel|GitLab – Premium-Spickzettel]] — 436 Zeilen · 9.8 KiB · `#gitlab`, `#git`, `#ci-cd`, `#merge-request`, `#runner`
-- [[02-Versionierung-Entwicklung/Make-und-Source-Builds-Premium-Spickzettel|Make, Source-Builds und Buildsysteme – Premium-Spickzettel]] — 488 Zeilen · 9.3 KiB · `#make`, `#build`, `#source`, `#cmake`, `#meson`
-- [[02-Versionierung-Entwicklung/Neovim-Konfiguration-und-Plugins-Premium-Spickzettel|Neovim – Konfiguration und Plugins]] — 550 Zeilen · 11.8 KiB · `#neovim`, `#lua`, `#configuration`, `#plugins`, `#keymaps`
-- [[02-Versionierung-Entwicklung/Neovim-LSP-Debugging-Premium-Spickzettel|Neovim – LSP, Diagnostics, Formatting und Debugging]] — 469 Zeilen · 11.1 KiB · `#neovim`, `#lsp`, `#debugging`, `#formatting`, `#treesitter`
-- [[02-Versionierung-Entwicklung/Neovim-Premium-Spickzettel|Neovim – Premium-Spickzettel]] — 749 Zeilen · 13.1 KiB · `#neovim`, `#vim`, `#editor`, `#lua`, `#shortcuts`
+- [[02-Versionierung-Entwicklung/Flutter-Cheatsheet|Flutter – Cheatsheet]] — 434 Zeilen · 9.8 KiB · `#flutter`, `#dart`, `#mobile`, `#web`, `#desktop`
+- [[02-Versionierung-Entwicklung/Git-Cheatsheet|Git – Cheatsheet]] — 686 Zeilen · 14.3 KiB · `#git`, `#version-control`, `#development`, `#cli`, `#devops`
+- [[02-Versionierung-Entwicklung/GitHub-Cheatsheet|GitHub – Cheatsheet]] — 425 Zeilen · 9.6 KiB · `#github`, `#git`, `#pull-request`, `#actions`, `#devops`
+- [[02-Versionierung-Entwicklung/GitLab-Cheatsheet|GitLab – Cheatsheet]] — 436 Zeilen · 9.8 KiB · `#gitlab`, `#git`, `#ci-cd`, `#merge-request`, `#runner`
+- [[02-Versionierung-Entwicklung/Make-und-Source-Builds-Cheatsheet|Make, Source-Builds und Buildsysteme – Cheatsheet]] — 488 Zeilen · 9.3 KiB · `#make`, `#build`, `#source`, `#cmake`, `#meson`
+- [[02-Versionierung-Entwicklung/Neovim-Konfiguration-und-Plugins-Cheatsheet|Neovim – Konfiguration und Plugins]] — 550 Zeilen · 11.8 KiB · `#neovim`, `#lua`, `#configuration`, `#plugins`, `#keymaps`
+- [[02-Versionierung-Entwicklung/Neovim-LSP-Debugging-Cheatsheet|Neovim – LSP, Diagnostics, Formatting und Debugging]] — 469 Zeilen · 11.1 KiB · `#neovim`, `#lsp`, `#debugging`, `#formatting`, `#treesitter`
+- [[02-Versionierung-Entwicklung/Neovim-Cheatsheet|Neovim – Cheatsheet]] — 749 Zeilen · 13.1 KiB · `#neovim`, `#vim`, `#editor`, `#lua`, `#shortcuts`
 - [[02-Versionierung-Entwicklung/Neovim-Shortcuts-und-Bewegungen|Neovim – Shortcuts, Bewegungen und Textobjekte]] — 506 Zeilen · 9.7 KiB · `#neovim`, `#vim`, `#shortcuts`, `#motions`, `#text-objects`
-- [[02-Versionierung-Entwicklung/Python-3-Premium-Spickzettel|Python 3 – Premium-Spickzettel]] — 672 Zeilen · 13.6 KiB · `#python`, `#programming`, `#pip`, `#venv`, `#testing`
-- [[02-Versionierung-Entwicklung/Ruby-on-Rails-Premium-Spickzettel|Ruby on Rails – Premium-Spickzettel]] — 510 Zeilen · 10.9 KiB · `#ruby`, `#rails`, `#web-development`, `#mvc`, `#active-record`
-- [[02-Versionierung-Entwicklung/Rust-Premium-Spickzettel|Rust – Premium-Spickzettel]] — 759 Zeilen · 14.2 KiB · `#rust`, `#cargo`, `#programming`, `#systems`, `#memory-safety`
+- [[02-Versionierung-Entwicklung/Python-3-Cheatsheet|Python 3 – Cheatsheet]] — 672 Zeilen · 13.6 KiB · `#python`, `#programming`, `#pip`, `#venv`, `#testing`
+- [[02-Versionierung-Entwicklung/Ruby-on-Rails-Cheatsheet|Ruby on Rails – Cheatsheet]] — 510 Zeilen · 10.9 KiB · `#ruby`, `#rails`, `#web-development`, `#mvc`, `#active-record`
+- [[02-Versionierung-Entwicklung/Rust-Cheatsheet|Rust – Cheatsheet]] — 759 Zeilen · 14.2 KiB · `#rust`, `#cargo`, `#programming`, `#systems`, `#memory-safety`
 
 ## Verwandte Bereiche
 

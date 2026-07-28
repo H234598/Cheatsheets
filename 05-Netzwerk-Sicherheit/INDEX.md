@@ -9,7 +9,7 @@ type: index
 status: fertig
 tags:
 - index
-- premium-spickzettel
+- cheatsheet
 - 05-netzwerk-sicherheit
 pages: 8
 ---
@@ -19,18 +19,18 @@ pages: 8
 > Client- und Serverkonfiguration unter Linux, Windows und BSD sowie Wireshark, pfSense und OPNsense.
 
 **Umfang:** 8 Spickzettel · 94.1 KiB Quelltext  
-[[00-START-HIER|← Startseite]] · [[INDEX|Gesamtindex]]
+[[00-START-HIER|← Startseite]] · [[/INDEX|Gesamtindex]]
 
 ## Seiten
 
-- [[05-Netzwerk-Sicherheit/BSD-Netzwerk-Premium-Spickzettel|BSD-Netzwerk – Premium-Spickzettel]] — 554 Zeilen · 8.6 KiB · `#bsd`, `#freebsd`, `#openbsd`, `#network`, `#ifconfig`
-- [[05-Netzwerk-Sicherheit/Linux-Netzwerk-Premium-Spickzettel|Linux-Netzwerk – Premium-Spickzettel]] — 835 Zeilen · 15.6 KiB · `#linux`, `#network`, `#iproute2`, `#networkmanager`, `#wpa-supplicant`
-- [[05-Netzwerk-Sicherheit/Netzwerk-Konfiguration-Premium-Spickzettel|Netzwerk-Konfiguration – Premium-Spickzettel]] — 308 Zeilen · 8.5 KiB · `#network`, `#linux`, `#windows`, `#bsd`, `#tcp-ip`
-- [[05-Netzwerk-Sicherheit/Netzwerk-Stacktypen-Premium-Spickzettel|Netzwerk-Stacktypen – Premium-Spickzettel]] — 285 Zeilen · 7.4 KiB · `#network`, `#ipv4`, `#ipv6`, `#dual-stack`, `#nat64`
-- [[05-Netzwerk-Sicherheit/OPNsense-Premium-Spickzettel|OPNsense – Premium-Spickzettel]] — 583 Zeilen · 12.5 KiB · `#opnsense`, `#firewall`, `#freebsd`, `#routing`, `#nat`
-- [[05-Netzwerk-Sicherheit/pfSense-Premium-Spickzettel|pfSense – Premium-Spickzettel]] — 595 Zeilen · 13.1 KiB · `#pfsense`, `#firewall`, `#freebsd`, `#routing`, `#nat`
-- [[05-Netzwerk-Sicherheit/Windows-Netzwerk-Premium-Spickzettel|Windows-Netzwerk – Premium-Spickzettel]] — 567 Zeilen · 11.2 KiB · `#windows`, `#network`, `#powershell`, `#dns`, `#routing`
-- [[05-Netzwerk-Sicherheit/Wireshark-Premium-Spickzettel|Wireshark – Premium-Spickzettel]] — 841 Zeilen · 17.3 KiB · `#wireshark`, `#tshark`, `#pcap`, `#network`, `#diagnose`
+- [[05-Netzwerk-Sicherheit/BSD-Netzwerk-Cheatsheet|BSD-Netzwerk – Cheatsheet]] — 554 Zeilen · 8.6 KiB · `#bsd`, `#freebsd`, `#openbsd`, `#network`, `#ifconfig`
+- [[05-Netzwerk-Sicherheit/Linux-Netzwerk-Cheatsheet|Linux-Netzwerk – Cheatsheet]] — 835 Zeilen · 15.6 KiB · `#linux`, `#network`, `#iproute2`, `#networkmanager`, `#wpa-supplicant`
+- [[05-Netzwerk-Sicherheit/Netzwerk-Konfiguration-Cheatsheet|Netzwerk-Konfiguration – Cheatsheet]] — 308 Zeilen · 8.5 KiB · `#network`, `#linux`, `#windows`, `#bsd`, `#tcp-ip`
+- [[05-Netzwerk-Sicherheit/Netzwerk-Stacktypen-Cheatsheet|Netzwerk-Stacktypen – Cheatsheet]] — 285 Zeilen · 7.4 KiB · `#network`, `#ipv4`, `#ipv6`, `#dual-stack`, `#nat64`
+- [[05-Netzwerk-Sicherheit/OPNsense-Cheatsheet|OPNsense – Cheatsheet]] — 583 Zeilen · 12.5 KiB · `#opnsense`, `#firewall`, `#freebsd`, `#routing`, `#nat`
+- [[05-Netzwerk-Sicherheit/pfSense-Cheatsheet|pfSense – Cheatsheet]] — 595 Zeilen · 13.1 KiB · `#pfsense`, `#firewall`, `#freebsd`, `#routing`, `#nat`
+- [[05-Netzwerk-Sicherheit/Windows-Netzwerk-Cheatsheet|Windows-Netzwerk – Cheatsheet]] — 567 Zeilen · 11.2 KiB · `#windows`, `#network`, `#powershell`, `#dns`, `#routing`
+- [[05-Netzwerk-Sicherheit/Wireshark-Cheatsheet|Wireshark – Cheatsheet]] — 841 Zeilen · 17.3 KiB · `#wireshark`, `#tshark`, `#pcap`, `#network`, `#diagnose`
 
 ## Verwandte Bereiche
 

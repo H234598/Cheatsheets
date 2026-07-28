@@ -15,7 +15,7 @@ maintenance:
   - MANIFEST.md
 
 download_only:
-  - Premium-Spickzettel-Gesamtband.md
+  - Cheatsheet-Gesamtband.md
 
 exclude_globs:
   - build/**

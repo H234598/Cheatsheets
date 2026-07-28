@@ -501,6 +501,6 @@ Fensterwechsel aus Terminal kann gemappt werden; Standard sicher über Terminal-
 - [Neovim visual mode](https://neovim.io/doc/user/visual.html)
 
 ## Verwandte Notizen
-- [[Neovim-Premium-Spickzettel]]
-- [[Neovim-Konfiguration-und-Plugins-Premium-Spickzettel]]
-- [[Neovim-LSP-Debugging-Premium-Spickzettel]]
+- [[Neovim-Cheatsheet]]
+- [[Neovim-Konfiguration-und-Plugins-Cheatsheet]]
+- [[Neovim-LSP-Debugging-Cheatsheet]]

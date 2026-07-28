@@ -135,7 +135,6 @@ def render_manifest_markdown(records: list[ManifestRecord]) -> str:
             f"| {record.number} | {area} | {title} | `{path}` | "
             f"{page.line_count} | {page.byte_size} | {page.status} |\n"
         )
-    lines.append("\n")
     return "".join(lines)
 
 

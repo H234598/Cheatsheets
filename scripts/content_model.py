@@ -86,10 +86,11 @@ def slugify(value: str) -> str:
     """Erzeuge einen stabilen, MkDocs-nahen ASCII-Anker."""
 
     value = ATTR_LIST_RE.sub("", value)
-    value = re.sub(r"[`*_~]", "", value)
+    value = re.sub(r"[`*~]", "", value)
     normalized = unicodedata.normalize("NFKD", value)
-    ascii_text = normalized.encode("ascii", "ignore").decode("ascii").lower()
-    return re.sub(r"[^a-z0-9]+", "-", ascii_text).strip("-") or "section"
+    ascii_text = normalized.encode("ascii", "ignore").decode("ascii")
+    cleaned = re.sub(r"[^\w\s-]", "", ascii_text).strip().lower()
+    return re.sub(r"[-\s]+", "-", cleaned) or "section"
 
 
 def page_id_from_path(relative_path: Path) -> str:

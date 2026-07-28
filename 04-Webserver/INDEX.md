@@ -9,7 +9,7 @@ type: index
 status: fertig
 tags:
 - index
-- premium-spickzettel
+- cheatsheet
 - 04-webserver
 pages: 2
 ---
@@ -19,12 +19,12 @@ pages: 2
 > nginx und Apache HTTP Server mit TLS, Reverse Proxy, Härtung und Diagnose.
 
 **Umfang:** 2 Spickzettel · 27.6 KiB Quelltext  
-[[00-START-HIER|← Startseite]] · [[INDEX|Gesamtindex]]
+[[00-START-HIER|← Startseite]] · [[/INDEX|Gesamtindex]]
 
 ## Seiten
 
-- [[04-Webserver/Apache-HTTP-Server-Premium-Spickzettel|Apache HTTP Server – Premium-Spickzettel]] — 635 Zeilen · 13.0 KiB · `#apache`, `#httpd`, `#webserver`, `#reverse-proxy`, `#tls`
-- [[04-Webserver/nginx-Premium-Spickzettel|nginx – Premium-Spickzettel]] — 703 Zeilen · 14.7 KiB · `#nginx`, `#webserver`, `#reverse-proxy`, `#tls`, `#linux`
+- [[04-Webserver/Apache-HTTP-Server-Cheatsheet|Apache HTTP Server – Cheatsheet]] — 635 Zeilen · 13.0 KiB · `#apache`, `#httpd`, `#webserver`, `#reverse-proxy`, `#tls`
+- [[04-Webserver/nginx-Cheatsheet|nginx – Cheatsheet]] — 703 Zeilen · 14.7 KiB · `#nginx`, `#webserver`, `#reverse-proxy`, `#tls`, `#linux`
 
 ## Verwandte Bereiche
 
