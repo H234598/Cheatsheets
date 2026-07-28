@@ -1,3 +1,12 @@
+{% set is_reference = page and page.meta and page.meta.web_page_type == "reference" %}
+{% if page and not page.is_homepage and not is_reference %}
+  <p class="cheat-global-help">
+    <button type="button" class="md-button" data-cheat-keyboard-open hidden>
+      Tastaturhilfe
+    </button>
+  </p>
+{% endif %}
+
 <dialog
   class="cheat-keyboard-dialog"
   data-cheat-keyboard-dialog
