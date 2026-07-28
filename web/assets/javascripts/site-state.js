@@ -7,40 +7,25 @@
   const MAX_PROGRESS_ENTRIES = 200;
   const GOTO_TIMEOUT_MS = 1500;
 
-  const EMPTY_STATE = Object.freeze({
-    schema: SCHEMA_VERSION,
-    favorites: [],
-    lastRead: null,
-    progress: {},
-    preferences: {
-      focusMode: false,
-      shortcuts: true,
-    },
-  });
-
   let storageAvailable = true;
-  let state = cloneEmptyState();
-  let pages = [];
+  let state = emptyState();
   let pageById = new Map();
   let currentPageId = null;
   let gotoDeadline = 0;
   let progressFrame = null;
   let lastProgressWrite = 0;
 
-  function cloneEmptyState() {
+  function emptyState() {
     return {
       schema: SCHEMA_VERSION,
       favorites: [],
       lastRead: null,
       progress: {},
-      preferences: {
-        focusMode: false,
-        shortcuts: true,
-      },
+      preferences: { focusMode: false, shortcuts: true },
     };
   }
 
-  function isPlainObject(value) {
+  function isObject(value) {
     return Boolean(value) && typeof value === "object" && !Array.isArray(value);
   }
 
@@ -48,16 +33,15 @@
     return typeof value === "string" && /^p_[0-9a-f]{16}$/.test(value);
   }
 
-  function normalizeTimestamp(value) {
-    if (typeof value !== "string") return null;
-    const parsed = Date.parse(value);
-    return Number.isFinite(parsed) ? new Date(parsed).toISOString() : null;
+  function validTimestamp(value) {
+    if (typeof value !== "string" || !Number.isFinite(Date.parse(value))) return null;
+    return new Date(Date.parse(value)).toISOString();
   }
 
-  function normalizeProgressEntry(value) {
-    if (!isPlainObject(value)) return null;
+  function normalizedProgress(value) {
+    if (!isObject(value)) return null;
     const ratio = Number(value.ratio);
-    const updatedAt = normalizeTimestamp(value.updatedAt);
+    const updatedAt = validTimestamp(value.updatedAt);
     if (!Number.isFinite(ratio) || !updatedAt) return null;
     return {
       ratio: Math.min(1, Math.max(0, ratio)),
@@ -67,20 +51,20 @@
   }
 
   function normalizeState(value) {
-    const normalized = cloneEmptyState();
-    if (!isPlainObject(value) || value.schema !== SCHEMA_VERSION) return normalized;
+    const result = emptyState();
+    if (!isObject(value) || value.schema !== SCHEMA_VERSION) return result;
 
     if (Array.isArray(value.favorites)) {
-      normalized.favorites = [...new Set(value.favorites.filter(isPageId))].slice(
+      result.favorites = [...new Set(value.favorites.filter(isPageId))].slice(
         0,
         MAX_FAVORITES,
       );
     }
 
-    if (isPlainObject(value.lastRead) && isPageId(value.lastRead.pageId)) {
-      const updatedAt = normalizeTimestamp(value.lastRead.updatedAt);
+    if (isObject(value.lastRead) && isPageId(value.lastRead.pageId)) {
+      const updatedAt = validTimestamp(value.lastRead.updatedAt);
       if (updatedAt) {
-        normalized.lastRead = {
+        result.lastRead = {
           pageId: value.lastRead.pageId,
           section:
             typeof value.lastRead.section === "string"
@@ -91,21 +75,21 @@
       }
     }
 
-    if (isPlainObject(value.progress)) {
+    if (isObject(value.progress)) {
       const entries = Object.entries(value.progress)
         .filter(([pageId]) => isPageId(pageId))
-        .map(([pageId, entry]) => [pageId, normalizeProgressEntry(entry)])
+        .map(([pageId, entry]) => [pageId, normalizedProgress(entry)])
         .filter(([, entry]) => entry !== null)
         .sort((left, right) => Date.parse(right[1].updatedAt) - Date.parse(left[1].updatedAt))
         .slice(0, MAX_PROGRESS_ENTRIES);
-      normalized.progress = Object.fromEntries(entries);
+      result.progress = Object.fromEntries(entries);
     }
 
-    if (isPlainObject(value.preferences)) {
-      normalized.preferences.focusMode = value.preferences.focusMode === true;
-      normalized.preferences.shortcuts = value.preferences.shortcuts !== false;
+    if (isObject(value.preferences)) {
+      result.preferences.focusMode = value.preferences.focusMode === true;
+      result.preferences.shortcuts = value.preferences.shortcuts !== false;
     }
-    return normalized;
+    return result;
   }
 
   function loadState() {
@@ -114,7 +98,7 @@
       return normalizeState(raw ? JSON.parse(raw) : null);
     } catch {
       storageAvailable = false;
-      return cloneEmptyState();
+      return emptyState();
     }
   }
 
@@ -125,7 +109,7 @@
       return true;
     } catch {
       storageAvailable = false;
-      updateStorageNotice();
+      updateStorageControls();
       return false;
     }
   }
@@ -162,62 +146,70 @@
     return current;
   }
 
-  function migrateState(aliasPayload) {
-    const aliases = isPlainObject(aliasPayload?.aliases) ? aliasPayload.aliases : {};
+  function migrateState(payload) {
+    const aliases = isObject(payload?.aliases) ? payload.aliases : {};
     let changed = false;
 
-    const migratedFavorites = [
+    const favorites = [
       ...new Set(state.favorites.map((pageId) => migrateId(pageId, aliases))),
     ].filter(isPageId);
-    if (JSON.stringify(migratedFavorites) !== JSON.stringify(state.favorites)) changed = true;
-    state.favorites = migratedFavorites.slice(0, MAX_FAVORITES);
+    if (JSON.stringify(favorites) !== JSON.stringify(state.favorites)) changed = true;
+    state.favorites = favorites.slice(0, MAX_FAVORITES);
 
     if (state.lastRead) {
       const migrated = migrateId(state.lastRead.pageId, aliases);
-      if (migrated !== state.lastRead.pageId) changed = true;
+      changed ||= migrated !== state.lastRead.pageId;
       state.lastRead.pageId = migrated;
     }
 
-    const migratedProgress = {};
+    const progress = {};
     for (const [pageId, entry] of Object.entries(state.progress)) {
       const migrated = migrateId(pageId, aliases);
-      if (migrated !== pageId) changed = true;
-      const existing = migratedProgress[migrated];
+      changed ||= migrated !== pageId;
+      const existing = progress[migrated];
       if (!existing || Date.parse(entry.updatedAt) > Date.parse(existing.updatedAt)) {
-        migratedProgress[migrated] = entry;
+        progress[migrated] = entry;
       }
     }
-    state.progress = migratedProgress;
+    state.progress = progress;
     if (changed) saveState();
   }
 
-  function pageToolRoot() {
+  function toolRoot() {
     return document.querySelector("[data-cheatsheet-page-tools]");
   }
 
   function readCurrentPageId() {
-    const value = pageToolRoot()?.dataset.pageId || "";
+    const value = toolRoot()?.dataset.pageId || "";
     return isPageId(value) ? value : null;
   }
 
-  function updateStorageNotice() {
+  function updateStorageControls() {
     document.documentElement.dataset.cheatsheetStorage = storageAvailable
       ? "available"
       : "unavailable";
     document.querySelectorAll("[data-cheat-storage-note]").forEach((element) => {
       element.hidden = storageAvailable;
     });
+    document.querySelectorAll("[data-cheat-shortcuts-toggle]").forEach((toggle) => {
+      toggle.disabled = !storageAvailable;
+      toggle.title = storageAvailable
+        ? ""
+        : "Lokale Speicherung ist in diesem Browser nicht verfügbar.";
+    });
   }
 
-  function updateFavoriteButton() {
+  function updateFavoriteButtons() {
     const active = Boolean(currentPageId && state.favorites.includes(currentPageId));
     document.querySelectorAll("[data-cheat-favorite]").forEach((button) => {
       button.setAttribute("aria-pressed", String(active));
       button.dataset.active = String(active);
-      const label = active ? "Aus Favoriten entfernen" : "Zu Favoriten hinzufügen";
-      button.setAttribute("aria-label", label);
-      const text = button.querySelector("[data-cheat-button-label]");
-      if (text) text.textContent = active ? "Favorit" : "Merken";
+      button.setAttribute(
+        "aria-label",
+        active ? "Aus Favoriten entfernen" : "Zu Favoriten hinzufügen",
+      );
+      const label = button.querySelector("[data-cheat-button-label]");
+      if (label) label.textContent = active ? "Favorit" : "Merken";
     });
   }
 
@@ -228,7 +220,7 @@
     else favorites.add(currentPageId);
     state.favorites = [...favorites].slice(-MAX_FAVORITES);
     saveState();
-    updateFavoriteButton();
+    updateFavoriteButtons();
     renderHomeState();
   }
 
@@ -237,20 +229,41 @@
     document.documentElement.dataset.focusMode = String(active);
     document.querySelectorAll("[data-cheat-focus]").forEach((button) => {
       button.setAttribute("aria-pressed", String(active));
-      const text = button.querySelector("[data-cheat-button-label]");
-      if (text) text.textContent = active ? "Fokus beenden" : "Fokusmodus";
+      const label = button.querySelector("[data-cheat-button-label]");
+      if (label) label.textContent = active ? "Fokus beenden" : "Fokusmodus";
     });
   }
 
-  function toggleFocusMode(force) {
-    const next = typeof force === "boolean" ? force : !state.preferences.focusMode;
-    state.preferences.focusMode = next;
+  function setFocusMode(value) {
+    state.preferences.focusMode = Boolean(value);
     saveState();
     applyFocusMode();
   }
 
+  function toggleFocusMode() {
+    setFocusMode(!state.preferences.focusMode);
+  }
+
+  function updateShortcutControls() {
+    document.querySelectorAll("[data-cheat-shortcuts-toggle]").forEach((toggle) => {
+      toggle.checked = state.preferences.shortcuts;
+    });
+  }
+
+  function setShortcutsEnabled(value) {
+    state.preferences.shortcuts = Boolean(value);
+    saveState();
+    updateShortcutControls();
+  }
+
   function currentSection() {
-    return decodeURIComponent(window.location.hash.replace(/^#/, "")).slice(0, 200) || null;
+    const raw = window.location.hash.replace(/^#/, "").slice(0, 400);
+    if (!raw) return null;
+    try {
+      return decodeURIComponent(raw).slice(0, 200) || null;
+    } catch {
+      return raw.slice(0, 200) || null;
+    }
   }
 
   function updateLastRead() {
@@ -264,9 +277,25 @@
   }
 
   function readingRatio() {
-    const root = document.documentElement;
-    const denominator = Math.max(1, root.scrollHeight - window.innerHeight);
+    const denominator = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
     return Math.min(1, Math.max(0, window.scrollY / denominator));
+  }
+
+  function pruneProgress() {
+    state.progress = Object.fromEntries(
+      Object.entries(state.progress)
+        .sort((left, right) => Date.parse(right[1].updatedAt) - Date.parse(left[1].updatedAt))
+        .slice(0, MAX_PROGRESS_ENTRIES),
+    );
+  }
+
+  function updateProgressLabel() {
+    const ratio = currentPageId ? state.progress[currentPageId]?.ratio || 0 : 0;
+    const percent = Math.round(ratio * 100);
+    document.querySelectorAll("[data-cheat-progress]").forEach((element) => {
+      element.textContent = `${percent} % gelesen`;
+      element.setAttribute("aria-label", `Lesefortschritt ${percent} Prozent`);
+    });
   }
 
   function persistProgress(force = false) {
@@ -279,6 +308,7 @@
       section: currentSection(),
       updatedAt: new Date(now).toISOString(),
     };
+    pruneProgress();
     saveState();
     updateProgressLabel();
   }
@@ -288,15 +318,6 @@
     progressFrame = window.requestAnimationFrame(() => {
       progressFrame = null;
       persistProgress(false);
-    });
-  }
-
-  function updateProgressLabel() {
-    const ratio = currentPageId ? state.progress[currentPageId]?.ratio || 0 : 0;
-    const percent = Math.round(ratio * 100);
-    document.querySelectorAll("[data-cheat-progress]").forEach((element) => {
-      element.textContent = `${percent} % gelesen`;
-      element.setAttribute("aria-label", `Lesefortschritt ${percent} Prozent`);
     });
   }
 
@@ -310,7 +331,7 @@
     }
   }
 
-  function createPageLink(page, suffix = "") {
+  function pageCard(page, suffix = "") {
     const url = safePageUrl(page);
     if (!url) return null;
     const link = document.createElement("a");
@@ -322,22 +343,23 @@
     link.append(title);
 
     const meta = document.createElement("span");
-    const parts = [page.category_title, Number.isFinite(page.minutes) ? `ca. ${page.minutes} Min.` : null]
-      .filter(Boolean);
-    if (suffix) parts.push(suffix);
+    const parts = [
+      page.category_title,
+      Number.isFinite(page.minutes) ? `ca. ${page.minutes} Min.` : null,
+      suffix || null,
+    ].filter(Boolean);
     meta.textContent = parts.join(" · ");
     link.append(meta);
     return link;
   }
 
-  function renderPageCollection(container, pageIds, emptyText, suffixForPage = null) {
+  function renderCollection(container, pageIds, emptyText, suffixForPage = null) {
     if (!container) return;
     container.replaceChildren();
     const fragment = document.createDocumentFragment();
     for (const pageId of pageIds) {
-      const page = pageById.get(pageId);
       const suffix = typeof suffixForPage === "function" ? suffixForPage(pageId) : "";
-      const link = createPageLink(page, suffix);
+      const link = pageCard(pageById.get(pageId), suffix);
       if (link) fragment.append(link);
     }
     if (!fragment.childNodes.length) {
@@ -354,10 +376,13 @@
     if (!dashboard) return;
     dashboard.hidden = false;
 
-    const favoriteIds = state.favorites.filter((pageId) => pageById.has(pageId)).slice(-6).reverse();
-    renderPageCollection(
+    const favorites = state.favorites
+      .filter((pageId) => pageById.has(pageId))
+      .slice(-6)
+      .reverse();
+    renderCollection(
       dashboard.querySelector("[data-cheat-home-favorites]"),
-      favoriteIds,
+      favorites,
       "Noch keine Favoriten gespeichert.",
     );
 
@@ -366,42 +391,45 @@
       .sort((left, right) => Date.parse(right[1].updatedAt) - Date.parse(left[1].updatedAt))
       .slice(0, 6)
       .map(([pageId]) => pageId);
-    renderPageCollection(
+    renderCollection(
       dashboard.querySelector("[data-cheat-home-progress]"),
       progressIds,
       "Noch kein angefangener Spickzettel.",
       (pageId) => `${Math.round((state.progress[pageId]?.ratio || 0) * 100)} %`,
     );
 
-    const lastRead = dashboard.querySelector("[data-cheat-home-last]");
-    if (lastRead) {
-      lastRead.replaceChildren();
-      const page = state.lastRead ? pageById.get(state.lastRead.pageId) : null;
-      const link = createPageLink(page, "zuletzt gelesen");
-      if (link && state.lastRead?.section) {
-        const url = new URL(link.href);
-        url.hash = encodeURIComponent(state.lastRead.section);
-        link.href = url.href;
-      }
-      if (link) lastRead.append(link);
-      else {
-        const empty = document.createElement("p");
-        empty.className = "cheat-local-empty";
-        empty.textContent = "Noch kein zuletzt gelesener Spickzettel.";
-        lastRead.append(empty);
-      }
+    const last = dashboard.querySelector("[data-cheat-home-last]");
+    if (!last) return;
+    last.replaceChildren();
+    const page = state.lastRead ? pageById.get(state.lastRead.pageId) : null;
+    const link = pageCard(page, "zuletzt gelesen");
+    if (link && state.lastRead?.section) {
+      const url = new URL(link.href);
+      url.hash = encodeURIComponent(state.lastRead.section);
+      link.href = url.href;
+    }
+    if (link) last.append(link);
+    else {
+      const empty = document.createElement("p");
+      empty.className = "cheat-local-empty";
+      empty.textContent = "Noch kein zuletzt gelesener Spickzettel.";
+      last.append(empty);
     }
   }
 
+  function keyboardDialog() {
+    return document.querySelector("[data-cheat-keyboard-dialog]");
+  }
+
   function openKeyboardHelp() {
-    const dialog = document.querySelector("[data-cheat-keyboard-dialog]");
-    if (!dialog) return;
+    const dialog = keyboardDialog();
+    if (!dialog || dialog.hasAttribute("open")) return;
     if (typeof dialog.showModal === "function") dialog.showModal();
     else dialog.setAttribute("open", "");
   }
 
   function closeKeyboardHelp() {
-    const dialog = document.querySelector("[data-cheat-keyboard-dialog]");
+    const dialog = keyboardDialog();
     if (!dialog?.hasAttribute("open")) return false;
     if (typeof dialog.close === "function") dialog.close();
     else dialog.removeAttribute("open");
@@ -417,21 +445,19 @@
     return true;
   }
 
-  function isEditableTarget(target) {
+  function isEditable(target) {
     return (
       target instanceof HTMLElement &&
       (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName))
     );
   }
 
-  function navigateTo(relativePath) {
-    window.location.assign(new URL(relativePath, baseUrl()).href);
+  function navigateTo(path) {
+    window.location.assign(new URL(path, baseUrl()).href);
   }
 
   function handleShortcut(event) {
-    if (!state.preferences.shortcuts || event.defaultPrevented || isEditableTarget(event.target)) {
-      return;
-    }
+    if (!state.preferences.shortcuts || event.defaultPrevented || isEditable(event.target)) return;
     if (event.ctrlKey || event.altKey || event.metaKey) return;
 
     if (event.key === "/") {
@@ -445,7 +471,7 @@
     }
     if (event.key === "Escape") {
       if (closeKeyboardHelp()) event.preventDefault();
-      else if (state.preferences.focusMode) toggleFocusMode(false);
+      else if (state.preferences.focusMode) setFocusMode(false);
       return;
     }
     if (event.key.toLowerCase() === "f" && !event.shiftKey) {
@@ -463,11 +489,7 @@
     }
     if (Date.now() > gotoDeadline) return;
     gotoDeadline = 0;
-    const targets = {
-      i: "index/gesamt/",
-      k: "kategorien/",
-      d: "downloads/",
-    };
+    const targets = { i: "index/gesamt/", k: "kategorien/", d: "downloads/" };
     if (targets[key]) {
       event.preventDefault();
       navigateTo(targets[key]);
@@ -475,13 +497,13 @@
   }
 
   function bindControls() {
-    const tools = pageToolRoot();
+    const tools = toolRoot();
     if (tools && currentPageId) tools.hidden = false;
     document.querySelectorAll("[data-cheat-favorite]").forEach((button) => {
       button.addEventListener("click", toggleFavorite);
     });
     document.querySelectorAll("[data-cheat-focus]").forEach((button) => {
-      button.addEventListener("click", () => toggleFocusMode());
+      button.addEventListener("click", toggleFocusMode);
     });
     document.querySelectorAll("[data-cheat-keyboard-open]").forEach((button) => {
       button.hidden = false;
@@ -489,6 +511,9 @@
     });
     document.querySelectorAll("[data-cheat-keyboard-close]").forEach((button) => {
       button.addEventListener("click", closeKeyboardHelp);
+    });
+    document.querySelectorAll("[data-cheat-shortcuts-toggle]").forEach((toggle) => {
+      toggle.addEventListener("change", () => setShortcutsEnabled(toggle.checked));
     });
     document.addEventListener("keydown", handleShortcut);
     window.addEventListener("scroll", scheduleProgress, { passive: true });
@@ -500,14 +525,14 @@
     document.documentElement.classList.add("cheatsheets-js");
     state = loadState();
     currentPageId = readCurrentPageId();
-    updateStorageNotice();
+    updateStorageControls();
 
     try {
       const [pagePayload, aliasPayload] = await Promise.all([
         fetchData("pages.json"),
         fetchData("page-id-aliases.json"),
       ]);
-      pages = Array.isArray(pagePayload) ? pagePayload : [];
+      const pages = Array.isArray(pagePayload) ? pagePayload : [];
       pageById = new Map(
         pages.filter((page) => isPageId(page?.id)).map((page) => [page.id, page]),
       );
@@ -517,8 +542,9 @@
     }
 
     applyFocusMode();
+    updateShortcutControls();
     bindControls();
-    updateFavoriteButton();
+    updateFavoriteButtons();
     updateLastRead();
     persistProgress(true);
     renderHomeState();
@@ -527,6 +553,7 @@
   }
 
   window.CheatsheetsUI = Object.freeze({
+    setShortcutsEnabled,
     storageKey: STORAGE_KEY,
     toggleFavorite,
     toggleFocusMode,
