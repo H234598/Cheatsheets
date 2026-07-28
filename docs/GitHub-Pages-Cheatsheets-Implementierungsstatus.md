@@ -13,7 +13,7 @@ Dieser Fortschrittsnachweis wird mit jeder Planphase aktualisiert. Verbindliche 
 | 5A – PR-CI | ✅ umgesetzt | PR #9, Merge `69c72997eed4fc0ac831eba696bac12b3a2f69b9`; 78 Tests und alle Gates grün |
 | 5B – Pages-Deployment | ⚠️ technisch umgesetzt | PR #11, Merge `59724c5256a5bed001164fe908dacff2d01fb11a`; Artefaktprüfung grün, produktive `page_url` noch extern zu bestätigen |
 | 6 – Downloads und Provenienz | ✅ umgesetzt | PR #12, Merge `128b44b349e54dd38c9ef097a18d480c5a526c2c`; 108 Tests und alle Gates grün |
-| 7 – Browser, Accessibility und Performance | 🚧 abnahmebereit | PR #14; 116 Python- und 7 Chromiumtests, axe und Budgets grün |
+| 7 – Browser, Accessibility und Performance | ✅ umgesetzt | PR #14, Merge `2f01ca09084ecf94bb9faad9221c1a80ec09237b`; 116 Python- und 7 Chromiumtests, axe und Budgets grün |
 | 8 – optionale Erweiterungen | ⬜ offen | – |
 
 ## Abgeschlossene Phase 3
@@ -112,7 +112,7 @@ Der endgültige PR-Head `e95687389dfbd32ada4cf42a40adeef40ff736e6` bestand 108 T
 
 Der danach versehentlich aus einem divergierten historischen Phase-6-Branch eröffnete PR #13 enthielt eine konkurrierende zweite Downloadimplementierung. Er wurde entsprechend der Pflegekonvention ohne Merge geschlossen; keine seiner Änderungen gelangte nach `main`.
 
-## Phase 7 – Abnahmestand
+## Abgeschlossene Phase 7
 
 PR #14 baut exakt auf dem Phase-6-Mergecommit `128b44b349e54dd38c9ef097a18d480c5a526c2c` auf und ergänzt die bisherige statische Prüfung um echte Browser-, Accessibility- und Performancegates.
 
@@ -142,7 +142,7 @@ Sieben End-to-End-Tests prüfen:
 
 ### Statische Budgets
 
-| Messwert | Blockierende Grenze | Funktionslauf `30343694759` |
+| Messwert | Blockierende Grenze | Finaler Lauf `30344111731` |
 |---|---:|---:|
 | eigenes JavaScript, Gzip-Summe | 30 KiB | 8.410 Bytes |
 | eigenes CSS, Gzip-Summe | 35 KiB | 2.187 Bytes |
@@ -161,9 +161,9 @@ Lighthouse-Scores werden nicht vorgetäuscht. Der Plan sieht eine blockierende L
 - drei kanonische Links auf den Gesamtband werden beim Webbuild explizit als `download`-Links auf `downloads/files/` ausgegeben;
 - das Fragezeichen-Kürzel wird in der Capture-Phase verarbeitet, bevor Theme-Shortcuts es übernehmen können.
 
-### Funktionsabnahme vor der abschließenden Statuspflege
+### Endgültige Abnahme und Merge
 
-GitHub-Actions-Lauf `30343694759` auf Head `fe4ed478fc432fcb400cf258ac63e2fdb3fb6a53` bestätigte:
+GitHub-Actions-Lauf `30344111731` auf dem endgültigen Head `e9e546b10a3723c4a7bdb63028de8e5642fd3798` bestätigte:
 
 - **116 von 116 Python-Tests bestanden**;
 - **7 von 7 Chromiumtests bestanden**, keine Wiederholung und kein Flake;
@@ -174,13 +174,13 @@ GitHub-Actions-Lauf `30343694759` auf Head `fe4ed478fc432fcb400cf258ac63e2fdb3fb
 - vollständiger Strict-MkDocs-Build einschließlich Downloads;
 - Pages-Artefakt mit 181 regulären Dateien und 19.869.192 Bytes;
 - keine Symlinks, Hardlinks, Sonderdateien oder Case-Kollisionen;
-- Artefakt-Baum-SHA-256 `8657ccc80fa87db95ddddb73100515f3dcd888ac7e603d44b095afe7b5808846`;
+- Artefakt-Baum-SHA-256 `2d2f6b37f31782c12d0fb5765d246ef2d1e9bd6549467d8cafab7920c0cd2313`;
 - 113 HTML-Dateien und null externe Laufzeitassets;
 - versionierte Arbeitskopie nach dem Build unverändert;
 - CodeRabbit und qlty grün;
 - keine offenen Review-Threads.
 
-Diese Dokumentations- und Statuspflege erzeugt bewusst einen neuen PR-Head. Phase 7 bleibt deshalb bis zum erneut grünen Validate-Lauf, abgeschlossenen Reviews und verifiziertem Merge als **abnahmebereit** markiert.
+PR #14 wurde anschließend per Squash gemergt. Der Mergecommit `2f01ca09084ecf94bb9faad9221c1a80ec09237b` wurde auf `main` verifiziert. Damit erfüllt Phase 7 sämtliche Abschlussbedingungen.
 
 Eine Phase wird erst nach veröffentlichten Dateien, grünen Tests und PR-Gates, ohne offene Review-Threads und nach verifiziertem Merge als vollständig umgesetzt markiert.
 
