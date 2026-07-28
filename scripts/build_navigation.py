@@ -276,7 +276,8 @@ def _alphabetical_index(index: ContentIndex) -> str:
     ]
     current = ""
     for page in pages:
-        first = page.title[:1].upper() if page.title else "#"
+        normalized_title = normalize_key(page.title)
+        first = normalized_title[:1].upper() if normalized_title else "#"
         if first != current:
             current = first
             lines.append(f"## {current}\n\n")
