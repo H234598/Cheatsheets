@@ -178,6 +178,9 @@
         window.requestAnimationFrame(render);
       }
 
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+      });
       form.addEventListener("input", scheduleRender);
       form.addEventListener("change", scheduleRender);
       form.addEventListener("reset", () => {
