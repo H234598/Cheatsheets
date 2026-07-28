@@ -33,13 +33,20 @@ READ_CHUNK_SIZE = 1024 * 1024
 ZIP_MIN_EPOCH = 315532800  # 1980-01-01T00:00:00Z, frühestes ZIP-Datum.
 PRIMARY_ARTIFACTS = {
     "Cheatsheets-Quellen.zip",
+    "Cheatsheets-Offline-HTML.zip",
     "Cheatsheet-Gesamtband.md",
 }
+OPTIONAL_ARTIFACTS = {"Cheatsheets-Offline-HTML.zip"}
 ARTIFACT_METADATA: dict[str, tuple[str, str, str]] = {
     "Cheatsheets-Quellen.zip": (
         "source-archive",
         "application/zip",
         "Obsidian-taugliches Archiv der kanonischen Inhaltsquellen und Inhaltsassets.",
+    ),
+    "Cheatsheets-Offline-HTML.zip": (
+        "offline-html",
+        "application/zip",
+        "Selbstenthaltende HTML-Ausgabe mit relativen Links, lokaler Suche und file://-Fallback.",
     ),
     "Cheatsheet-Gesamtband.md": (
         "combined-markdown",
