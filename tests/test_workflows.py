@@ -173,14 +173,19 @@ def test_offline_archive_report_extraction_and_browser_syntax_are_required(
 ) -> None:
     content = (
         valid_workflow()
-        .replace("          python scripts/validate_offline_archive.py \\\n", "")
         .replace(
-            "            --archive site/downloads/files/Cheatsheets-Offline-HTML.zip \\\n",
-            "",
+            "python scripts/validate_offline_archive.py",
+            "python scripts/not-the-offline-validator.py",
         )
-        .replace("            --extract build/offline-site \\\n", "")
-        .replace("            --report build/reports/offline.json\n", "")
-        .replace("          node --check tests/web/offline.spec.mjs\n", "")
+        .replace("--extract build/offline-site", "--extract build/not-offline-site")
+        .replace(
+            "--report build/reports/offline.json",
+            "--report build/reports/not-offline.json",
+        )
+        .replace(
+            "node --check tests/web/offline.spec.mjs",
+            "node --check tests/web/not-offline.spec.mjs",
+        )
     )
     write_workflow(tmp_path, content)
 
