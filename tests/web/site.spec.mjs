@@ -197,7 +197,7 @@ test("Favorit, Fokusmodus, Tastaturhilfe und Suchkürzel funktionieren", async (
   const stored = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)), STORAGE_KEY);
   expect(stored.favorites).toContain(pageId);
 
-  await page.keyboard.press("?");
+  await page.keyboard.press("Shift+/");
   await expect(page.locator("[data-cheat-keyboard-dialog][open]")).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(page.locator("[data-cheat-keyboard-dialog]")).not.toHaveAttribute("open", "");
@@ -281,12 +281,16 @@ test("320-Pixel-Ansicht, Fokus und Reduced Motion bleiben robust", async ({
 
   const codeBlock = page.locator(".md-typeset pre").first();
   await expect(codeBlock).toBeVisible();
+  await expect(codeBlock).toHaveAttribute("tabindex", "0");
+  await expect(codeBlock).toHaveAttribute("aria-label", /Codeblock/);
   expect(
     await codeBlock.evaluate((element) => getComputedStyle(element).overflowX),
   ).toMatch(/auto|scroll/);
 
   const tableContainer = page.locator(".md-typeset__table").first();
   if ((await tableContainer.count()) > 0) {
+    await expect(tableContainer).toHaveAttribute("tabindex", "0");
+    await expect(tableContainer).toHaveAttribute("aria-label", /Tabelle/);
     expect(
       await tableContainer.evaluate((element) => getComputedStyle(element).overflowX),
     ).toMatch(/auto|scroll/);
