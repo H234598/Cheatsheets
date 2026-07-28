@@ -1,6 +1,9 @@
 site_name: Cheatsheets
 site_description: Obsidian-kompatible technische Premium-Spickzettel
 site_url: https://h234598.github.io/Cheatsheets/
+repo_url: https://github.com/H234598/Cheatsheets
+repo_name: H234598/Cheatsheets
+edit_uri: blob/main/
 
 docs_dir: build/docs
 site_dir: site
@@ -63,4 +66,6 @@ extra_css:
   - assets/stylesheets/extra.css
 
 extra_javascript:
+  - assets/javascripts/site-state.js
+  - assets/javascripts/filters.js
   - assets/javascripts/mermaid-loader.js
