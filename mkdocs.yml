@@ -1,5 +1,5 @@
 site_name: Cheatsheets
-site_description: Obsidian-kompatible technische Premium-Spickzettel
+site_description: Obsidian-kompatible technische Cheatsheets
 site_url: https://h234598.github.io/Cheatsheets/
 
 docs_dir: build/docs
@@ -8,6 +8,11 @@ strict: true
 use_directory_urls: true
 exclude_docs: |
   .cheatsheets-build-root
+not_in_nav: |
+  /404.md
+  /downloads/**
+  /index/quelle.md
+  /intern/**
 
 theme:
   name: material
