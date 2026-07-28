@@ -51,6 +51,7 @@ def test_templates_keep_progressive_controls_hidden_without_javascript() -> None
     assert "data-cheat-keyboard-open" in local_state
     assert "data-cheat-filter-panel" in local_state
     assert "<noscript>" in local_state
+    assert "cheat-global-help" in keyboard
     assert "data-cheat-shortcuts-toggle" in keyboard
     assert "<dialog" in keyboard
 
@@ -102,6 +103,8 @@ def test_initialization_preserves_existing_reading_progress() -> None:
 
     assert "updateProgressLabel();\n    renderHomeState();" in site_state
     assert "persistProgress(true);\n    renderHomeState();" not in site_state
+    assert "ratio: Math.max(existing?.ratio || 0, currentRatio)" in site_state
+    assert "section: advances ? currentSection() : existing.section" in site_state
 
 
 def test_corrupt_local_state_is_discarded_without_disabling_working_storage() -> None:
