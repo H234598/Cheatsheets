@@ -6,8 +6,6 @@ docs_dir: build/docs
 site_dir: site
 strict: true
 use_directory_urls: true
-hooks:
-  - scripts/mkdocs_graph_hook.py
 exclude_docs: |
   .cheatsheets-build-root
 not_in_nav: |
