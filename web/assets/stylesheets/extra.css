@@ -1,0 +1,33 @@
+:root {
+  --cheat-content-width: 78ch;
+  --cheat-focus-width: 3px;
+  --cheat-card-radius: 0.7rem;
+}
+
+.md-content__inner {
+  max-width: var(--cheat-content-width);
+}
+
+.md-typeset pre,
+.md-typeset .highlight,
+.cheat-table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+}
+
+:where(a, button, summary, input, select, [tabindex]):focus-visible {
+  outline: var(--cheat-focus-width) solid var(--md-accent-fg-color);
+  outline-offset: 0.2rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
