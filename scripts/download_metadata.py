@@ -15,6 +15,7 @@ from content_model import ContentIndex
 from download_model import (
     ARTIFACT_METADATA,
     ARTIFACT_ORDER,
+    OPTIONAL_ARTIFACTS,
     PRIMARY_ARTIFACTS,
     SOURCE_REPOSITORY,
     DownloadArtifact,
@@ -63,6 +64,8 @@ def _manifest_rows(artifacts: Sequence[DownloadArtifact]) -> list[dict[str, obje
     actual = {artifact.name: artifact for artifact in artifacts}
     rows: list[dict[str, object]] = []
     for name in ARTIFACT_ORDER:
+        if name in OPTIONAL_ARTIFACTS and name not in actual:
+            continue
         kind, media_type, description = ARTIFACT_METADATA[name]
         artifact = actual.get(name)
         rows.append(
@@ -199,9 +202,18 @@ def render_landing_page(result: DownloadBuildResult) -> str:
                 f'<a class="md-button md-button--primary" href="{href}" download>'
                 f"{name} herunterladen</a>\n\n",
                 f"- **Größe:** {_human_size(artifact.byte_size)}\n",
-                f"- **SHA-256:** `{artifact.sha256}`\n\n",
+                f"- **SHA-256:** `{artifact.sha256}`\n",
             ]
         )
+        if artifact.kind == "offline-html":
+            lines.extend(
+                [
+                    "- **Direkt:** ZIP entpacken und `index.html` öffnen.\n",
+                    "- **Mit Suche und lokalen Werkzeugen:** im entpackten Ordner "
+                    "`python offline-server.py` starten.\n",
+                ]
+            )
+        lines.append("\n")
 
     lines.extend(
         [
@@ -234,9 +246,9 @@ def render_landing_page(result: DownloadBuildResult) -> str:
             "Get-FileHash .\\Cheatsheets-Quellen.zip -Algorithm SHA256\n",
             "```\n\n",
             "> [!note] Selbstreferenzielle Metadaten\n",
-            "> JSON und CSV führen alle zehn Downloaddateien auf. Ihre eigenen "
-            "Hashfelder bleiben leer; `DOWNLOAD-SHA256SUMS.txt` enthält die "
-            "Hashwerte beider Manifeste und aller übrigen Dateien.\n",
+            f"> JSON und CSV führen alle {len(result.artifacts)} Downloaddateien auf. "
+            "Ihre eigenen Hashfelder bleiben leer; `DOWNLOAD-SHA256SUMS.txt` "
+            "enthält die Hashwerte beider Manifeste und aller übrigen Dateien.\n",
         ]
     )
     return "".join(lines)
