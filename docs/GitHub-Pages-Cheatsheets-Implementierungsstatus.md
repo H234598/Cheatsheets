@@ -12,7 +12,7 @@ Dieser Fortschrittsnachweis wird mit jeder Planphase aktualisiert. Verbindliche 
 | 4 – ADHS-freundliche Oberfläche | ✅ umgesetzt | PR #7, Merge `0682c7f8e508d56b60d8d8e72024121e1bcd815d`; CodeRabbit und qlty grün |
 | 5A – PR-CI | ✅ umgesetzt | PR #9, Merge `69c72997eed4fc0ac831eba696bac12b3a2f69b9`; 78 Tests und alle Gates grün |
 | 5B – Pages-Deployment | ⚠️ technisch umgesetzt | PR #11, Merge `59724c5256a5bed001164fe908dacff2d01fb11a`; 90 Tests und Artefaktprüfung grün, produktive `page_url` noch extern zu bestätigen |
-| 6 – Downloads und Provenienz | 🚧 in Umsetzung | Branch `agent/downloads-provenance`; Quell-ZIP, Gesamt-Markdown, Manifeste, Prüfsummen und Provenienz |
+| 6 – Downloads und Provenienz | 🚧 abnahmebereit | PR #12; 95 Tests, vollständiger Downloadsatz und Pages-Artefakt grün |
 | 7 – Browser, Accessibility und Performance | ⬜ offen | – |
 | 8 – optionale Erweiterungen | ⬜ offen | – |
 
@@ -96,7 +96,7 @@ Der PR-Lauf bestätigte 90 Tests und ein sicheres Pages-Artefakt mit 170 regulä
 
 Der verfügbare GitHub-Connector listet derzeit nur Pull-Request-bezogene Workflowläufe. Deshalb konnte der erste produktive Push-Lauf einschließlich ausgegebener `page_url` noch nicht unabhängig ausgelesen werden. Diese externe Laufzeitbestätigung bleibt sichtbar offen und wird nicht als bereits erfolgt behauptet.
 
-## Laufende Phase 6
+## Phase 6 – Abnahmestand
 
 Phase 6 erzeugt einen vollständigen Downloadsatz aus demselben Checkout und `SOURCE_DATE_EPOCH` wie die Website:
 
@@ -113,6 +113,23 @@ Der Quell-ZIP verwendet stabile Reihenfolge, feste Rechte, `ZIP_STORED` und den 
 Das Gesamt-Markdown verwendet die kanonische Kategorienreihenfolge, stabile Page-ID-Anker und präfixierte Abschnittsanker. Codefences werden vor und nach der Linkkonvertierung gehasht.
 
 Der zentrale Site-Build erzeugt die Downloads vor MkDocs, schreibt die Landingpage mit realen Größen und Hashes und kopiert die Artefakte erst nach erfolgreichem HTML-Build nach `site/downloads/files/`. Dadurch bleiben rohe `.md`-Downloads unverändert herunterladbar und werden nicht versehentlich als HTML-Seiten gerendert.
+
+Der vollständige GitHub-Actions-Lauf `30334654750` auf Head `77a603435f5db79d47891ad6bb469330649135d2` bestätigte:
+
+- **95 von 95 Tests bestanden**;
+- zwölf Kategorien, 86 Fachseiten und 116 Markdownseiten;
+- null Contentfehler und null Contentwarnungen;
+- null Linkfehler und null Linkwarnungen;
+- null Securityfehler, -warnungen oder Informationsbefunde;
+- bytegleiche kanonische Metadaten;
+- vollständiger Strict-MkDocs-Build einschließlich Downloads;
+- Pages-Artefakt mit 180 regulären Dateien und 25.016.928 Bytes;
+- keine Symlinks, Hardlinks, Sonderdateien oder Case-Kollisionen;
+- Artefakt-Baum-SHA-256 `daeb8fe09bc1117e718f55da198806ae30d0ff9ef5d120f420bcb9dd1f3b1878`;
+- versionierte Arbeitskopie nach dem Build unverändert;
+- qlty grün und keine offenen Review-Threads.
+
+CodeRabbit wird auf dem finalen Head bis zum Endzustand geprüft. Die Statuspflege selbst erzeugt einen neuen Commit; deshalb muss der vollständige Validate-Lauf anschließend noch einmal auf dem endgültigen Head grün sein.
 
 Eine Phase wird erst nach grünen Gates, ohne offene Review-Threads und nach verifiziertem Merge als vollständig umgesetzt markiert.
 
