@@ -1,7 +1,7 @@
 ---
-title: Cheatheets – README
+title: Cheatsheets – README
 aliases:
-- Premium-Spickzettel
+- Cheatsheet
 - Cheatsheets README
 created: '2026-07-17'
 modified: '2026-07-17'
@@ -9,7 +9,7 @@ type: readme
 status: fertig
 tags:
 - readme
-- premium-spickzettel
+- cheatsheet
 - obsidian
 - Cheatsheets
 version: 2.1.0
@@ -21,10 +21,10 @@ Diese Sammlung ist ein Obsidian-kompatibler IT-Referenz-Vault mit **86 Fachseite
 
 ## Einstieg
 
-- [Startseite](00-START-HIER.md)
-- [Gesamtindex](INDEX.md)
-- [Abdeckung der ursprünglichen Themenliste](00-Anforderungsabdeckung.md)
-- [Zusammengeführter Gesamtband](Premium-Spickzettel-Gesamtband.md)
-- [Manifest](MANIFEST.md)
-- [Qualitätsprüfung](QUALITAETSPRUEFUNG.md)
-- [Changelog](CHANGELOG.md)
+- [[00-START-HIER|Startseite]]
+- [[/INDEX|Gesamtindex]]
+- [[00-Anforderungsabdeckung|Abdeckung der ursprünglichen Themenliste]]
+- [[Cheatsheet-Gesamtband|Zusammengeführter Gesamtband]]
+- [[MANIFEST|Manifest]]
+- [[QUALITAETSPRUEFUNG|Qualitätsprüfung]]
+- [[CHANGELOG|Changelog]]
