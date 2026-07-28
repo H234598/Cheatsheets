@@ -56,8 +56,7 @@
 
     if (Array.isArray(value.favorites)) {
       result.favorites = [...new Set(value.favorites.filter(isPageId))].slice(
-        0,
-        MAX_FAVORITES,
+        -MAX_FAVORITES,
       );
     }
 
@@ -174,9 +173,11 @@
 
     const favorites = [
       ...new Set(state.favorites.map((pageId) => migrateId(pageId, aliases))),
-    ].filter(isPageId);
+    ]
+      .filter(isPageId)
+      .slice(-MAX_FAVORITES);
     if (JSON.stringify(favorites) !== JSON.stringify(state.favorites)) changed = true;
-    state.favorites = favorites.slice(0, MAX_FAVORITES);
+    state.favorites = favorites;
 
     if (state.lastRead) {
       const migrated = migrateId(state.lastRead.pageId, aliases);
@@ -194,6 +195,7 @@
       }
     }
     state.progress = progress;
+    pruneProgress();
     if (changed) saveState();
   }
 
@@ -250,6 +252,7 @@
     const active = state.preferences.focusMode === true;
     document.documentElement.dataset.focusMode = String(active);
     document.querySelectorAll("[data-cheat-focus]").forEach((button) => {
+      button.hidden = false;
       button.setAttribute("aria-pressed", String(active));
       const label = button.querySelector("[data-cheat-button-label]");
       if (label) label.textContent = active ? "Fokus beenden" : "Fokusmodus";
