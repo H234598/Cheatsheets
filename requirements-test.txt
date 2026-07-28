@@ -1,3 +1,7 @@
 # Exakt gepinnte Testabhängigkeiten. Aktualisierung ausschließlich per Review-PR.
-PyYAML==6.0.2
-pytest==8.4.1
+iniconfig==2.3.0
+packaging==26.2
+pluggy==1.6.0
+pygments==2.20.0
+pytest==9.0.3
+pyyaml==6.0.2
