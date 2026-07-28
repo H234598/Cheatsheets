@@ -68,6 +68,7 @@ jobs:
           changed_files = 0
           replacement_count = 0
           root_index_links = 0
+          heading_links = 0
           for relative in tracked_paths():
               if relative == workflow:
                   continue
@@ -82,13 +83,19 @@ jobs:
               except UnicodeDecodeError:
                   continue
               updated, count = label_pattern.subn(replacement, text)
+
               link_count = updated.count('[[INDEX|Gesamtindex]]')
               updated = updated.replace('[[INDEX|Gesamtindex]]', '[[/INDEX|Gesamtindex]]')
-              if count or link_count:
+
+              heading_count = updated.count('[[#Java JCAJCE]]')
+              updated = updated.replace('[[#Java JCAJCE]]', '[[#Java JCA/JCE]]')
+
+              if count or link_count or heading_count:
                   path.write_bytes(updated.encode('utf-8'))
                   changed_files += 1
                   replacement_count += count
                   root_index_links += link_count
+                  heading_links += heading_count
 
           renamed_paths = 0
           for relative in sorted(tracked_paths(), key=lambda item: (len(item.parts), item.as_posix()), reverse=True):
@@ -107,6 +114,7 @@ jobs:
 
           print(f'Inhaltsersetzungen: {replacement_count} in {changed_files} Dateien')
           print(f'Eindeutig gemachte Root-Indexlinks: {root_index_links}')
+          print(f'Korrigierte Abschnittslinks: {heading_links}')
           print(f'Umbenannte Pfade: {renamed_paths}')
           PY
 
@@ -121,6 +129,31 @@ jobs:
 
       - name: Manifest prüfen
         run: python scripts/build_manifest.py --check
+
+      - name: Alle internen Links prüfen
+        id: linkcheck
+        shell: bash
+        run: |
+          set -o pipefail
+          PYTHONPATH=scripts python - <<'PY' 2>&1 | tee /tmp/link-validation.log
+          from pathlib import Path
+          from link_validation import validate_all
+
+          errors = validate_all(Path.cwd())
+          if errors:
+              print('\n'.join(errors))
+              raise SystemExit(f'{len(errors)} Link-/Contentfehler gefunden')
+          print('Vollständige Linkvalidierung erfolgreich.')
+          PY
+
+      - name: Linkdiagnose hochladen
+        if: failure() && steps.linkcheck.conclusion == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: link-validation-diagnostic
+          path: /tmp/link-validation.log
+          if-no-files-found: error
+          retention-days: 1
 
       - name: Webbuild prüfen
         id: webbuild
