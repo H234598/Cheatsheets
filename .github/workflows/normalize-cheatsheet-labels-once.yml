@@ -154,7 +154,20 @@ jobs:
         run: python -m compileall -q scripts tests
 
       - name: Tests ausführen
-        run: python -m pytest -q
+        id: tests
+        shell: bash
+        run: |
+          set -o pipefail
+          python -m pytest -q 2>&1 | tee /tmp/pytest.log
+
+      - name: Testdiagnose hochladen
+        if: failure() && steps.tests.conclusion == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-diagnostic
+          path: /tmp/pytest.log
+          if-no-files-found: error
+          retention-days: 1
 
       - name: Manifest prüfen
         run: python scripts/build_manifest.py --check
