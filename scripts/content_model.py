@@ -186,6 +186,12 @@ class PageRecord:
             return PurePosixPath("index.md")
         if self.page_type == "category-index":
             return self.relative_path.parent / "index.md"
+        if self.page_type == "root-index":
+            return PurePosixPath("index/quelle.md")
+        if self.page_type in {"root-readme", "maintenance"}:
+            return PurePosixPath("intern") / self.relative_path.name
+        if self.page_type == "download-only":
+            return PurePosixPath("downloads") / self.relative_path.name
         return self.relative_path
 
     @property
