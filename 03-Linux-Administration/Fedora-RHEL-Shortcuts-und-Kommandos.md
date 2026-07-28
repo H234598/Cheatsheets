@@ -293,7 +293,7 @@ Keine Geheimnisse/PII in Supportpakete aufnehmen; Ausgabe vor Weitergabe prüfen
 - [Linux man-pages](https://www.man7.org/linux/man-pages/)
 
 ## Verwandte Notizen
-- [[Fedora-RHEL-Premium-Spickzettel]]
-- [[Systemd-Premium-Spickzettel]]
-- [[SELinux-Premium-Spickzettel]]
-- [[firewalld-Premium-Spickzettel]]
+- [[Fedora-RHEL-Cheatsheet]]
+- [[Systemd-Cheatsheet]]
+- [[SELinux-Cheatsheet]]
+- [[firewalld-Cheatsheet]]

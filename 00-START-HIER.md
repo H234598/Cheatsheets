@@ -1,8 +1,8 @@
 ---
-title: Premium-Spickzettel – Start hier
+title: Cheatsheet – Start hier
 aliases:
-- Premium Spickzettel II
-- Premium-Spickzettel Gesamtausgabe
+- Cheatsheet II
+- Cheatsheet Gesamtausgabe
 - Startseite
 created: '2026-07-17'
 modified: '2026-07-17'
@@ -13,19 +13,19 @@ tags:
 - obsidian
 - cheatsheet
 - it-administration
-- premium-spickzettel
+- cheatsheet
 version: 2.1.0
 pages: 86
 ---
-# Premium-Spickzettel – Start hier
+# Cheatsheet – Start hier
 
 > [!summary] Gesamtausgabe
-> **86 ausführliche Spickzettel** in 12 Themenbereichen, zusammen 45,118 Zeilen und 1035.2 KiB Markdown. Enthalten sind die überarbeiteten Seiten aus „Premium Spickzettel I“, die Restthemen aus „Premium Spickzettel II“ und die Ergänzung **Thales Luna Network HSM A750**.
+> **86 ausführliche Spickzettel** in 12 Themenbereichen, zusammen 45,118 Zeilen und 1035.2 KiB Markdown. Enthalten sind die überarbeiteten Seiten aus „Cheatsheet I“, die Restthemen aus „Cheatsheet II“ und die Ergänzung **Thales Luna Network HSM A750**.
 
 ## Direkteinstieg
 
 - [[INDEX|Gesamtindex mit allen Seiten]]
-- [[Premium-Spickzettel-Gesamtband|Zusammengeführter Leseband]]
+- [[Cheatsheet-Gesamtband|Zusammengeführter Leseband]]
 - [[MANIFEST|Manifest mit Dateigrößen, Zeilen und Herkunft]]
 - [[00-Anforderungsabdeckung|Abdeckung der ursprünglichen Themenliste]]
 - [[QUALITAETSPRUEFUNG|Qualitätsprüfung]]
@@ -50,4 +50,4 @@ pages: 86
 
 ## Neueste Ergänzung
 
-- [[10-Sicherheit-PKI/Thales-Luna-Network-HSM-A750-Premium-Spickzettel|Thales Luna Network HSM A750 – Premium-Spickzettel]]
+- [[10-Sicherheit-PKI/Thales-Luna-Network-HSM-A750-Cheatsheet|Thales Luna Network HSM A750 – Cheatsheet]]

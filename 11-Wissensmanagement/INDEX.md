@@ -9,7 +9,7 @@ type: index
 status: fertig
 tags:
 - index
-- premium-spickzettel
+- cheatsheet
 - 11-wissensmanagement
 pages: 1
 ---
@@ -19,11 +19,11 @@ pages: 1
 > Obsidian-Markdown, portable Notizen und Vault-Struktur.
 
 **Umfang:** 1 Spickzettel · 14.5 KiB Quelltext  
-[[00-START-HIER|← Startseite]] · [[INDEX|Gesamtindex]]
+[[00-START-HIER|← Startseite]] · [[/INDEX|Gesamtindex]]
 
 ## Seiten
 
-- [[11-Wissensmanagement/Obsidian-Markdown-Premium-Spickzettel|Obsidian-Markdown – Premium-Spickzettel]] — 752 Zeilen · 14.5 KiB · `#obsidian`, `#markdown`, `#wikilinks`, `#callouts`, `#yaml`
+- [[11-Wissensmanagement/Obsidian-Markdown-Cheatsheet|Obsidian-Markdown – Cheatsheet]] — 752 Zeilen · 14.5 KiB · `#obsidian`, `#markdown`, `#wikilinks`, `#callouts`, `#yaml`
 
 ## Verwandte Bereiche
 

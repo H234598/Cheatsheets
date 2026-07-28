@@ -1,5 +1,5 @@
 ---
-title: Premium-Spickzettel – Qualitätsprüfung
+title: Cheatsheet – Qualitätsprüfung
 aliases:
 - Qualitätsprüfung Cheatsheets
 - Integritätsbericht
@@ -10,7 +10,7 @@ status: fertig
 tags:
 - qualitaet
 - integritaet
-- premium-spickzettel
+- cheatsheet
 version: 2.1.0
 ---
 # Qualitätsprüfung

@@ -9,7 +9,7 @@ type: index
 status: fertig
 tags:
 - index
-- premium-spickzettel
+- cheatsheet
 - 01-enterprise-windows
 pages: 7
 ---
@@ -19,17 +19,17 @@ pages: 7
 > Enterprise-Anwendungen, Microsoft-Werkzeuge, RPC, Terminal und IIS.
 
 **Umfang:** 7 Spickzettel · 76.3 KiB Quelltext  
-[[00-START-HIER|← Startseite]] · [[INDEX|Gesamtindex]]
+[[00-START-HIER|← Startseite]] · [[/INDEX|Gesamtindex]]
 
 ## Seiten
 
-- [[01-Enterprise-Windows/Microsoft-Excel-Premium-Spickzettel|Microsoft Excel – Premium-Spickzettel]] — 388 Zeilen · 9.7 KiB · `#microsoft`, `#excel`, `#office`, `#spreadsheets`, `#data`
-- [[01-Enterprise-Windows/Microsoft-IIS-Premium-Spickzettel|Microsoft IIS – Premium-Spickzettel]] — 709 Zeilen · 17.0 KiB · `#microsoft`, `#windows-server`, `#iis`, `#webserver`, `#powershell`
-- [[01-Enterprise-Windows/MS-RPC-Verbindungen-Premium-Spickzettel|Microsoft RPC-Verbindungen – Premium-Spickzettel]] — 343 Zeilen · 10.5 KiB · `#windows`, `#rpc`, `#dcom`, `#networking`, `#firewall`
-- [[01-Enterprise-Windows/Microsoft-Visio-Premium-Spickzettel|Microsoft Visio – Premium-Spickzettel]] — 283 Zeilen · 8.7 KiB · `#microsoft`, `#visio`, `#diagrams`, `#architecture`, `#shortcuts`
-- [[01-Enterprise-Windows/Microsoft-Word-Premium-Spickzettel|Microsoft Word – Premium-Spickzettel]] — 291 Zeilen · 8.4 KiB · `#microsoft`, `#word`, `#office`, `#documents`, `#shortcuts`
-- [[01-Enterprise-Windows/OMNITRACKER-Premium-Spickzettel|OMNITRACKER – Premium-Spickzettel]] — 349 Zeilen · 12.7 KiB · `#omnitracker`, `#itsm`, `#workflow`, `#enterprise`, `#service-management`
-- [[01-Enterprise-Windows/Windows-Terminal-Premium-Spickzettel|Windows Terminal – Premium-Spickzettel]] — 374 Zeilen · 9.3 KiB · `#windows`, `#terminal`, `#powershell`, `#wsl`, `#shortcuts`
+- [[01-Enterprise-Windows/Microsoft-Excel-Cheatsheet|Microsoft Excel – Cheatsheet]] — 388 Zeilen · 9.7 KiB · `#microsoft`, `#excel`, `#office`, `#spreadsheets`, `#data`
+- [[01-Enterprise-Windows/Microsoft-IIS-Cheatsheet|Microsoft IIS – Cheatsheet]] — 709 Zeilen · 17.0 KiB · `#microsoft`, `#windows-server`, `#iis`, `#webserver`, `#powershell`
+- [[01-Enterprise-Windows/MS-RPC-Verbindungen-Cheatsheet|Microsoft RPC-Verbindungen – Cheatsheet]] — 343 Zeilen · 10.5 KiB · `#windows`, `#rpc`, `#dcom`, `#networking`, `#firewall`
+- [[01-Enterprise-Windows/Microsoft-Visio-Cheatsheet|Microsoft Visio – Cheatsheet]] — 283 Zeilen · 8.7 KiB · `#microsoft`, `#visio`, `#diagrams`, `#architecture`, `#shortcuts`
+- [[01-Enterprise-Windows/Microsoft-Word-Cheatsheet|Microsoft Word – Cheatsheet]] — 291 Zeilen · 8.4 KiB · `#microsoft`, `#word`, `#office`, `#documents`, `#shortcuts`
+- [[01-Enterprise-Windows/OMNITRACKER-Cheatsheet|OMNITRACKER – Cheatsheet]] — 349 Zeilen · 12.7 KiB · `#omnitracker`, `#itsm`, `#workflow`, `#enterprise`, `#service-management`
+- [[01-Enterprise-Windows/Windows-Terminal-Cheatsheet|Windows Terminal – Cheatsheet]] — 374 Zeilen · 9.3 KiB · `#windows`, `#terminal`, `#powershell`, `#wsl`, `#shortcuts`
 
 ## Verwandte Bereiche
 

@@ -1,10 +1,22 @@
-version: "2.1.0"
-build_date: "2026-07-17"
-repository_target: "H234598/Cheatsheets"
+schema_version: 1
+content_date: '2026-07-17'
+content_fingerprint_sha256: fe6d593ede144c59e5adc7b60749f8e1f408fbb4b4407aab4ac3b5be9261c281
+categories: 12
 reference_pages: 86
-category_count: 12
-markdown_files: 106
-total_reference_lines: 45118
-total_reference_bytes: 1059995
-latest_addition: "10-Sicherheit-PKI/Thales-Luna-Network-HSM-A750-Premium-Spickzettel.md"
-status: "fertig"
+total_lines: 45118
+total_bytes: 1054936
+statuses:
+  fertig: 86
+category_pages:
+  Enterprise & Windows: 7
+  Versionierung, Entwicklung & Editoren: 12
+  Linux-, Unix- & Paketverwaltung: 25
+  Webserver: 2
+  Netzwerk & Firewalls: 8
+  Storage, Dateisysteme & Synchronisation: 9
+  Android: 4
+  Künstliche Intelligenz: 6
+  Führung & Kommunikation: 2
+  Sicherheit & PKI: 5
+  Wissensmanagement: 1
+  Hardware & Prozessoren: 5

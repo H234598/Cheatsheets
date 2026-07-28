@@ -9,7 +9,7 @@ type: index
 status: fertig
 tags:
 - index
-- premium-spickzettel
+- cheatsheet
 - 12-hardware-prozessoren
 pages: 5
 ---
@@ -19,15 +19,15 @@ pages: 5
 > Historie und Einordnung von Intel-, AMD- und Arm-Prozessoren sowie Benchmarkmethodik.
 
 **Umfang:** 5 Spickzettel · 91.6 KiB Quelltext  
-[[00-START-HIER|← Startseite]] · [[INDEX|Gesamtindex]]
+[[00-START-HIER|← Startseite]] · [[/INDEX|Gesamtindex]]
 
 ## Seiten
 
-- [[12-Hardware-Prozessoren/AMD-Prozessorhistorie-Premium-Spickzettel|AMD-Prozessorhistorie – Premium-Spickzettel]] — 482 Zeilen · 17.3 KiB · `#hardware`, `#cpu`, `#amd`, `#x86`, `#ryzen`
-- [[12-Hardware-Prozessoren/Arm-Prozessorhistorie-Premium-Spickzettel|Arm-Prozessorhistorie – Premium-Spickzettel]] — 565 Zeilen · 18.9 KiB · `#hardware`, `#cpu`, `#arm`, `#aarch64`, `#cortex`
-- [[12-Hardware-Prozessoren/CPU-Benchmarks-und-Vergleichbarkeit-Premium-Spickzettel|CPU-Benchmarks und Vergleichbarkeit – Premium-Spickzettel]] — 828 Zeilen · 21.0 KiB · `#hardware`, `#cpu`, `#benchmark`, `#spec`, `#geekbench`
-- [[12-Hardware-Prozessoren/Intel-Prozessorhistorie-Premium-Spickzettel|Intel-Prozessorhistorie – Premium-Spickzettel]] — 403 Zeilen · 12.9 KiB · `#hardware`, `#cpu`, `#intel`, `#x86`, `#xeon`
-- [[12-Hardware-Prozessoren/Prozessorhistorie-Intel-AMD-Arm-Premium-Spickzettel|Prozessorhistorie Intel, AMD und Arm – Premium-Spickzettel]] — 609 Zeilen · 21.5 KiB · `#hardware`, `#cpu`, `#intel`, `#amd`, `#arm`
+- [[12-Hardware-Prozessoren/AMD-Prozessorhistorie-Cheatsheet|AMD-Prozessorhistorie – Cheatsheet]] — 482 Zeilen · 17.3 KiB · `#hardware`, `#cpu`, `#amd`, `#x86`, `#ryzen`
+- [[12-Hardware-Prozessoren/Arm-Prozessorhistorie-Cheatsheet|Arm-Prozessorhistorie – Cheatsheet]] — 565 Zeilen · 18.9 KiB · `#hardware`, `#cpu`, `#arm`, `#aarch64`, `#cortex`
+- [[12-Hardware-Prozessoren/CPU-Benchmarks-und-Vergleichbarkeit-Cheatsheet|CPU-Benchmarks und Vergleichbarkeit – Cheatsheet]] — 828 Zeilen · 21.0 KiB · `#hardware`, `#cpu`, `#benchmark`, `#spec`, `#geekbench`
+- [[12-Hardware-Prozessoren/Intel-Prozessorhistorie-Cheatsheet|Intel-Prozessorhistorie – Cheatsheet]] — 403 Zeilen · 12.9 KiB · `#hardware`, `#cpu`, `#intel`, `#x86`, `#xeon`
+- [[12-Hardware-Prozessoren/Prozessorhistorie-Intel-AMD-Arm-Cheatsheet|Prozessorhistorie Intel, AMD und Arm – Cheatsheet]] — 609 Zeilen · 21.5 KiB · `#hardware`, `#cpu`, `#intel`, `#amd`, `#arm`
 
 ## Verwandte Bereiche
 

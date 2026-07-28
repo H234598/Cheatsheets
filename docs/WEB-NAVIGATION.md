@@ -66,10 +66,10 @@ Diese Daten ergänzen die lokale Material-Suche. Sie führen keine Telemetrie ei
 Die basisunabhängige kanonische URL wird aus dem **generierten** Pfad gebildet:
 
 ```text
-Quelle:       05-Netzwerk-Sicherheit/Linux-Netzwerk-Premium-Spickzettel.md
-Kanonisch:    /05-Netzwerk-Sicherheit/Linux-Netzwerk-Premium-Spickzettel/
-Project-Page: https://h234598.github.io/Cheatsheets/05-Netzwerk-Sicherheit/Linux-Netzwerk-Premium-Spickzettel/
-Custom Domain:https://cheatsheets.example.org/05-Netzwerk-Sicherheit/Linux-Netzwerk-Premium-Spickzettel/
+Quelle:       05-Netzwerk-Sicherheit/Linux-Netzwerk-Cheatsheet.md
+Kanonisch:    /05-Netzwerk-Sicherheit/Linux-Netzwerk-Cheatsheet/
+Project-Page: https://h234598.github.io/Cheatsheets/05-Netzwerk-Sicherheit/Linux-Netzwerk-Cheatsheet/
+Custom Domain:https://cheatsheets.example.org/05-Netzwerk-Sicherheit/Linux-Netzwerk-Cheatsheet/
 ```
 
 Der Repository-Unterpfad wird ausschließlich aus der beim Build übergebenen vollständigen `site_url` ergänzt. Im Markdown und in der Basiskonfiguration wird kein `/Cheatsheets/`-Präfix in interne Links eingebrannt.

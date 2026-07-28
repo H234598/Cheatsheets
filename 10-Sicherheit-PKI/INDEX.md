@@ -9,7 +9,7 @@ type: index
 status: fertig
 tags:
 - index
-- premium-spickzettel
+- cheatsheet
 - 10-sicherheit-pki
 pages: 5
 ---
@@ -19,15 +19,15 @@ pages: 5
 > OpenSSL, Java-Keytool, HashiCorp Vault, OpenBao und Thales Luna HSM A750.
 
 **Umfang:** 5 Spickzettel · 92.4 KiB Quelltext  
-[[00-START-HIER|← Startseite]] · [[INDEX|Gesamtindex]]
+[[00-START-HIER|← Startseite]] · [[/INDEX|Gesamtindex]]
 
 ## Seiten
 
-- [[10-Sicherheit-PKI/HashiCorp-Vault-Premium-Spickzettel|HashiCorp Vault – Premium-Spickzettel]] — 644 Zeilen · 14.8 KiB · `#hashicorp`, `#vault`, `#secrets-management`, `#pki`, `#transit`
-- [[10-Sicherheit-PKI/Keytool-Premium-Spickzettel|Keytool – Premium-Spickzettel für Java-Keystores]] — 531 Zeilen · 11.8 KiB · `#java`, `#keytool`, `#pki`, `#zertifikate`, `#keystore`
-- [[10-Sicherheit-PKI/OpenBao-Premium-Spickzettel|OpenBao – Premium-Spickzettel]] — 460 Zeilen · 10.5 KiB · `#openbao`, `#secrets-management`, `#pki`, `#transit`, `#kv`
-- [[10-Sicherheit-PKI/OpenSSL-Premium-Spickzettel|OpenSSL – Premium-Spickzettel]] — 571 Zeilen · 13.8 KiB · `#openssl`, `#tls`, `#pki`, `#x509`, `#csr`
-- [[10-Sicherheit-PKI/Thales-Luna-Network-HSM-A750-Premium-Spickzettel|Thales Luna Network HSM A750 – Premium-Spickzettel]] — 1414 Zeilen · 41.4 KiB · `#thales`, `#luna`, `#hsm`, `#a750`, `#pki`
+- [[10-Sicherheit-PKI/HashiCorp-Vault-Cheatsheet|HashiCorp Vault – Cheatsheet]] — 644 Zeilen · 14.8 KiB · `#hashicorp`, `#vault`, `#secrets-management`, `#pki`, `#transit`
+- [[10-Sicherheit-PKI/Keytool-Cheatsheet|Keytool – Cheatsheet für Java-Keystores]] — 531 Zeilen · 11.8 KiB · `#java`, `#keytool`, `#pki`, `#zertifikate`, `#keystore`
+- [[10-Sicherheit-PKI/OpenBao-Cheatsheet|OpenBao – Cheatsheet]] — 460 Zeilen · 10.5 KiB · `#openbao`, `#secrets-management`, `#pki`, `#transit`, `#kv`
+- [[10-Sicherheit-PKI/OpenSSL-Cheatsheet|OpenSSL – Cheatsheet]] — 571 Zeilen · 13.8 KiB · `#openssl`, `#tls`, `#pki`, `#x509`, `#csr`
+- [[10-Sicherheit-PKI/Thales-Luna-Network-HSM-A750-Cheatsheet|Thales Luna Network HSM A750 – Cheatsheet]] — 1414 Zeilen · 41.4 KiB · `#thales`, `#luna`, `#hsm`, `#a750`, `#pki`
 
 ## Verwandte Bereiche
 
