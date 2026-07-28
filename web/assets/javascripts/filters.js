@@ -128,9 +128,11 @@
           const normalizedTags = (page.tags || []).map(normalizedText);
           if (!normalizedTags.includes(tagSelect.value)) return false;
         }
-        const maximumMinutes = Number(timeSelect.value);
-        if (Number.isFinite(maximumMinutes) && Number(page.minutes) > maximumMinutes) {
-          return false;
+        if (timeSelect.value) {
+          const maximumMinutes = Number(timeSelect.value);
+          if (!Number.isFinite(maximumMinutes) || Number(page.minutes) > maximumMinutes) {
+            return false;
+          }
         }
         return true;
       }
