@@ -102,6 +102,15 @@ def test_initialization_preserves_existing_reading_progress() -> None:
     assert "persistProgress(true);\n    renderHomeState();" not in site_state
 
 
+def test_corrupt_local_state_is_discarded_without_disabling_working_storage() -> None:
+    site_state = (JS_DIR / "site-state.js").read_text(encoding="utf-8")
+
+    assert "function discardInvalidStoredState()" in site_state
+    assert "localStorage.removeItem(STORAGE_KEY);" in site_state
+    assert "parsed = JSON.parse(raw);" in site_state
+    assert "discardInvalidStoredState();\n      return emptyState();" in site_state
+
+
 def test_css_contains_focus_mobile_and_reduced_motion_contracts() -> None:
     css = (ROOT / "web" / "assets" / "stylesheets" / "extra.css").read_text(
         encoding="utf-8"
