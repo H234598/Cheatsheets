@@ -6,6 +6,8 @@ docs_dir: build/docs
 site_dir: site
 strict: true
 use_directory_urls: true
+hooks:
+  - scripts/mkdocs_graph_hook.py
 exclude_docs: |
   .cheatsheets-build-root
 not_in_nav: |
@@ -13,6 +15,7 @@ not_in_nav: |
   /downloads/**
   /index/quelle.md
   /intern/**
+  /wissensgraph/**
 
 theme:
   name: material
@@ -73,9 +76,11 @@ extra:
 extra_css:
   - assets/stylesheets/extra.css
   - assets/stylesheets/accessibility.css
+  - assets/stylesheets/knowledge-graph.css
 
 extra_javascript:
   - assets/javascripts/site-state.js
   - assets/javascripts/filters.js
   - assets/javascripts/accessibility.js
   - assets/javascripts/mermaid-loader.js
+  - assets/javascripts/knowledge-graph.js
