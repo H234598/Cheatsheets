@@ -32,6 +32,33 @@ def normalize_base_path(value: str) -> str:
     return candidate
 
 
+def translate_mounted_request(
+    request_target: str,
+    base_path: str,
+) -> tuple[str | None, str | None, HTTPStatus | None]:
+    """Übersetze einen Request in den gemounteten Sitebaum oder eine Weiterleitung."""
+
+    base_path = normalize_base_path(base_path)
+    split = urlsplit(request_target)
+    path = split.path
+
+    if base_path != "/":
+        if path == "/":
+            return None, base_path, HTTPStatus.FOUND
+        if path == base_path.rstrip("/"):
+            return None, base_path, HTTPStatus.MOVED_PERMANENTLY
+        if not path.startswith(base_path):
+            return None, None, None
+        relative = "/" + path[len(base_path) :]
+    else:
+        if not path.startswith("/"):
+            return None, None, None
+        relative = path or "/"
+
+    translated = urlunsplit(("", "", relative, split.query, ""))
+    return translated, None, None
+
+
 class MountedSiteHandler(SimpleHTTPRequestHandler):
     """Mountet genau ein reguläres Siteverzeichnis unter ``base_path``."""
 
@@ -40,25 +67,19 @@ class MountedSiteHandler(SimpleHTTPRequestHandler):
     verbose = False
 
     def _mounted_path(self) -> bool:
-        split = urlsplit(self.path)
-        path = split.path
-        base_without_slash = self.base_path.rstrip("/")
-        if path == "/":
-            self.send_response(HTTPStatus.FOUND)
-            self.send_header("Location", self.base_path)
+        translated, redirect, status = translate_mounted_request(
+            self.path,
+            self.base_path,
+        )
+        if redirect is not None and status is not None:
+            self.send_response(status)
+            self.send_header("Location", redirect)
             self.end_headers()
             return False
-        if path == base_without_slash:
-            self.send_response(HTTPStatus.MOVED_PERMANENTLY)
-            self.send_header("Location", self.base_path)
-            self.end_headers()
-            return False
-        if not path.startswith(self.base_path):
+        if translated is None:
             self.send_error(HTTPStatus.NOT_FOUND)
             return False
-
-        relative = "/" + path[len(self.base_path) :]
-        self.path = urlunsplit(("", "", relative, split.query, ""))
+        self.path = translated
         return True
 
     def do_GET(self) -> None:  # noqa: N802 - API der Standardbibliothek
