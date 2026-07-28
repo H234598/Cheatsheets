@@ -1,11 +1,13 @@
 {% if page and page.meta and page.meta.web_page_type == "reference" and page.meta.web_page_id %}
+  {% set offline_mode = config.extra and config.extra.offline_mode %}
+  {% set category_target = page.meta.web_category_id ~ ('/index.html' if offline_mode else '/') %}
   <section
     class="cheat-page-context"
     aria-label="Seiteninformationen und lokale Werkzeuge"
   >
     <div class="cheat-page-meta" aria-label="Seiteninformationen">
       {% if page.meta.web_category_title and page.meta.web_category_id %}
-        <a href="{{ (page.meta.web_category_id ~ '/') | url }}">
+        <a href="{{ category_target | url }}">
           {{ page.meta.web_category_title }}
         </a>
       {% endif %}
