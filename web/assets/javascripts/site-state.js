@@ -92,14 +92,36 @@
     return result;
   }
 
-  function loadState() {
+  function discardInvalidStoredState() {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      return normalizeState(raw ? JSON.parse(raw) : null);
+      localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      storageAvailable = false;
+    }
+  }
+
+  function loadState() {
+    let raw;
+    try {
+      raw = localStorage.getItem(STORAGE_KEY);
     } catch {
       storageAvailable = false;
       return emptyState();
     }
+    if (!raw) return emptyState();
+
+    let parsed;
+    try {
+      parsed = JSON.parse(raw);
+    } catch {
+      discardInvalidStoredState();
+      return emptyState();
+    }
+    if (!isObject(parsed) || parsed.schema !== SCHEMA_VERSION) {
+      discardInvalidStoredState();
+      return emptyState();
+    }
+    return normalizeState(parsed);
   }
 
   function saveState() {
