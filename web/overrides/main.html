@@ -6,9 +6,21 @@
   <meta name="color-scheme" content="light dark">
   <meta name="cheatsheets-base-url" content="{{ base_url }}/">
   <meta name="cheatsheets-ui-schema" content="1">
+  {% if config.extra and config.extra.offline_mode %}
+    <meta name="cheatsheets-offline" content="true">
+  {% endif %}
 {% endblock %}
 
 {% block content %}
+  {% if config.extra and config.extra.offline_mode %}
+    <aside class="cheat-offline-notice" role="note" aria-label="Hinweis zur Offline-Ausgabe">
+      <strong>Offline-Ausgabe</strong>
+      <span>
+        Alle Inhalte und lokalen Assets liegen in diesem Paket. Für Suche, Favoriten und Filter
+        <code>python offline-server.py</code> im entpackten Ordner starten.
+      </span>
+    </aside>
+  {% endif %}
   {% include "partials/page-meta.html" %}
   {% include "partials/local-state.html" %}
   {{ super() }}
