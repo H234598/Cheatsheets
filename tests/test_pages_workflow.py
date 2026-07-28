@@ -63,7 +63,7 @@ def test_build_and_deploy_are_separate_with_minimal_permissions() -> None:
     deploy = jobs["deploy"]
     assert isinstance(build, dict) and isinstance(deploy, dict)
     assert build["runs-on"] == "ubuntu-24.04"
-    assert build["timeout-minutes"] == "40"
+    assert build["timeout-minutes"] == "55"
     assert build["permissions"] == {"contents": "read", "pages": "write"}
 
     assert deploy["needs"] == "build"
@@ -109,6 +109,7 @@ def test_site_is_built_once_with_configured_base_url_and_validated() -> None:
     assert '--site-url "${SITE_URL%/}/"' in text
     assert "python scripts/build_manifest.py --check" in text
     assert "python scripts/validate_pages_artifact.py" in text
+    assert "python scripts/validate_offline_archive.py" in text
     assert "--site-dir site" in text
 
     upload = next(item for item in steps(build) if item.get("uses") == UPLOAD_PAGES)
