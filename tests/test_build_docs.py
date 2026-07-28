@@ -231,18 +231,18 @@ def test_generated_config_uses_absolute_paths_site_url_and_navigation(
     assert Path(parsed["theme"]["custom_dir"]).is_absolute()
 
 
-def test_build_site_runs_mkdocs_with_generated_navigation_and_data(
+def test_build_site_runs_online_and_offline_mkdocs_with_verified_downloads(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     make_build_repository(tmp_path)
     monkeypatch.setenv("GITHUB_SHA", "a" * 40)
     monkeypatch.setenv("SOURCE_DATE_EPOCH", "1767225600")
-    captured: dict[str, object] = {}
+    captured: list[dict[str, object]] = []
 
     def fake_mkdocs(config_path: Path) -> None:
         config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
-        captured.update(config)
+        captured.append(config)
         site_dir = Path(config["site_dir"])
         site_dir.mkdir(parents=True, exist_ok=True)
         (site_dir / "index.html").write_text("<h1>Fixture</h1>\n", encoding="utf-8")
@@ -259,12 +259,25 @@ def test_build_site_runs_mkdocs_with_generated_navigation_and_data(
     )
 
     assert pages == 5 and assets == 1
-    assert captured["nav"][0] == {"Start hier": "index.md"}
+    assert len(captured) == 2
+    offline_config, online_config = captured
+    assert offline_config["use_directory_urls"] is False
+    assert offline_config["extra"]["offline_mode"] is True
+    assert offline_config["nav"][0] == {"Start hier": "index.md"}
+    assert online_config["nav"][0] == {"Start hier": "index.md"}
     assert (tmp_path / "build" / "docs" / "data" / "pages.json").is_file()
     assert (tmp_path / "build" / "docs" / "data" / "page-id-aliases.json").is_file()
+    assert (tmp_path / "build" / "offline-info.json").is_file()
     assert (tmp_path / "site" / "index.html").is_file()
     assert (tmp_path / "site" / "404.html").is_file()
     assert (tmp_path / "site" / "downloads" / "files" / "Cheatsheets-Quellen.zip").is_file()
+    assert (
+        tmp_path
+        / "site"
+        / "downloads"
+        / "files"
+        / "Cheatsheets-Offline-HTML.zip"
+    ).is_file()
     assert (tmp_path / "site" / BUILD_SENTINEL).is_file()
 
 
