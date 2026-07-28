@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import hashlib
+import json
 from pathlib import Path
 import shutil
 from typing import Iterable
@@ -24,9 +25,17 @@ from build_navigation import (
 )
 from callouts import convert_obsidian_callouts_for_web
 from content_index import build_content_index
-from content_model import CATEGORY_RE, ContentIndex, FenceState, PageRecord, advance_fence_state
+from content_model import (
+    CATEGORY_RE,
+    FRONTMATTER_RE,
+    ContentIndex,
+    FenceState,
+    PageRecord,
+    advance_fence_state,
+)
 from io_utils import atomic_write_text, mark_generated_root, staged_directory
 from link_converters import convert_for_web
+from ui_config import UIConfigError, write_ui_data
 
 PUBLISH_ROLES = {
     "reference",
@@ -47,6 +56,14 @@ SOURCE_EXCLUDED_PARTS = {
     "node_modules",
     "site",
     "tests",
+}
+RESERVED_WEB_METADATA = {
+    "web_category_id",
+    "web_category_title",
+    "web_minutes",
+    "web_page_id",
+    "web_page_type",
+    "web_source_path",
 }
 
 
@@ -112,10 +129,50 @@ def _validation_errors(index: ContentIndex) -> list[str]:
     return [issue.format() for issue in index.issues if issue.severity == "error"]
 
 
+def _web_metadata_lines(page: PageRecord) -> list[str]:
+    values: list[tuple[str, str | int]] = [
+        ("web_page_id", page.page_id),
+        ("web_page_type", page.page_type),
+        ("web_minutes", page.estimated_minutes),
+        ("web_source_path", page.relative_path.as_posix()),
+    ]
+    if page.category_id:
+        values.append(("web_category_id", page.category_id))
+    if page.category_title:
+        values.append(("web_category_title", page.category_title))
+
+    lines: list[str] = []
+    for key, value in values:
+        encoded = str(value) if isinstance(value, int) else json.dumps(value, ensure_ascii=False)
+        lines.append(f"{key}: {encoded}")
+    return lines
+
+
+def inject_web_metadata(text: str, page: PageRecord) -> str:
+    """Ergänze ausschließlich die generierte Kopie um stabile UI-Metadaten."""
+
+    collisions = RESERVED_WEB_METADATA.intersection(page.metadata)
+    if collisions:
+        raise BuildDocsError(
+            "Reservierte Web-Metadaten sind bereits in der kanonischen Quelle belegt: "
+            f"{page.relative_path.as_posix()} ({', '.join(sorted(collisions))})"
+        )
+
+    match = FRONTMATTER_RE.match(text)
+    lines = _web_metadata_lines(page)
+    if match is None:
+        return "---\n" + "\n".join(lines) + "\n---\n" + text
+
+    newline = "\r\n" if "\r\n" in match.group(0) else "\n"
+    insertion = newline + newline.join(lines)
+    return text[: match.end(1)] + insertion + text[match.end(1) :]
+
+
 def _transform_page(page: PageRecord, index: ContentIndex) -> str:
     before_fences = fenced_segment_hashes(page.raw_text)
+    generated_source = inject_web_metadata(page.raw_text, page)
     converted = convert_for_web(
-        page.raw_text,
+        generated_source,
         page.source_path,
         index.root,
         index=index,
@@ -223,6 +280,10 @@ def build_docs(
             site_url=site_url,
             source_commit=source_commit,
         )
+        try:
+            write_ui_data(staging, root, index)
+        except UIConfigError as exc:
+            raise BuildDocsError(f"UI-Konfiguration ist ungültig: {exc}") from exc
         mark_generated_root(staging)
 
     after = source_tree_hashes(root)
@@ -238,5 +299,5 @@ def build_docs(
         source_hashes=before,
         navigation=navigation_result.nav,
         generated_markdown_pages=navigation_result.generated_markdown_pages,
-        data_files=navigation_result.data_files,
+        data_files=navigation_result.data_files + 1,
     )
