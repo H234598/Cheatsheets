@@ -97,7 +97,6 @@ jobs:
               renamed = Path(*new_parts)
               if renamed == relative:
                   continue
-              source = root / relative
               target = root / renamed
               if target.exists():
                   raise SystemExit(f'Zielpfad existiert bereits: {renamed}')
@@ -112,14 +111,24 @@ jobs:
       - name: Kanonische Manifeste aktualisieren
         run: python scripts/build_manifest.py --update-committed
 
-      - name: Vollständig prüfen
+      - name: Python-Dateien kompilieren
+        run: python -m compileall -q scripts tests
+
+      - name: Tests ausführen
+        run: python -m pytest -q
+
+      - name: Manifest prüfen
+        run: python scripts/build_manifest.py --check
+
+      - name: Webbuild prüfen
+        run: python scripts/build_site.py --check --site-url https://example.invalid/Cheatsheets/
+
+      - name: Diff prüfen
+        run: git diff --check
+
+      - name: Nulltreffer prüfen
         shell: bash
         run: |
-          python -m compileall -q scripts tests
-          python -m pytest -q
-          python scripts/build_manifest.py --check
-          python scripts/build_site.py --check --site-url https://example.invalid/Cheatsheets/
-          git diff --check
           python - <<'PY'
           from __future__ import annotations
 
