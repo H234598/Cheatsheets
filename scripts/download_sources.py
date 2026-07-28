@@ -10,6 +10,7 @@ import os
 from pathlib import Path, PurePosixPath
 import re
 import stat
+import subprocess
 from typing import Mapping, Sequence
 import zipfile
 
@@ -30,8 +31,61 @@ from download_model import (
     SOURCE_ROLES,
     ZIP_MIN_EPOCH,
 )
-from io_utils import sha256_bytes, source_date_epoch, stable_json_dumps, generated_at_iso
+from io_utils import generated_at_iso, sha256_bytes, source_date_epoch, stable_json_dumps
 from link_converters import convert_for_combined
+
+
+def canonical_archive_name(name: str) -> str:
+    """Normalisiere einen ZIP-Namen und lehne plattformübergreifend unsichere Formen ab."""
+
+    if not name or any(ord(char) < 32 or ord(char) == 127 for char in name):
+        raise DownloadBuildError(f"Unsicherer Archivpfad: {name!r}")
+    if name.startswith(("//", "\\\\")) or re.match(r"^[A-Za-z]:", name):
+        raise DownloadBuildError(f"Absoluter Laufwerks- oder UNC-Archivpfad: {name!r}")
+
+    canonical = name.replace("\\", "/")
+    if canonical.startswith("/") or canonical.startswith("//"):
+        raise DownloadBuildError(f"Absoluter Archivpfad: {name!r}")
+    parts = canonical.split("/")
+    if any(part in {"", ".", ".."} for part in parts):
+        raise DownloadBuildError(f"Unsicherer Archivpfadbestandteil: {name!r}")
+
+    pure = PurePosixPath(canonical)
+    if pure.is_absolute() or pure.as_posix() != canonical:
+        raise DownloadBuildError(f"Nicht kanonischer Archivpfad: {name!r}")
+    return canonical
+
+
+def git_tracked_paths(root: Path) -> set[str]:
+    """Liefere ausschließlich Git-getrackte Repositorypfade als sichere Archivnamen."""
+
+    try:
+        completed = subprocess.run(
+            ["git", "-C", str(root), "ls-files", "-z", "--cached"],
+            check=True,
+            capture_output=True,
+            timeout=10,
+        )
+    except (FileNotFoundError, subprocess.CalledProcessError, subprocess.TimeoutExpired) as exc:
+        raise DownloadBuildError(
+            "Git-getracktes Quellinventar konnte nicht ermittelt werden"
+        ) from exc
+    try:
+        decoded = completed.stdout.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise DownloadBuildError("Git-Pfadinventar ist nicht gültiges UTF-8") from exc
+
+    tracked: set[str] = set()
+    for raw in decoded.split("\0"):
+        if not raw:
+            continue
+        canonical = canonical_archive_name(raw)
+        if canonical in tracked:
+            raise DownloadBuildError(
+                f"Git-Pfade kollidieren nach Archivnormalisierung: {canonical}"
+            )
+        tracked.add(canonical)
+    return tracked
 
 
 def _read_regular_source(path: Path, root: Path) -> bytes:
@@ -64,7 +118,7 @@ def _read_regular_source(path: Path, root: Path) -> bytes:
         os.close(descriptor)
 
 
-def _content_asset_paths(root: Path) -> list[Path]:
+def _content_asset_paths(root: Path, tracked: set[str]) -> list[Path]:
     paths: list[Path] = []
     for path in sorted(
         root.rglob("*"),
@@ -85,9 +139,24 @@ def _content_asset_paths(root: Path) -> list[Path]:
             continue
         if any(part in SOURCE_EXCLUDED_PARTS for part in relative.parts):
             continue
-        if is_content_asset:
-            paths.append(path)
+        if not is_content_asset:
+            continue
+        canonical = canonical_archive_name(relative.as_posix())
+        if canonical not in tracked:
+            raise DownloadBuildError(
+                "Unerwartetes, nicht Git-getracktes Inhaltsasset: " + relative.as_posix()
+            )
+        paths.append(path)
     return paths
+
+
+def _add_entry(entries: dict[str, bytes], name: str, payload: bytes) -> None:
+    canonical = canonical_archive_name(name)
+    if canonical in entries:
+        raise DownloadBuildError(
+            f"Doppelter Archivpfad nach Normalisierung: {canonical}"
+        )
+    entries[canonical] = payload
 
 
 def source_entries(
@@ -95,26 +164,29 @@ def source_entries(
     index: ContentIndex,
     generated_metadata: Mapping[str, bytes],
 ) -> list[tuple[str, bytes]]:
+    tracked = git_tracked_paths(root)
     entries: dict[str, bytes] = {}
     for page in index.pages.values():
-        if page.page_type in SOURCE_ROLES:
-            entries[page.relative_path.as_posix()] = _read_regular_source(
-                page.source_path, root
+        if page.page_type not in SOURCE_ROLES:
+            continue
+        relative = canonical_archive_name(page.relative_path.as_posix())
+        if relative not in tracked:
+            raise DownloadBuildError(
+                f"Kanonische Quelle ist nicht Git-getrackt: {relative}"
             )
+        _add_entry(entries, relative, _read_regular_source(page.source_path, root))
 
-    for path in _content_asset_paths(root):
-        entries[path.relative_to(root).as_posix()] = _read_regular_source(path, root)
+    for path in _content_asset_paths(root, tracked):
+        relative = path.relative_to(root).as_posix()
+        _add_entry(entries, relative, _read_regular_source(path, root))
     for name in ("MANIFEST.csv", "MANIFEST.md", "BUILD-REPORT.yaml"):
-        entries[name] = generated_metadata[name]
+        _add_entry(entries, name, generated_metadata[name])
 
     license_path = root / "LICENSE"
     if license_path.exists():
-        entries["LICENSE"] = _read_regular_source(license_path, root)
-
-    for name in entries:
-        pure = PurePosixPath(name)
-        if pure.is_absolute() or ".." in pure.parts or name.startswith("/"):
-            raise DownloadBuildError(f"Unsicherer Archivpfad: {name}")
+        if "LICENSE" not in tracked:
+            raise DownloadBuildError("LICENSE ist vorhanden, aber nicht Git-getrackt")
+        _add_entry(entries, "LICENSE", _read_regular_source(license_path, root))
 
     ordered = sorted(
         entries.items(), key=lambda item: normalize_posix_path(item[0]).casefold()
@@ -122,8 +194,10 @@ def source_entries(
     checksum = "".join(
         f"{sha256_bytes(payload)}  {name}\n" for name, payload in ordered
     ).encode("utf-8")
-    ordered.append(("SOURCE-SHA256SUMS.txt", checksum))
-    return sorted(ordered, key=lambda item: normalize_posix_path(item[0]).casefold())
+    _add_entry(entries, "SOURCE-SHA256SUMS.txt", checksum)
+    return sorted(
+        entries.items(), key=lambda item: normalize_posix_path(item[0]).casefold()
+    )
 
 
 def render_source_zip(entries: Sequence[tuple[str, bytes]]) -> bytes:
@@ -133,6 +207,7 @@ def render_source_zip(entries: Sequence[tuple[str, bytes]]) -> bytes:
     value = datetime.fromtimestamp(epoch, tz=timezone.utc)
     date_time = (value.year, value.month, value.day, value.hour, value.minute, value.second)
     buffer = io.BytesIO()
+    seen: set[str] = set()
     with zipfile.ZipFile(
         buffer,
         mode="w",
@@ -140,7 +215,11 @@ def render_source_zip(entries: Sequence[tuple[str, bytes]]) -> bytes:
         allowZip64=True,
         strict_timestamps=False,
     ) as archive:
-        for name, payload in entries:
+        for raw_name, payload in entries:
+            name = canonical_archive_name(raw_name)
+            if name in seen:
+                raise DownloadBuildError(f"Doppelter ZIP-Eintrag: {name}")
+            seen.add(name)
             info = zipfile.ZipInfo(filename=name, date_time=date_time)
             info.create_system = 3
             info.compress_type = zipfile.ZIP_STORED
