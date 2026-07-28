@@ -8,6 +8,7 @@
   <meta name="cheatsheets-ui-schema" content="1">
   {% if config.extra and config.extra.offline_mode %}
     <meta name="cheatsheets-offline" content="true">
+    <script src="{{ 'assets/javascripts/offline-navigation.js' | url }}" defer></script>
   {% endif %}
 {% endblock %}
 
