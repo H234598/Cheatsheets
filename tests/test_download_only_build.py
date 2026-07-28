@@ -30,6 +30,15 @@ def _write_publication_config(root: Path, download_name: str) -> None:
     )
 
 
+def _write_ui_config(root: Path) -> None:
+    path = root / "config" / "page-id-aliases.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        '{\n  "aliases": {},\n  "schema_version": 1\n}\n',
+        encoding="utf-8",
+    )
+
+
 def test_download_only_page_tolerates_ambiguous_combined_headings(tmp_path: Path) -> None:
     alpha = write_page(
         tmp_path,
@@ -74,6 +83,7 @@ def test_download_only_page_tolerates_ambiguous_combined_headings(tmp_path: Path
         ),
     )
     _write_publication_config(tmp_path, download_name)
+    _write_ui_config(tmp_path)
 
     output = tmp_path / "build" / "docs"
     result = build_docs(
