@@ -99,6 +99,21 @@ class MountedSiteHandler(SimpleHTTPRequestHandler):
             super().log_message(format, *args)
 
 
+def configured_handler(
+    *,
+    site_root: Path,
+    base_path: str,
+    verbose: bool,
+):
+    class ConfiguredMountedSiteHandler(MountedSiteHandler):
+        pass
+
+    ConfiguredMountedSiteHandler.site_root = site_root
+    ConfiguredMountedSiteHandler.base_path = base_path
+    ConfiguredMountedSiteHandler.verbose = verbose
+    return partial(ConfiguredMountedSiteHandler, directory=str(site_root))
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Liefert site/ für Playwright unter einem Pages-Basispfad aus."
@@ -122,11 +137,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         raise SiteServerError("port muss zwischen 1 und 65535 liegen")
 
     base_path = normalize_base_path(args.base_path)
-    handler = partial(MountedSiteHandler, directory=str(site_root))
-    handler.base_path = base_path  # type: ignore[attr-defined]
-    handler.site_root = site_root  # type: ignore[attr-defined]
-    handler.verbose = args.verbose  # type: ignore[attr-defined]
-
+    handler = configured_handler(
+        site_root=site_root,
+        base_path=base_path,
+        verbose=args.verbose,
+    )
     server = ThreadingHTTPServer((args.host, args.port), handler)
     print(
         f"Cheatsheets-Testserver: http://{args.host}:{args.port}{base_path}",
