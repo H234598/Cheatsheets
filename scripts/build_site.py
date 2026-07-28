@@ -16,6 +16,7 @@ from typing import Any, Sequence
 import yaml
 
 from build_docs import BuildDocsError, build_docs, source_tree_hashes
+from build_downloads import DownloadBuildError, build_downloads, copy_downloads_to_site
 from build_navigation import (
     NavigationError,
     build_navigation,
@@ -24,6 +25,7 @@ from build_navigation import (
     validate_publication_config,
 )
 from content_index import build_content_index
+from download_metadata import write_landing_page
 from io_utils import (
     UnsafePathError,
     atomic_write_text,
@@ -247,6 +249,13 @@ def build_site(
     configured_site_url = resolve_site_url(root, site_url)
     source_commit = detect_source_commit(root)
     before = source_tree_hashes(root)
+    download_result = build_downloads(
+        root,
+        output.parent / "downloads",
+        source_commit=source_commit,
+        strict=strict,
+        force=force,
+    )
     docs_result = build_docs(
         root,
         output,
@@ -255,6 +264,7 @@ def build_site(
         site_url=configured_site_url,
         source_commit=source_commit,
     )
+    write_landing_page(docs_result.output / "downloads" / "index.md", download_result)
 
     with staged_directory(
         site_dir,
@@ -270,6 +280,7 @@ def build_site(
             nav=docs_result.navigation,
         )
         run_mkdocs(config_path)
+        copy_downloads_to_site(download_result, staging_site)
         _assert_site(staging_site)
         mark_generated_root(staging_site)
 
@@ -312,6 +323,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 0
     except (
         BuildDocsError,
+        DownloadBuildError,
         BuildSiteError,
         NavigationError,
         UnsafePathError,
