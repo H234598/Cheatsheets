@@ -1,12 +1,14 @@
 {% extends "main.html" %}
 
 {% block content %}
+  {% set offline_mode = config.extra and config.extra.offline_mode %}
+  {% set home_target = ('index.html' | url) if offline_mode else config.site_url %}
   <h1>Seite nicht gefunden</h1>
   <p>
     Die angeforderte Cheatsheet-Seite ist nicht vorhanden oder wurde verschoben.
   </p>
   <p>
-    <a class="md-button md-button--primary" href="{{ config.site_url }}">
+    <a class="md-button md-button--primary" href="{{ home_target }}">
       Zur Startseite
     </a>
   </p>
