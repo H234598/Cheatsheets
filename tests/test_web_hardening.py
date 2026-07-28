@@ -17,6 +17,7 @@ def write_minimal_site(root: Path, *, html: str | None = None) -> Path:
         "filters.js",
         "accessibility.js",
         "mermaid-loader.js",
+        "offline-navigation.js",
     ):
         (site / "assets" / "javascripts" / name).write_text(
             'console.log("fixture");\n', encoding="utf-8"
