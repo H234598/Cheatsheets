@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from content_model import parse_headings, slugify
+from content_index import parse_headings
+from content_model import slugify
 
 
 @pytest.mark.parametrize(
