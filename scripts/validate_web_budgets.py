@@ -17,9 +17,13 @@ from io_utils import atomic_write_text, stable_json_dumps
 CUSTOM_JAVASCRIPT = (
     "assets/javascripts/site-state.js",
     "assets/javascripts/filters.js",
+    "assets/javascripts/accessibility.js",
     "assets/javascripts/mermaid-loader.js",
 )
-CUSTOM_STYLESHEETS = ("assets/stylesheets/extra.css",)
+CUSTOM_STYLESHEETS = (
+    "assets/stylesheets/extra.css",
+    "assets/stylesheets/accessibility.css",
+)
 CUSTOM_JS_GZIP_LIMIT = 30 * 1024
 CUSTOM_CSS_GZIP_LIMIT = 35 * 1024
 SINGLE_HTML_LIMIT = 2 * 1024 * 1024
@@ -120,7 +124,7 @@ def analyze_web_budgets(site_dir: Path) -> tuple[list[BudgetIssue], dict[str, ob
             BudgetIssue(
                 "WB011",
                 f"Eigenes CSS überschreitet {CUSTOM_CSS_GZIP_LIMIT} Gzip-Bytes: {stylesheet_gzip}",
-                "assets/stylesheets/extra.css",
+                "assets/stylesheets",
             )
         )
 
