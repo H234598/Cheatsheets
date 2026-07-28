@@ -546,7 +546,7 @@
     bindControls();
     updateFavoriteButtons();
     updateLastRead();
-    persistProgress(true);
+    updateProgressLabel();
     renderHomeState();
     document.documentElement.dataset.cheatsheetUi = "ready";
     document.dispatchEvent(new CustomEvent("cheatsheets:ui-ready"));
