@@ -38,7 +38,6 @@ theme:
 plugins:
   - search:
       lang: de
-      indexing: full
 
 markdown_extensions:
   - admonition
