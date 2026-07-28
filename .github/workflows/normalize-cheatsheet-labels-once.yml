@@ -132,7 +132,14 @@ jobs:
 
           path = Path('scripts/content_model.py')
           text = path.read_text(encoding='utf-8')
-          text = text.replace('[`*_~]', '[`*~]')
+          text = text.replace(
+              'return re.sub(r"[`*_~]", "", value).strip(), explicit_id',
+              'return re.sub(r"[`*~]", "", value).strip(), explicit_id',
+          )
+          text = text.replace(
+              'value = re.sub(r"[`*_~]", "", value)',
+              'value = re.sub(r"[`*~]", "", value)',
+          )
           text = text.replace(
               '    ascii_text = normalized.encode("ascii", "ignore").decode("ascii").lower()\n'
               '    return re.sub(r"[^a-z0-9]+", "-", ascii_text).strip("-") or "section"\n',
