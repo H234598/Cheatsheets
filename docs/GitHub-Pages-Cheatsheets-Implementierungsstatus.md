@@ -14,7 +14,7 @@ Dieser Fortschrittsnachweis wird mit jeder Planphase aktualisiert. Verbindliche 
 | 5B – Pages-Deployment | ✅ umgesetzt und produktiv bestätigt | PR #11, Merge `59724c5256a5bed001164fe908dacff2d01fb11a`; GitHub Actions, `cheatsheets.telacore.org`, DNS, HTTPS und Aliase am 2026-07-28 durch den Betreiber bestätigt |
 | 6 – Downloads und Provenienz | ✅ umgesetzt | PR #12, Merge `128b44b349e54dd38c9ef097a18d480c5a526c2c`; 108 Tests und alle Gates grün |
 | 7 – Browser, Accessibility und Performance | ✅ umgesetzt | PR #14, Merge `2f01ca09084ecf94bb9faad9221c1a80ec09237b`; 116 Python- und 7 Chromiumtests, axe und Budgets grün |
-| 8A – Offline-HTML | 🚧 im Review | PR #17; reproduzierbares Offline-ZIP, unabhängiger Validator sowie Server- und `file://`-Browsertests |
+| 8A – Offline-HTML | ✅ umgesetzt | PR #17, Merge `80a2eca257e7c6c668fb633f6de0062eb6e64f89`; 132 Python- und 9 Chromiumtests, unabhängige Archivprüfung grün |
 | 8B – Wissensgraph | ⬜ offen | – |
 | 8C – PDF/EPUB und weitere optionale Exporte | ⬜ offen | – |
 
@@ -193,7 +193,7 @@ GitHub-Actions-Lauf `30344111731` auf dem endgültigen Head `e9e546b10a3723c4a7b
 
 PR #14 wurde anschließend per Squash gemergt. Der Mergecommit `2f01ca09084ecf94bb9faad9221c1a80ec09237b` wurde auf `main` verifiziert. Damit erfüllt Phase 7 sämtliche Abschlussbedingungen.
 
-## Phase 8A – Offline-HTML im Review
+## Abgeschlossene Phase 8A
 
 PR #17 ergänzt die Downloadpipeline um:
 
@@ -231,30 +231,34 @@ Die Pull-Request-CI baut Online- und Offline-Site, validiert das fertige ZIP una
 1. vollständige lokale Funktion über HTTP einschließlich Filter, relativer Fachseiten- und Tastaturnavigation sowie null fremder Requests;
 2. lesbarer und navigierbarer No-JavaScript-Fallback direkt über `file://`.
 
-Der Funktionslauf `30363526789` auf Head `a1de90499e879ac6f93f70cded9e1f2a7d33dd96` bestätigte vor der abschließenden Planpflege:
+Der endgültige GitHub-Actions-Lauf `30365011519` auf Head `50de56d89c913f2429efc2e063f04e1b29d1a169` bestätigte:
 
-- **131 von 131 Python-Tests bestanden**;
+- **132 von 132 Python-Tests bestanden**;
 - **9 von 9 Chromiumtests bestanden**, davon zwei Offline-Szenarien;
 - zwölf Kategorien, 86 Fachseiten und 117 bekannte Markdownseiten;
 - null Content-, Link- oder Sicherheitsbefunde;
 - bytegleiche kanonische Metadaten;
 - vollständiger Online- und Offline-Strict-Build;
 - Offline-ZIP mit 184 Dateien und 20.024.409 Bytes;
-- Offline-Baum-SHA-256 `6159669d39679b02350ae344052e999134bc3eea70067ec23758021e760f2121`;
+- Offline-ZIP-SHA-256 `45bf82c99849efb74d57cad481620e3431ebc0b88607c2e75aa9ae31defda28f`;
+- Offline-Baum-SHA-256 `fe8c2296c7c72880d2ae490b397241b18e0a5c5d607a4ec775b059460d937489`;
 - 36.788 geprüfte lokale Offline-Referenzen und 799 ausschließlich anklickbare externe Links;
 - Pages-Artefakt mit 183 regulären Dateien und 39.899.127 Bytes;
-- Pages-Baum-SHA-256 `4cde887b17a9ae26a4a5eb78da5e001a436f4d5fe3479f497d5dcbb50db56407`;
+- Pages-Baum-SHA-256 `3db413941cf8f889fb9c371d3c5a9e674064bd42c2a3b87cbc933052dbbf28a5`;
 - eigenes JavaScript mit 9.067 Gzip-Bytes und eigenes CSS mit 2.325 Gzip-Bytes;
 - 113 Online-HTML-Dateien und null externe Laufzeitassets;
-- versionierte Arbeitskopie nach dem Build unverändert.
+- versionierte Arbeitskopie nach dem Build unverändert;
+- CodeRabbit und qlty grün;
+- keine offenen Review-Threads.
 
-Frühere rote Läufe haben drei reale Integrationsfehler sichtbar gemacht und wurden nicht als Flakes ignoriert:
+Frühere rote Läufe haben reale Integrationsfehler sichtbar gemacht und wurden nicht als Flakes ignoriert:
 
 - ungerade Commitsekunden mussten auf die Zwei-Sekunden-Auflösung des ZIP-Formats normalisiert werden;
 - Online-Verzeichnislinks aus Templates und Tastaturkürzeln benötigten explizite Offline-`.html`-Ziele;
-- der lokale Testserver leitete einen Root-Mount `/` auf sich selbst um und verhinderte dadurch den Teststart.
+- der lokale Testserver leitete einen Root-Mount `/` auf sich selbst um und verhinderte dadurch den Teststart;
+- ein Workflowpolicy-Selbsttest verwendete zunächst fragile Python-Zeilenfortsetzungen und wurde durch eindeutige Befehlsmutationen ersetzt.
 
-Alle drei Ursachen sind mit Unit-, Vertrags- oder Browsertests abgesichert. Die anschließende Dokumentations- und Workflowpolicy-Pflege erzeugt einen neuen Head. Phase 8A bleibt deshalb bis zum erneut vollständig grünen Validate-Lauf, CodeRabbit, qlty, null offenen Review-Threads und verifiziertem Merge als **im Review** markiert.
+Alle Ursachen sind mit Unit-, Vertrags- oder Browsertests abgesichert. PR #17 wurde anschließend per Squash gemergt. Der Mergecommit `80a2eca257e7c6c668fb633f6de0062eb6e64f89` wurde auf `main` verifiziert. Damit erfüllt Phase 8A sämtliche Abschlussbedingungen.
 
 Die übrigen optionalen Erweiterungen – Wissensgraph, PDF/EPUB, PWA oder signierte Attestations – bleiben getrennt offen. Sie werden weder als erledigt markiert noch mit dem Offline-PR vermischt.
 
