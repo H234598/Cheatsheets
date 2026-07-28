@@ -4,20 +4,13 @@ on:
   push:
     branches:
       - agent/normalize-cheatsheet-labels
-  pull_request:
-    branches:
-      - main
-    types:
-      - opened
-      - synchronize
-      - reopened
 
 permissions:
   contents: write
 
 concurrency:
   group: normalize-cheatsheet-labels-once
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   normalize:
@@ -26,7 +19,7 @@ jobs:
       - name: Repository auschecken
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.head_ref || github.ref_name }}
+          ref: ${{ github.ref_name }}
           fetch-depth: 0
 
       - name: Python einrichten
