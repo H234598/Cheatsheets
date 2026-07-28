@@ -15,23 +15,33 @@ python -m pip install --disable-pip-version-check \
   -r requirements-test.txt
 python -m pip check
 
+mkdir -p build/reports
+export SOURCE_DATE_EPOCH="$(git show -s --format=%ct HEAD)"
+
 python scripts/validate_workflows.py \
   --report build/reports/workflows.json
 python -m compileall -q scripts tests
 python -m pytest -q --junitxml=build/reports/pytest.xml
 python scripts/validate_content.py \
   --report build/reports/content.json
-python scripts/validate_links.py
+python scripts/validate_links.py \
+  --report build/reports/links.json
 python scripts/validate_security.py \
   --report build/reports/security.json
 
-SOURCE_DATE_EPOCH="$(git show -s --format=%ct HEAD)" \
+python scripts/build_manifest.py \
+  --output build/reports/expected-metadata
+for name in MANIFEST.csv MANIFEST.md BUILD-REPORT.yaml SHA256SUMS.txt; do
+  diff -u "$name" "build/reports/expected-metadata/$name"
+done
+
 python scripts/build_site.py \
   --check \
   --strict \
   --site-url https://example.invalid/Cheatsheets/
 
 git diff --exit-code
+git status --short
 ```
 
 ## Blockierende Gates
@@ -44,6 +54,7 @@ git diff --exit-code
 | Contentmodell | Frontmatter-, Kategorie-, Manifest-, Pfad-, Hash- oder Kollisionsfehlern |
 | Linkprüfung | fehlenden, mehrdeutigen oder unsicheren internen Links und fehlerhaften Callouts |
 | Sicherheitsprüfung | hochpräzisen Secrets, privaten Schlüsselblöcken, aktivem Raw HTML oder externen Laufzeitassets |
+| Kanonische Metadaten | jeder byteweisen Abweichung von Manifesten, Buildreport oder Prüfsummen |
 | Strict-Build | MkDocs-Warnungen, unvollständigem Webbaum oder Buildfehlern |
 | Quelldiff | Änderungen an versionierten Dateien durch den Build |
 
@@ -87,6 +98,21 @@ Der Scanner trennt zwei Aufgaben:
 
 Nicht allowlistetes, aber nicht aktiv gefährliches Raw HTML wird als Warnung protokolliert. Private Beispielnetze und interne Hostnamensuffixe erscheinen als Informationsbefund. Sie blockieren Phase 5A nicht, bleiben aber im JSON-Bericht reviewbar.
 
+## Kanonische Metadaten
+
+Die Pipeline erzeugt bei jedem Lauf folgende Dateien neu:
+
+```text
+MANIFEST.csv
+MANIFEST.md
+BUILD-REPORT.yaml
+SHA256SUMS.txt
+```
+
+Die erwarteten Dateien entstehen unter `build/reports/expected-metadata/` und werden byteweise mit dem eingecheckten Stand verglichen. Jede Abweichung blockiert den Pull Request. Der vollständige Unterschied wird als `metadata-diff.patch` im Diagnoseartefakt gespeichert.
+
+Dadurch müssen Änderungen an Fachseiten, Kategorieindizes, Dateinamen, Frontmatter, Zeilenzahlen oder Dateigrößen immer gemeinsam mit den generatorisch aktualisierten kanonischen Metadaten reviewt werden.
+
 ## Diagnoseartefakt
 
 Der Workflow erzeugt `validation-reports-<run-id>` mit:
@@ -96,6 +122,7 @@ build/reports/
 ├── workflows.json
 ├── pytest.xml
 ├── content.json
+├── links.json
 ├── links.txt
 ├── security.json
 ├── metadata-diff.patch
@@ -103,10 +130,6 @@ build/reports/
 ```
 
 Die Berichte enthalten keine vollständigen erkannten Secrets. Secretfunde werden ausschließlich durch Regelname und gekürzten SHA-256-Fingerabdruck beschrieben.
-
-## Metadatendrift
-
-Die eingecheckten kanonischen Metadaten stammen noch aus dem ursprünglichen Inhaltsstand. Phase 5A erzeugt ihre erwarteten Fassungen reproduzierbar und legt den Unterschied als Patch ab. Erst der separate Metadaten-/Content-PR aktualisiert diese Dateien bewusst; danach wird jede Drift zu einem blockierenden Fehler.
 
 ## Browser- und Accessibility-Tests
 
