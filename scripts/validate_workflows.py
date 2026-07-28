@@ -50,6 +50,22 @@ REQUIRED_VALIDATE_COMMANDS = {
         "Webbudget- und Laufzeitassetprüfung fehlt",
     ),
     "WF058": ("npm run test:web", "blockierende Browser- und Accessibility-Tests fehlen"),
+    "WF059": (
+        "python scripts/validate_offline_archive.py",
+        "unabhängige Offline-Archivprüfung fehlt",
+    ),
+    "WF060": (
+        "--extract build/offline-site",
+        "sichere Offline-Extraktion für Browsertests fehlt",
+    ),
+    "WF061": (
+        "--report build/reports/offline.json",
+        "maschinenlesbarer Offline-Bericht fehlt",
+    ),
+    "WF062": (
+        "node --check tests/web/offline.spec.mjs",
+        "Syntaxprüfung der Offline-Browsertests fehlt",
+    ),
 }
 
 
@@ -364,22 +380,13 @@ def validate_workflows(root: Path) -> list[WorkflowIssue]:
         key=lambda item: item.name.casefold(),
     )
     if not paths:
-        return [
-            WorkflowIssue("error", "WF000", "Keine Workflows gefunden", ".github/workflows")
-        ]
+        return [WorkflowIssue("error", "WF000", "Keine Workflows gefunden", ".github/workflows")]
 
     issues: list[WorkflowIssue] = []
     for path in paths:
         relative = path.relative_to(root).as_posix()
         if path.is_symlink():
-            issues.append(
-                WorkflowIssue(
-                    "error",
-                    "WF013",
-                    "Workflow darf kein Symlink sein",
-                    relative,
-                )
-            )
+            issues.append(WorkflowIssue("error", "WF013", "Workflow darf kein Symlink sein", relative))
             continue
         payload, text, load_issues = _load_workflow(path, relative)
         issues.extend(load_issues)
@@ -420,10 +427,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         for issue in issues:
             print(f"- {issue.format()}")
         return 1
-    print(
-        "Workflowvalidierung erfolgreich: minimale Rechte, unveränderliche Action-Pins "
-        "und reproduzierbare Browsergates."
-    )
+    print("Workflowvalidierung erfolgreich: minimale Rechte und unveränderliche Action-Pins.")
     return 0
 
 

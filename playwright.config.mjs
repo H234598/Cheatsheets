@@ -3,6 +3,8 @@ import { defineConfig, devices } from "@playwright/test";
 const port = Number.parseInt(process.env.WEB_TEST_PORT || "4173", 10);
 const basePath = process.env.WEB_TEST_BASE_PATH || "/Cheatsheets/";
 const siteDir = process.env.SITE_DIR || "site";
+const offlinePort = Number.parseInt(process.env.OFFLINE_TEST_PORT || "4174", 10);
+const offlineSiteDir = process.env.OFFLINE_SITE_DIR || "build/offline-site";
 
 export default defineConfig({
   testDir: "./tests/web",
@@ -28,12 +30,20 @@ export default defineConfig({
     screenshot: "only-on-failure",
     video: "retain-on-failure",
   },
-  webServer: {
-    command: `python scripts/serve_site.py --site-dir "${siteDir}" --base-path "${basePath}" --port ${port}`,
-    url: `http://127.0.0.1:${port}${basePath}`,
-    reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
-  },
+  webServer: [
+    {
+      command: `python scripts/serve_site.py --site-dir "${siteDir}" --base-path "${basePath}" --port ${port}`,
+      url: `http://127.0.0.1:${port}${basePath}`,
+      reuseExistingServer: !process.env.CI,
+      timeout: 120_000,
+    },
+    {
+      command: `python scripts/serve_site.py --site-dir "${offlineSiteDir}" --base-path "/" --port ${offlinePort}`,
+      url: `http://127.0.0.1:${offlinePort}/`,
+      reuseExistingServer: !process.env.CI,
+      timeout: 120_000,
+    },
+  ],
   projects: [
     {
       name: "chromium",

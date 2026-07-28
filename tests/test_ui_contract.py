@@ -60,6 +60,8 @@ def test_templates_keep_progressive_controls_hidden_without_javascript() -> None
     assert 'meta name="cheatsheets-base-url"' in main
     assert 'content="{{ base_url }}/"' in main
     assert "config.site_url" not in main
+    assert 'meta name="cheatsheets-offline"' in main
+    assert "offline-navigation.js" in main
     assert 'include "partials/page-meta.html"' in main
     assert 'include "partials/local-state.html"' in main
     assert 'include "partials/keyboard-help.html"' in main
@@ -67,10 +69,14 @@ def test_templates_keep_progressive_controls_hidden_without_javascript() -> None
     assert "data-page-id=" in page_meta
     assert "config.extra.source_repository_url" in page_meta
     assert "config.repo_url" not in page_meta
+    assert "category_target" in page_meta
+    assert "'/index.html' if offline_mode else '/'" in page_meta
     assert "hidden" in page_meta
     assert local_state.count('class="cheat-action-card"') == 3
     assert 'href="#direkteinstieg"' in local_state
     assert 'href="#cheatsheets"' not in local_state
+    assert "kategorien/index.html" in local_state
+    assert "index/gesamt.html" in local_state
     assert "data-cheat-keyboard-open" not in local_state
     assert "data-cheat-filter-panel" in local_state
     assert "<noscript>" in local_state
@@ -80,7 +86,9 @@ def test_templates_keep_progressive_controls_hidden_without_javascript() -> None
     assert "data-cheat-shortcuts-toggle" in keyboard
     assert "<dialog" in keyboard
     assert "Seite nicht gefunden" in not_found
-    assert 'href="{{ config.site_url }}"' in not_found
+    assert "home_target" in not_found
+    assert "index.html" in not_found
+    assert "config.site_url" in not_found
 
 
 def test_ui_scripts_do_not_use_html_injection_or_telemetry() -> None:
@@ -108,6 +116,10 @@ def test_ui_scripts_do_not_use_html_injection_or_telemetry() -> None:
     assert "Suchbegriffe" not in scripts["site-state.js"]
     assert "enhanceScrollableRegions" in scripts["accessibility.js"]
     assert 'element.tabIndex = 0' in scripts["accessibility.js"]
+    assert 'meta[name="cheatsheets-offline"]' in scripts["offline-navigation.js"]
+    assert "index/gesamt.html" in scripts["offline-navigation.js"]
+    assert "kategorien/index.html" in scripts["offline-navigation.js"]
+    assert "downloads/index.html" in scripts["offline-navigation.js"]
 
 
 def test_filter_contract_uses_canonical_tags_and_unbounded_empty_time() -> None:
@@ -192,7 +204,13 @@ def test_page_id_alias_register_has_minimal_schema() -> None:
 
 @pytest.mark.parametrize(
     "script_name",
-    ["site-state.js", "filters.js", "accessibility.js", "mermaid-loader.js"],
+    [
+        "site-state.js",
+        "filters.js",
+        "accessibility.js",
+        "mermaid-loader.js",
+        "offline-navigation.js",
+    ],
 )
 def test_javascript_syntax_when_node_is_available(script_name: str) -> None:
     node = shutil.which("node")

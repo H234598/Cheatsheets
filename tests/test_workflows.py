@@ -53,6 +53,11 @@ jobs:
         run: |
           python -m pytest -q
           python scripts/validate_web_budgets.py --site-dir site
+          python scripts/validate_offline_archive.py \
+            --archive site/downloads/files/Cheatsheets-Offline-HTML.zip \
+            --extract build/offline-site \
+            --report build/reports/offline.json
+          node --check tests/web/offline.spec.mjs
           npm run test:web
       - name: Reports
         if: always()
@@ -161,6 +166,32 @@ def test_node_24_and_browser_gates_are_required(tmp_path: Path) -> None:
     codes = {issue.code for issue in validate_workflows(tmp_path)}
 
     assert {"WF053", "WF055", "WF056", "WF057", "WF058"}.issubset(codes)
+
+
+def test_offline_archive_report_extraction_and_browser_syntax_are_required(
+    tmp_path: Path,
+) -> None:
+    content = (
+        valid_workflow()
+        .replace(
+            "python scripts/validate_offline_archive.py",
+            "python scripts/not-the-offline-validator.py",
+        )
+        .replace("--extract build/offline-site", "--extract build/not-offline-site")
+        .replace(
+            "--report build/reports/offline.json",
+            "--report build/reports/not-offline.json",
+        )
+        .replace(
+            "node --check tests/web/offline.spec.mjs",
+            "node --check tests/web/not-offline.spec.mjs",
+        )
+    )
+    write_workflow(tmp_path, content)
+
+    codes = {issue.code for issue in validate_workflows(tmp_path)}
+
+    assert {"WF059", "WF060", "WF061", "WF062"}.issubset(codes)
 
 
 def test_wrong_node_version_and_remote_npx_are_rejected(tmp_path: Path) -> None:

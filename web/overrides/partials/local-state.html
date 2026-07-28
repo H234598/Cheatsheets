@@ -1,4 +1,7 @@
 {% if page and page.is_homepage %}
+  {% set offline_mode = config.extra and config.extra.offline_mode %}
+  {% set categories_target = 'kategorien/index.html' if offline_mode else 'kategorien/' %}
+  {% set index_target = 'index/gesamt.html' if offline_mode else 'index/gesamt/' %}
   <section class="cheat-home-actions" aria-labelledby="cheat-home-actions-title">
     <h2 id="cheat-home-actions-title">Schnellstart</h2>
     <div class="cheat-action-grid">
@@ -6,11 +9,11 @@
         <strong>Hier anfangen</strong>
         <span>Zur Einführung und den wichtigsten Einstiegen</span>
       </a>
-      <a class="cheat-action-card" href="{{ 'kategorien/' | url }}">
+      <a class="cheat-action-card" href="{{ categories_target | url }}">
         <strong>Kategorie wählen</strong>
         <span>Einen klar abgegrenzten Themenbereich öffnen</span>
       </a>
-      <a class="cheat-action-card" href="{{ 'index/gesamt/' | url }}">
+      <a class="cheat-action-card" href="{{ index_target | url }}">
         <strong>Alle durchsuchen</strong>
         <span>Gesamtindex, Tags und lokale Filter verwenden</span>
       </a>

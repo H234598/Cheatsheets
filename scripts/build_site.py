@@ -22,6 +22,11 @@ from build_navigation import (
     normalize_site_url,
     validate_publication_config,
 )
+from build_offline import (
+    OFFLINE_ARCHIVE_NAME,
+    OfflineBuildError,
+    build_offline_archive,
+)
 from content_index import build_content_index
 from download_metadata import write_landing_page
 from download_model import DownloadBuildError, detect_source_commit
@@ -29,6 +34,7 @@ from io_utils import (
     UnsafePathError,
     atomic_write_text,
     mark_generated_root,
+    stable_json_dumps,
     staged_directory,
 )
 
@@ -226,7 +232,8 @@ def build_site(
     source_commit = detect_source_commit(root)
     before = source_tree_hashes(root)
     index = build_content_index(root)
-    download_result = build_downloads(
+
+    base_download_result = build_downloads(
         root,
         output.parent / "downloads",
         index=index,
@@ -242,6 +249,42 @@ def build_site(
         force=force,
         site_url=configured_site_url,
         source_commit=source_commit,
+    )
+    write_landing_page(docs_result.output / "downloads" / "index.md", base_download_result)
+
+    offline_result = build_offline_archive(
+        root,
+        docs_result.output,
+        index=index,
+        nav=docs_result.navigation,
+        base_downloads=base_download_result,
+        site_url=configured_site_url,
+        source_commit=source_commit,
+        run_mkdocs=run_mkdocs,
+    )
+    atomic_write_text(
+        output.parent / "offline-info.json",
+        stable_json_dumps(
+            {
+                "archive": OFFLINE_ARCHIVE_NAME,
+                "files": offline_result.files,
+                "generated_at": base_download_result.generated_at,
+                "schema_version": 1,
+                "source_commit": source_commit,
+                "tree_sha256": offline_result.tree_sha256,
+                "uncompressed_bytes": offline_result.uncompressed_bytes,
+            }
+        ),
+    )
+
+    download_result = build_downloads(
+        root,
+        output.parent / "downloads",
+        index=index,
+        source_commit=source_commit,
+        strict=strict,
+        force=True,
+        extra_payloads={OFFLINE_ARCHIVE_NAME: offline_result.payload},
     )
     write_landing_page(docs_result.output / "downloads" / "index.md", download_result)
 
@@ -303,6 +346,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     except (
         BuildDocsError,
         DownloadBuildError,
+        OfflineBuildError,
         BuildSiteError,
         NavigationError,
         UnsafePathError,

@@ -13,12 +13,19 @@ from build_downloads import build_downloads, copy_downloads_to_site
 from conftest import manifest_row, write_manifest, write_page
 from content_index import build_content_index
 from download_metadata import render_landing_page
-from download_model import ARTIFACT_ORDER, DownloadBuildError
+from download_model import (
+    ARTIFACT_ORDER,
+    OPTIONAL_ARTIFACTS,
+    DownloadBuildError,
+)
 from download_sources import canonical_archive_name
 from io_utils import BUILD_SENTINEL
 
 COMMIT = "a" * 40
 EPOCH = 1767225600
+BASE_ARTIFACT_ORDER = [
+    name for name in ARTIFACT_ORDER if name not in OPTIONAL_ARTIFACTS
+]
 
 
 def make_download_repository(root: Path) -> tuple[Path, Path]:
@@ -113,7 +120,7 @@ def test_download_build_is_deterministic_complete_and_self_describing(
         force=True,
     )
 
-    assert [artifact.name for artifact in first.artifacts] == list(ARTIFACT_ORDER)
+    assert [artifact.name for artifact in first.artifacts] == BASE_ARTIFACT_ORDER
     assert file_payloads(first.output) == file_payloads(second.output)
     assert (first.output / BUILD_SENTINEL).is_file()
     assert first.source_tree_sha256 == second.source_tree_sha256
@@ -121,7 +128,9 @@ def test_download_build_is_deterministic_complete_and_self_describing(
     manifest = json.loads(
         (first.output / "DOWNLOAD-MANIFEST.json").read_text(encoding="utf-8")
     )
-    assert {item["name"] for item in manifest["artifacts"]} == set(ARTIFACT_ORDER)
+    assert {item["name"] for item in manifest["artifacts"]} == set(
+        BASE_ARTIFACT_ORDER
+    )
     self_rows = {
         item["name"]: item
         for item in manifest["artifacts"]
@@ -135,7 +144,7 @@ def test_download_build_is_deterministic_complete_and_self_describing(
         encoding="utf-8", newline=""
     ) as handle:
         csv_names = {row["name"] for row in csv.DictReader(handle)}
-    assert csv_names == set(ARTIFACT_ORDER)
+    assert csv_names == set(BASE_ARTIFACT_ORDER)
 
     checksums = {}
     for line in (first.output / "DOWNLOAD-SHA256SUMS.txt").read_text(
@@ -143,7 +152,9 @@ def test_download_build_is_deterministic_complete_and_self_describing(
     ).splitlines():
         digest, name = line.split("  ", 1)
         checksums[name] = digest
-    assert set(checksums) == set(ARTIFACT_ORDER) - {"DOWNLOAD-SHA256SUMS.txt"}
+    assert set(checksums) == set(BASE_ARTIFACT_ORDER) - {
+        "DOWNLOAD-SHA256SUMS.txt"
+    }
     for name, digest in checksums.items():
         assert hashlib.sha256((first.output / name).read_bytes()).hexdigest() == digest
 
@@ -153,6 +164,41 @@ def test_download_build_is_deterministic_complete_and_self_describing(
     assert provenance["reference_pages"] == 2
     assert provenance["categories"] == 1
     assert provenance["source_tree_sha256"] == first.source_tree_sha256
+
+
+def test_optional_offline_artifact_is_integrated_into_all_metadata(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    make_download_repository(tmp_path)
+    monkeypatch.setenv("SOURCE_DATE_EPOCH", str(EPOCH))
+    offline_payload = b"deterministic-offline-fixture"
+    result = build_downloads(
+        tmp_path,
+        tmp_path / "build" / "downloads",
+        source_commit=COMMIT,
+        strict=True,
+        force=True,
+        extra_payloads={"Cheatsheets-Offline-HTML.zip": offline_payload},
+    )
+
+    assert [artifact.name for artifact in result.artifacts] == list(ARTIFACT_ORDER)
+    assert (result.output / "Cheatsheets-Offline-HTML.zip").read_bytes() == offline_payload
+    manifest = json.loads(
+        (result.output / "DOWNLOAD-MANIFEST.json").read_text(encoding="utf-8")
+    )
+    row = next(
+        item
+        for item in manifest["artifacts"]
+        if item["name"] == "Cheatsheets-Offline-HTML.zip"
+    )
+    assert row["primary"] is True
+    assert row["sha256"] == hashlib.sha256(offline_payload).hexdigest()
+    checksums = (result.output / "DOWNLOAD-SHA256SUMS.txt").read_text(encoding="utf-8")
+    assert "  Cheatsheets-Offline-HTML.zip\n" in checksums
+    landing = render_landing_page(result)
+    assert "python offline-server.py" in landing
+    assert f"alle {len(ARTIFACT_ORDER)} Downloaddateien" in landing
 
 
 def test_source_zip_is_safe_sorted_and_excludes_repository_state(

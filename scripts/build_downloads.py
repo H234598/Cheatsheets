@@ -10,6 +10,7 @@ atomare Ausgaben folgen ``H234598/desinfect`` am Commit
 from __future__ import annotations
 
 import argparse
+from collections.abc import Mapping
 from pathlib import Path
 import re
 import shutil
@@ -30,6 +31,7 @@ from download_metadata import (
     write_landing_page,
 )
 from download_model import (
+    ARTIFACT_METADATA,
     DownloadBuildError,
     DownloadBuildResult,
     detect_source_commit,
@@ -52,11 +54,25 @@ def _validate_index(index: ContentIndex) -> None:
         raise DownloadBuildError(f"Contentmodell ist ungültig:\n{preview}{suffix}")
 
 
+def _merge_extra_payloads(
+    payloads: dict[str, bytes], extra_payloads: Mapping[str, bytes] | None
+) -> None:
+    for name, payload in (extra_payloads or {}).items():
+        if name not in ARTIFACT_METADATA:
+            raise DownloadBuildError(f"Unbekanntes zusätzliches Downloadartefakt: {name}")
+        if name in payloads:
+            raise DownloadBuildError(f"Doppeltes zusätzliches Downloadartefakt: {name}")
+        if not isinstance(payload, bytes):
+            raise DownloadBuildError(f"Downloadartefakt muss Bytes enthalten: {name}")
+        payloads[name] = payload
+
+
 def prepare_payloads(
     root: Path,
     index: ContentIndex,
     *,
     source_commit: str,
+    extra_payloads: Mapping[str, bytes] | None = None,
 ) -> tuple[dict[str, bytes], list[tuple[str, bytes]]]:
     generated = generate_metadata(root)
     entries = source_entries(root, index, generated)
@@ -71,6 +87,7 @@ def prepare_payloads(
         "SOURCE-SHA256SUMS.txt": dict(entries)["SOURCE-SHA256SUMS.txt"],
         "PROVENANCE.json": render_provenance(index, entries, source_commit),
     }
+    _merge_extra_payloads(payloads, extra_payloads)
     listed = ordered_artifacts(payloads)
     payloads["DOWNLOAD-MANIFEST.json"] = render_manifest_json(
         listed, source_commit=source_commit
@@ -92,6 +109,7 @@ def build_downloads(
     source_commit: str | None = None,
     strict: bool = True,
     force: bool = False,
+    extra_payloads: Mapping[str, bytes] | None = None,
 ) -> DownloadBuildResult:
     """Erzeuge den vollständigen Downloadsatz atomar unter *output*."""
 
@@ -105,7 +123,12 @@ def build_downloads(
             "Ein strenger Downloadbuild benötigt einen vollständigen Quellcommit"
         )
     source_commit = source_commit or "unknown"
-    payloads, entries = prepare_payloads(root, index, source_commit=source_commit)
+    payloads, entries = prepare_payloads(
+        root,
+        index,
+        source_commit=source_commit,
+        extra_payloads=extra_payloads,
+    )
     artifacts = ordered_artifacts(payloads)
 
     with staged_directory(output, allowed_root=output.parent.resolve(), force=force) as staging:

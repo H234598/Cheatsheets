@@ -21,6 +21,22 @@
   color: var(--md-footer-fg-color);
 }
 
+.cheat-offline-notice {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-inline-start: 0.25rem solid var(--md-accent-fg-color);
+  border-radius: 0.45rem;
+  background: var(--md-code-bg-color);
+  color: var(--md-default-fg-color);
+}
+
+.cheat-offline-notice code {
+  white-space: nowrap;
+}
+
 [data-md-color-scheme="default"] .md-typeset .highlight :is(
     .c,
     .c1,
@@ -35,7 +51,8 @@
 }
 
 @media (forced-colors: active) {
-  .md-typeset__table {
+  .md-typeset__table,
+  .cheat-offline-notice {
     border: 1px solid CanvasText;
   }
 }

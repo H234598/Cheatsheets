@@ -19,6 +19,7 @@ CUSTOM_JAVASCRIPT = (
     "assets/javascripts/filters.js",
     "assets/javascripts/accessibility.js",
     "assets/javascripts/mermaid-loader.js",
+    "assets/javascripts/offline-navigation.js",
 )
 CUSTOM_STYLESHEETS = (
     "assets/stylesheets/extra.css",

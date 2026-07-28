@@ -15,7 +15,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-24.04
-    timeout-minutes: 40
+    timeout-minutes: 55
 
     permissions:
       contents: read
@@ -83,6 +83,12 @@ jobs:
           python scripts/build_site.py \
             --strict \
             --site-url "${SITE_URL%/}/"
+
+      - name: Offline-HTML unabhängig validieren
+        run: >-
+          python scripts/validate_offline_archive.py
+          --archive site/downloads/files/Cheatsheets-Offline-HTML.zip
+          --report build/reports/offline.json
 
       - name: Pages-Artefakt validieren
         run: >-

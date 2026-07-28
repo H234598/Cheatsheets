@@ -17,7 +17,7 @@ concurrency:
 jobs:
   validate:
     runs-on: ubuntu-24.04
-    timeout-minutes: 55
+    timeout-minutes: 60
 
     steps:
       - name: Repository auschecken
@@ -80,8 +80,10 @@ jobs:
           node --check web/assets/javascripts/filters.js
           node --check web/assets/javascripts/accessibility.js
           node --check web/assets/javascripts/mermaid-loader.js
+          node --check web/assets/javascripts/offline-navigation.js
           node --check playwright.config.mjs
           node --check tests/web/site.spec.mjs
+          node --check tests/web/offline.spec.mjs
 
       - name: Unit- und Integrationstests
         run: >-
@@ -134,6 +136,14 @@ jobs:
             --site-url http://127.0.0.1:4173/Cheatsheets/ \
             2>&1 | tee build/reports/build-site.txt
 
+      - name: Offline-HTML unabhängig prüfen und entpacken
+        run: >-
+          python scripts/validate_offline_archive.py
+          --archive site/downloads/files/Cheatsheets-Offline-HTML.zip
+          --extract build/offline-site
+          --report build/reports/offline.json
+          --force
+
       - name: Pages-Artefakt validieren
         run: >-
           python scripts/validate_pages_artifact.py
@@ -152,6 +162,8 @@ jobs:
           SITE_DIR: site
           WEB_TEST_BASE_PATH: /Cheatsheets/
           WEB_TEST_PORT: "4173"
+          OFFLINE_SITE_DIR: build/offline-site
+          OFFLINE_TEST_PORT: "4174"
         run: npm run test:web
 
       - name: Unveränderte Quellarbeitskopie bestätigen
