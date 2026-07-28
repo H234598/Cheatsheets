@@ -7,7 +7,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_dependabot_updates_actions_and_python_weekly_in_berlin() -> None:
+def test_dependabot_updates_actions_python_and_npm_weekly_in_berlin() -> None:
     payload = yaml.safe_load(
         (ROOT / ".github" / "dependabot.yml").read_text(encoding="utf-8")
     )
@@ -17,10 +17,21 @@ def test_dependabot_updates_actions_and_python_weekly_in_berlin() -> None:
     assert {item["package-ecosystem"] for item in updates} == {
         "github-actions",
         "pip",
+        "npm",
     }
     assert all(item["directory"] == "/" for item in updates)
     assert all(item["target-branch"] == "main" for item in updates)
     assert all(item["schedule"]["interval"] == "weekly" for item in updates)
+    assert all(item["schedule"]["day"] == "monday" for item in updates)
     assert all(item["schedule"]["timezone"] == "Europe/Berlin" for item in updates)
     assert all(item["open-pull-requests-limit"] <= 5 for item in updates)
     assert all(len(item["groups"]) == 1 for item in updates)
+
+    schedule = {
+        item["package-ecosystem"]: item["schedule"]["time"] for item in updates
+    }
+    assert schedule == {
+        "github-actions": "06:00",
+        "pip": "06:15",
+        "npm": "06:30",
+    }
