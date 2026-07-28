@@ -20,6 +20,7 @@ from typing import Iterable
 from build_navigation import (
     NavigationResult,
     load_publication_config,
+    normalize_site_url,
     validate_publication_config,
     write_navigation_outputs,
 )
@@ -203,15 +204,16 @@ def _asset_paths(root: Path) -> Iterable[Path]:
         yield path
 
 
-def _write_generated_support(staging: Path, root: Path) -> None:
+def _write_generated_support(staging: Path, root: Path, site_url: str) -> None:
     web_assets = root / "web" / "assets"
     if web_assets.is_dir():
         shutil.copytree(web_assets, staging / "assets", dirs_exist_ok=True)
+    home_url = normalize_site_url(site_url)
     atomic_write_text(
         staging / "404.md",
         "# Seite nicht gefunden\n\n"
         "Die angeforderte Cheatsheet-Seite ist nicht vorhanden oder wurde verschoben.\n\n"
-        "[Zur Startseite](index.md)\n",
+        f"[Zur Startseite]({home_url})\n",
     )
 
 
@@ -271,7 +273,7 @@ def build_docs(
             shutil.copyfile(asset, target)
             asset_count += 1
 
-        _write_generated_support(staging, root)
+        _write_generated_support(staging, root, site_url)
         navigation_result = write_navigation_outputs(
             staging,
             index,
