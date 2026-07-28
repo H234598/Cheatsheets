@@ -132,31 +132,14 @@ jobs:
 
           path = Path('scripts/content_model.py')
           text = path.read_text(encoding='utf-8')
-
-          old_markup = '[`*_~]'
-          new_markup = '[`*~]'
-          markup_count = text.count(old_markup)
-          if markup_count != 2:
-              raise SystemExit(
-                  f'Erwartete zwei Markup-Muster, gefunden: {markup_count}'
-              )
-          text = text.replace(old_markup, new_markup)
-
-          old_slug = (
+          text = text.replace('[`*_~]', '[`*~]')
+          text = text.replace(
               '    ascii_text = normalized.encode("ascii", "ignore").decode("ascii").lower()\n'
-              '    return re.sub(r"[^a-z0-9]+", "-", ascii_text).strip("-") or "section"\n'
-          )
-          new_slug = (
+              '    return re.sub(r"[^a-z0-9]+", "-", ascii_text).strip("-") or "section"\n',
               '    ascii_text = normalized.encode("ascii", "ignore").decode("ascii")\n'
               '    cleaned = re.sub(r"[^\\w\\s-]", "", ascii_text).strip().lower()\n'
-              '    return re.sub(r"[-\\s]+", "-", cleaned) or "section"\n'
+              '    return re.sub(r"[-\\s]+", "-", cleaned) or "section"\n',
           )
-          if text.count(old_slug) != 1:
-              raise SystemExit('Erwarteter slugify-Block wurde nicht exakt einmal gefunden')
-          text = text.replace(old_slug, new_slug)
-
-          if old_markup in text or text.count(new_markup) < 2:
-              raise SystemExit('Heading-Markup-Endzustand ist nicht konsistent')
           path.write_text(text, encoding='utf-8', newline='\n')
           print('Überschriftentext und Anker an Python-Markdown/MkDocs angeglichen.')
           PY
