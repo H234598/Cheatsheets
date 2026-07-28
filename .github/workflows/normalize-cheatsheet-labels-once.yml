@@ -69,6 +69,7 @@ jobs:
           replacement_count = 0
           root_index_links = 0
           heading_links = 0
+          duplicate_headings = 0
           for relative in tracked_paths():
               if relative == workflow:
                   continue
@@ -90,12 +91,16 @@ jobs:
               heading_count = updated.count('[[#Java JCAJCE]]')
               updated = updated.replace('[[#Java JCAJCE]]', '[[#Java JCA/JCE]]')
 
-              if count or link_count or heading_count:
+              duplicate_count = updated.count('### Stand Juli 2026')
+              updated = updated.replace('### Stand Juli 2026', '### Mobile-Stand Juli 2026')
+
+              if count or link_count or heading_count or duplicate_count:
                   path.write_bytes(updated.encode('utf-8'))
                   changed_files += 1
                   replacement_count += count
                   root_index_links += link_count
                   heading_links += heading_count
+                  duplicate_headings += duplicate_count
 
           renamed_paths = 0
           for relative in sorted(tracked_paths(), key=lambda item: (len(item.parts), item.as_posix()), reverse=True):
@@ -115,6 +120,7 @@ jobs:
           print(f'Inhaltsersetzungen: {replacement_count} in {changed_files} Dateien')
           print(f'Eindeutig gemachte Root-Indexlinks: {root_index_links}')
           print(f'Korrigierte Abschnittslinks: {heading_links}')
+          print(f'Eindeutig benannte Abschnittsüberschriften: {duplicate_headings}')
           print(f'Umbenannte Pfade: {renamed_paths}')
           PY
 
