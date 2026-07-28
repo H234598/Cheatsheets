@@ -222,7 +222,20 @@ jobs:
           retention-days: 1
 
       - name: Diff prüfen
-        run: git diff --check
+        id: diffcheck
+        shell: bash
+        run: |
+          set -o pipefail
+          git diff --check 2>&1 | tee /tmp/diff-check.log
+
+      - name: Diffdiagnose hochladen
+        if: failure() && steps.diffcheck.conclusion == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: diff-check-diagnostic
+          path: /tmp/diff-check.log
+          if-no-files-found: error
+          retention-days: 1
 
       - name: Nulltreffer prüfen
         shell: bash
