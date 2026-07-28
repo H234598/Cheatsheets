@@ -10,7 +10,7 @@ import re
 import stat
 
 from content_model import ContentIndex
-from io_utils import atomic_write_text, ensure_within, stable_json_dumps
+from io_utils import atomic_write_text, stable_json_dumps
 
 PAGE_ID_RE = re.compile(r"^p_[0-9a-f]{16}$")
 ALIASES_FILE = Path("config/page-id-aliases.json")
@@ -22,7 +22,13 @@ class UIConfigError(RuntimeError):
 
 def _read_regular_file_no_follow(path: Path, root: Path) -> bytes:
     root = root.resolve()
-    path = ensure_within(path, root)
+    path = Path(os.path.abspath(path))
+    try:
+        path.relative_to(root)
+        path.parent.resolve().relative_to(root)
+    except ValueError as exc:
+        raise UIConfigError(f"UI-Konfiguration verlässt die Repositorywurzel: {path}") from exc
+
     before = path.lstat()
     if stat.S_ISLNK(before.st_mode):
         raise UIConfigError(f"Symbolischer Link ist als UI-Konfiguration unzulässig: {path}")
@@ -57,6 +63,10 @@ def load_page_id_aliases(root: Path, index: ContentIndex) -> dict[str, object]:
         raw = _read_regular_file_no_follow(path, root)
     except FileNotFoundError as exc:
         raise UIConfigError(f"Page-ID-Migrationsregister fehlt: {ALIASES_FILE}") from exc
+    except OSError as exc:
+        raise UIConfigError(
+            f"Page-ID-Migrationsregister kann nicht sicher gelesen werden: {exc}"
+        ) from exc
 
     try:
         payload = json.loads(raw.decode("utf-8"))
