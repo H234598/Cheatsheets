@@ -1,10 +1,14 @@
 {% set is_reference = page and page.meta and page.meta.web_page_type == "reference" %}
-{% if page and not page.is_homepage and not is_reference %}
-  <p class="cheat-global-help">
+{% if page and not is_reference %}
+  <nav class="cheat-global-tools" aria-label="Lokale Seitenwerkzeuge">
+    <button type="button" class="md-button" data-cheat-focus aria-pressed="false" hidden>
+      <span aria-hidden="true">◉</span>
+      <span data-cheat-button-label>Fokusmodus</span>
+    </button>
     <button type="button" class="md-button" data-cheat-keyboard-open hidden>
       Tastaturhilfe
     </button>
-  </p>
+  </nav>
 {% endif %}
 
 <dialog
