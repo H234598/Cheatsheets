@@ -11,17 +11,34 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 JS_DIR = ROOT / "web" / "assets" / "javascripts"
+STYLE_DIR = ROOT / "web" / "assets" / "stylesheets"
 TEMPLATE_DIR = ROOT / "web" / "overrides"
 
 
-def test_mkdocs_loads_local_ui_assets_in_stable_order() -> None:
+def test_mkdocs_loads_only_local_ui_assets_in_stable_order() -> None:
     config = yaml.safe_load((ROOT / "mkdocs.yml").read_text(encoding="utf-8"))
 
     assert config["theme"]["font"] is False
-    assert config["repo_url"] == "https://github.com/H234598/Cheatsheets"
+    assert "repo_url" not in config
+    assert "repo_name" not in config
+    assert config["extra"]["source_repository_url"] == (
+        "https://github.com/H234598/Cheatsheets"
+    )
+    assert config["extra"]["social"] == [
+        {
+            "icon": "fontawesome/brands/github",
+            "link": "https://github.com/H234598/Cheatsheets",
+            "name": "Cheatsheets-Quellrepository auf GitHub",
+        }
+    ]
+    assert config["extra_css"] == [
+        "assets/stylesheets/extra.css",
+        "assets/stylesheets/accessibility.css",
+    ]
     assert config["extra_javascript"] == [
         "assets/javascripts/site-state.js",
         "assets/javascripts/filters.js",
+        "assets/javascripts/accessibility.js",
         "assets/javascripts/mermaid-loader.js",
     ]
     assert all("//" not in asset for asset in config["extra_javascript"])
@@ -38,6 +55,7 @@ def test_templates_keep_progressive_controls_hidden_without_javascript() -> None
     keyboard = (TEMPLATE_DIR / "partials" / "keyboard-help.html").read_text(
         encoding="utf-8"
     )
+    not_found = (TEMPLATE_DIR / "404.html").read_text(encoding="utf-8")
 
     assert 'meta name="cheatsheets-base-url"' in main
     assert 'content="{{ base_url }}/"' in main
@@ -47,6 +65,8 @@ def test_templates_keep_progressive_controls_hidden_without_javascript() -> None
     assert 'include "partials/keyboard-help.html"' in main
     assert "data-cheatsheet-page-tools" in page_meta
     assert "data-page-id=" in page_meta
+    assert "config.extra.source_repository_url" in page_meta
+    assert "config.repo_url" not in page_meta
     assert "hidden" in page_meta
     assert local_state.count('class="cheat-action-card"') == 3
     assert 'href="#direkteinstieg"' in local_state
@@ -59,6 +79,8 @@ def test_templates_keep_progressive_controls_hidden_without_javascript() -> None
     assert "data-cheat-keyboard-open" in keyboard
     assert "data-cheat-shortcuts-toggle" in keyboard
     assert "<dialog" in keyboard
+    assert "Seite nicht gefunden" in not_found
+    assert 'href="{{ config.site_url }}"' in not_found
 
 
 def test_ui_scripts_do_not_use_html_injection_or_telemetry() -> None:
@@ -84,6 +106,8 @@ def test_ui_scripts_do_not_use_html_injection_or_telemetry() -> None:
     assert "url.origin !== window.location.origin" in scripts["site-state.js"]
     assert "url.origin !== window.location.origin" in scripts["filters.js"]
     assert "Suchbegriffe" not in scripts["site-state.js"]
+    assert "enhanceScrollableRegions" in scripts["accessibility.js"]
+    assert 'element.tabIndex = 0' in scripts["accessibility.js"]
 
 
 def test_filter_contract_uses_canonical_tags_and_unbounded_empty_time() -> None:
@@ -140,9 +164,10 @@ def test_page_metadata_guards_optional_reading_time() -> None:
     assert "page.meta.web_minutes is not none" in page_meta
 
 
-def test_css_contains_focus_mobile_and_reduced_motion_contracts() -> None:
-    css = (ROOT / "web" / "assets" / "stylesheets" / "extra.css").read_text(
-        encoding="utf-8"
+def test_css_contains_focus_mobile_reduced_motion_and_contrast_contracts() -> None:
+    css = "\n".join(
+        (STYLE_DIR / name).read_text(encoding="utf-8")
+        for name in ("extra.css", "accessibility.css")
     )
 
     assert ":focus-visible" in css
@@ -151,6 +176,9 @@ def test_css_contains_focus_mobile_and_reduced_motion_contracts() -> None:
     assert "@media (prefers-reduced-motion: reduce)" in css
     assert "overflow-x: auto" in css
     assert ".cheat-table-scroll" in css
+    assert ".md-typeset__table" in css
+    assert ".md-copyright" in css
+    assert "color: var(--md-default-fg-color);" in css
     assert ".md-typeset table:not([class])" not in css
 
 
@@ -164,12 +192,12 @@ def test_page_id_alias_register_has_minimal_schema() -> None:
 
 @pytest.mark.parametrize(
     "script_name",
-    ["site-state.js", "filters.js", "mermaid-loader.js"],
+    ["site-state.js", "filters.js", "accessibility.js", "mermaid-loader.js"],
 )
 def test_javascript_syntax_when_node_is_available(script_name: str) -> None:
     node = shutil.which("node")
     if node is None:
-        pytest.skip("Node.js ist nicht installiert; Browserprüfung folgt in Phase 7")
+        pytest.skip("Node.js ist nicht installiert; CI führt die Browserprüfung aus")
     subprocess.run(
         [node, "--check", str(JS_DIR / script_name)],
         check=True,
