@@ -46,6 +46,7 @@ def test_templates_keep_progressive_controls_hidden_without_javascript() -> None
     assert "data-page-id=" in page_meta
     assert "hidden" in page_meta
     assert local_state.count('class="cheat-action-card"') == 3
+    assert "data-cheat-keyboard-open" in local_state
     assert "data-cheat-filter-panel" in local_state
     assert "<noscript>" in local_state
     assert "data-cheat-shortcuts-toggle" in keyboard
@@ -75,6 +76,13 @@ def test_ui_scripts_do_not_use_html_injection_or_telemetry() -> None:
     assert "url.origin !== window.location.origin" in scripts["site-state.js"]
     assert "url.origin !== window.location.origin" in scripts["filters.js"]
     assert "Suchbegriffe" not in scripts["site-state.js"]
+
+
+def test_empty_time_filter_is_unbounded() -> None:
+    filters = (JS_DIR / "filters.js").read_text(encoding="utf-8")
+
+    assert "if (timeSelect.value)" in filters
+    assert "const maximumMinutes = Number(timeSelect.value)" in filters
 
 
 def test_css_contains_focus_mobile_and_reduced_motion_contracts() -> None:
