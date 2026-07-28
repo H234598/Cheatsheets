@@ -82,11 +82,54 @@ Dependabot prüft wöchentlich:
 
 Die Aktualisierungen erfolgen als normale Pull Requests gegen `main`, durchlaufen dieselben Gates und werden nicht allein wegen ihres automatischen Autors gemergt.
 
-## Zielstruktur für Pages
+## Pages-Deployment
 
-Die spätere Pages-Pipeline besteht aus getrennten Jobs:
+`.github/workflows/pages.yml` läuft ausschließlich bei:
 
-1. `build`: Checkout, reproduzierbare Validierung, Tests und Erzeugung von `site/`.
-2. `deploy`: Veröffentlichung des zuvor geprüften Pages-Artefakts im Environment `github-pages`.
+- Push nach `main`;
+- manueller Auslösung über `workflow_dispatch`.
 
-Ein fehlgeschlagener Build darf kein Deployment auslösen.
+Globale Berechtigungen sind leer. Der Workflow besteht aus zwei getrennten Jobs:
+
+1. `build`: liest den Repositoryinhalt, konfiguriert Pages, validiert Quellen und erzeugt genau einmal `site/`;
+2. `deploy`: benötigt den erfolgreichen Build und veröffentlicht ausschließlich dessen Pages-Artefakt.
+
+### Buildjob
+
+```yaml
+permissions:
+  contents: read
+  pages: write
+```
+
+Der Build verwendet `actions/configure-pages` als einzige Autorität für die tatsächliche Basis-URL. Die daraus gelieferte URL wird an `build_site.py --site-url` übergeben. Dadurch bleiben Project Page und spätere Custom Domain dieselbe Buildarchitektur.
+
+Vor dem Upload prüft `validate_pages_artifact.py`:
+
+- `index.html` und `404.html`;
+- reguläre Dateien und Verzeichnisse;
+- keine Symlinks oder Hardlinks;
+- keine Case-insensitiven Pfadkollisionen;
+- Größenlimit;
+- deterministischen Baum-SHA-256.
+
+### Deploymentjob
+
+```yaml
+permissions:
+  pages: write
+  id-token: write
+```
+
+Der Deploymentjob besitzt:
+
+```yaml
+needs: build
+environment:
+  name: github-pages
+  url: ${{ steps.deployment.outputs.page_url }}
+```
+
+Er checkt das Repository nicht erneut aus, baut nichts und verwendet keine Secrets. Ein fehlgeschlagener Build kann deshalb kein Deployment auslösen.
+
+Das vollständige Betriebs-, Custom-Domain- und Rollback-Runbook steht in `docs/WEB-WARTUNG.md`.
