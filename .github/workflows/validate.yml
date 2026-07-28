@@ -1,0 +1,127 @@
+name: Validate
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+
+    steps:
+      - name: Repository auschecken
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Python einrichten
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            requirements-docs.txt
+            requirements-test.txt
+
+      - name: Berichtsverzeichnis und Quellzeit setzen
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/reports
+          echo "SOURCE_DATE_EPOCH=$(git show -s --format=%ct HEAD)" >> "$GITHUB_ENV"
+
+      - name: Abhängigkeiten installieren
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check \
+            -r requirements-docs.txt \
+            -r requirements-test.txt
+          python -m pip check
+
+      - name: Workflow-Policy prüfen
+        run: >-
+          python scripts/validate_workflows.py
+          --report build/reports/workflows.json
+
+      - name: Pythonquellen kompilieren
+        run: python -m compileall -q scripts tests
+
+      - name: Unit- und Integrationstests
+        run: >-
+          python -m pytest -q
+          --junitxml=build/reports/pytest.xml
+
+      - name: Contentmodell prüfen
+        run: >-
+          python scripts/validate_content.py
+          --report build/reports/content.json
+
+      - name: Links und Callouts prüfen
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/validate_links.py \
+            --report build/reports/links.json \
+            2>&1 | tee build/reports/links.txt
+
+      - name: Secrets, Raw HTML und Laufzeitassets prüfen
+        run: >-
+          python scripts/validate_security.py
+          --report build/reports/security.json
+
+      - name: Erwartete kanonische Metadaten erzeugen
+        run: >-
+          python scripts/build_manifest.py
+          --output build/reports/expected-metadata
+
+      - name: Kanonische Metadaten vergleichen
+        shell: bash
+        run: |
+          set -euo pipefail
+          : > build/reports/metadata-diff.patch
+          for name in MANIFEST.csv MANIFEST.md BUILD-REPORT.yaml SHA256SUMS.txt; do
+            diff -u "$name" "build/reports/expected-metadata/$name" \
+              >> build/reports/metadata-diff.patch || true
+          done
+          if test -s build/reports/metadata-diff.patch; then
+            cat build/reports/metadata-diff.patch >&2
+            exit 1
+          fi
+
+      - name: Vollständigen Strict-Build prüfen
+        run: >-
+          python scripts/build_site.py
+          --check
+          --strict
+          --site-url https://example.invalid/Cheatsheets/
+
+      - name: Unveränderte Quellarbeitskopie bestätigen
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+          git status --short
+
+      - name: Diagnostikartefakte hochladen
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: validation-reports-${{ github.run_id }}
+          path: build/reports
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 6
+          include-hidden-files: false
