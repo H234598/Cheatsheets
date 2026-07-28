@@ -197,7 +197,17 @@ test("Favorit, Fokusmodus, Tastaturhilfe und Suchkürzel funktionieren", async (
   const stored = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)), STORAGE_KEY);
   expect(stored.favorites).toContain(pageId);
 
-  await page.keyboard.press("Shift+/");
+  await page.evaluate(() => {
+    document.dispatchEvent(
+      new KeyboardEvent("keydown", {
+        key: "?",
+        code: "Slash",
+        shiftKey: true,
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+  });
   await expect(page.locator("[data-cheat-keyboard-dialog][open]")).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(page.locator("[data-cheat-keyboard-dialog]")).not.toHaveAttribute("open", "");
