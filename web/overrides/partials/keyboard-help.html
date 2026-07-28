@@ -1,4 +1,6 @@
 {% set is_reference = page and page.meta and page.meta.web_page_type == "reference" %}
+{% set offline_mode = config.extra and config.extra.offline_mode %}
+{% set graph_target = 'wissensgraph/index.html' if offline_mode else 'wissensgraph/' %}
 {% if page and not is_reference %}
   <nav class="cheat-global-tools" aria-label="Lokale Seitenwerkzeuge">
     <button type="button" class="md-button" data-cheat-focus aria-pressed="false" hidden>
@@ -19,6 +21,9 @@
   <div class="cheat-keyboard-dialog__content">
     <h2 id="cheat-keyboard-title">Tastaturhilfe</h2>
     <p>Alle Funktionen besitzen zusätzlich sichtbare Links oder Schaltflächen.</p>
+    <p class="cheat-dialog-links">
+      <a href="{{ graph_target | url }}">Wissensgraph öffnen</a>
+    </p>
     <table>
       <thead>
         <tr>
@@ -34,6 +39,7 @@
         <tr><td><kbd>g</kbd>, dann <kbd>i</kbd></td><td>Gesamtindex öffnen</td></tr>
         <tr><td><kbd>g</kbd>, dann <kbd>k</kbd></td><td>Kategorien öffnen</td></tr>
         <tr><td><kbd>g</kbd>, dann <kbd>d</kbd></td><td>Downloads öffnen</td></tr>
+        <tr><td><kbd>g</kbd>, dann <kbd>w</kbd></td><td>Wissensgraph öffnen</td></tr>
       </tbody>
     </table>
     <label class="cheat-shortcut-setting">
