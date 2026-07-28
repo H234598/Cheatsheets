@@ -54,6 +54,22 @@ def _target_generated_path(index: ContentIndex, resolution: Resolution) -> PureP
     return PurePosixPath(resolution.path.relative_to(index.root).as_posix())
 
 
+def _download_replacement(
+    source_page: PageRecord,
+    occurrence: LinkOccurrence,
+    resolution: Resolution,
+) -> str:
+    if resolution.path is None:
+        raise LinkError("Downloadziel besitzt keinen Pfad")
+    target = PurePosixPath("downloads/files") / resolution.path.name
+    relative = _relative_posix(source_page.generated_path, target)
+    if resolution.anchor:
+        relative += "#" + resolution.anchor
+    href = html.escape(_encoded_link(relative), quote=True)
+    label = html.escape(occurrence.label)
+    return f'<a href="{href}" download>{label}</a>'
+
+
 def _web_replacement(
     index: ContentIndex,
     source_page: PageRecord,
@@ -62,6 +78,8 @@ def _web_replacement(
     tolerate: bool,
 ) -> str:
     if resolution.ok and resolution.path is not None:
+        if resolution.page is not None and resolution.page.page_type == "download-only":
+            return _download_replacement(source_page, occurrence, resolution)
         target = _target_generated_path(index, resolution)
         relative = _relative_posix(source_page.generated_path, target)
         if resolution.anchor:
