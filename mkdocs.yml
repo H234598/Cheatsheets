@@ -1,9 +1,6 @@
 site_name: Cheatsheets
 site_description: Obsidian-kompatible technische Cheatsheets
 site_url: https://h234598.github.io/Cheatsheets/
-repo_url: https://github.com/H234598/Cheatsheets
-repo_name: H234598/Cheatsheets
-edit_uri: blob/main/
 
 docs_dir: build/docs
 site_dir: site
@@ -66,10 +63,19 @@ validation:
   unrecognized_links: warn
   anchors: warn
 
+extra:
+  source_repository_url: https://github.com/H234598/Cheatsheets
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/H234598/Cheatsheets
+      name: Cheatsheets-Quellrepository auf GitHub
+
 extra_css:
   - assets/stylesheets/extra.css
+  - assets/stylesheets/accessibility.css
 
 extra_javascript:
   - assets/javascripts/site-state.js
   - assets/javascripts/filters.js
+  - assets/javascripts/accessibility.js
   - assets/javascripts/mermaid-loader.js

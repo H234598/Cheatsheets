@@ -11,9 +11,9 @@ Dieser Fortschrittsnachweis wird mit jeder Planphase aktualisiert. Verbindliche 
 | 3 – Navigation, Indizes und Suche | ✅ umgesetzt | PR #6, Merge `7db8f713aca07e67b481f9fbcb00553f6a555495`; CodeRabbit und qlty grün |
 | 4 – ADHS-freundliche Oberfläche | ✅ umgesetzt | PR #7, Merge `0682c7f8e508d56b60d8d8e72024121e1bcd815d`; CodeRabbit und qlty grün |
 | 5A – PR-CI | ✅ umgesetzt | PR #9, Merge `69c72997eed4fc0ac831eba696bac12b3a2f69b9`; 78 Tests und alle Gates grün |
-| 5B – Pages-Deployment | ⚠️ technisch umgesetzt | PR #11, Merge `59724c5256a5bed001164fe908dacff2d01fb11a`; 90 Tests und Artefaktprüfung grün, produktive `page_url` noch extern zu bestätigen |
-| 6 – Downloads und Provenienz | 🚧 abnahmebereit | PR #12; 108 Tests, Downloadsatz, Reviews und Pages-Artefakt grün |
-| 7 – Browser, Accessibility und Performance | ⬜ offen | – |
+| 5B – Pages-Deployment | ⚠️ technisch umgesetzt | PR #11, Merge `59724c5256a5bed001164fe908dacff2d01fb11a`; Artefaktprüfung grün, produktive `page_url` noch extern zu bestätigen |
+| 6 – Downloads und Provenienz | ✅ umgesetzt | PR #12, Merge `128b44b349e54dd38c9ef097a18d480c5a526c2c`; 108 Tests und alle Gates grün |
+| 7 – Browser, Accessibility und Performance | 🚧 abnahmebereit | PR #14; 116 Python- und 7 Chromiumtests, axe und Budgets grün |
 | 8 – optionale Erweiterungen | ⬜ offen | – |
 
 ## Abgeschlossene Phase 3
@@ -49,13 +49,7 @@ Vor dem Merge wurden fünf konkrete Reviewbefunde behoben und mit Regressionstes
 
 ## Parallele Inhaltsvereinheitlichung
 
-PR #8 wurde unabhängig vom Phasenstrang als repositoryweite Inhalts- und Dateinamenvereinheitlichung gemergt:
-
-```text
-05b8d7469ba8c1129ddfde016e43852f88bfc499
-```
-
-Der PR ersetzt die frühere Zusatzbezeichnung durch **Cheatsheet**, benennt betroffene Dateien und Links um und regeneriert die kanonischen Metadaten. Er behebt zugleich die im ersten Phase-5A-Lauf sichtbar gewordenen Baseline-Linkprobleme. Der anschließend eröffnete PR #10 wurde deshalb ohne Merge und mit leerem Diff geschlossen.
+PR #8 wurde unabhängig vom Phasenstrang als repositoryweite Inhalts- und Dateinamenvereinheitlichung unter `05b8d7469ba8c1129ddfde016e43852f88bfc499` gemergt. Der PR ersetzt die frühere Zusatzbezeichnung durch **Cheatsheet**, benennt betroffene Dateien und Links um und regeneriert die kanonischen Metadaten. Der anschließend eröffnete PR #10 wurde deshalb ohne Merge und mit leerem Diff geschlossen.
 
 ## Abgeschlossene Phase 5A
 
@@ -92,15 +86,15 @@ Sicherheits- und Betriebsmerkmale:
 - kein Checkout und kein Build im Deploymentjob;
 - `needs: build` und Environment `github-pages`.
 
-Der PR-Lauf bestätigte 90 Tests und ein sicheres Pages-Artefakt mit 170 regulären Dateien. CodeRabbit, qlty und alle Review-Threads waren grün. PR #11 wurde unter `59724c5256a5bed001164fe908dacff2d01fb11a` gemergt.
+Der PR-Lauf bestätigte 90 Tests und ein sicheres Pages-Artefakt. CodeRabbit, qlty und alle Review-Threads waren grün. PR #11 wurde unter `59724c5256a5bed001164fe908dacff2d01fb11a` gemergt.
 
-Der verfügbare GitHub-Connector listet derzeit nur Pull-Request-bezogene Workflowläufe. Deshalb konnte der erste produktive Push-Lauf einschließlich ausgegebener `page_url` noch nicht unabhängig ausgelesen werden. Diese externe Laufzeitbestätigung bleibt sichtbar offen und wird nicht als bereits erfolgt behauptet.
+Die technische Pipeline ist damit umgesetzt. Die unabhängige Bestätigung eines produktiven Push-Deployments einschließlich ausgegebener `page_url` bleibt sichtbar offen und wird nicht als bereits erfolgt behauptet.
 
-## Phase 6 – Abnahmestand
+## Abgeschlossene Phase 6
 
-Phase 6 erzeugt einen vollständigen Downloadsatz aus demselben Checkout und `SOURCE_DATE_EPOCH` wie die Website:
+PR #12 erzeugt einen vollständigen Downloadsatz aus demselben Checkout und `SOURCE_DATE_EPOCH` wie die Website:
 
-- `Cheatsheets-Quellen.zip` mit kanonischen Inhalten, Inhaltsassets, Lizenz und Quellprüfsummen;
+- `Cheatsheets-Quellen.zip` mit kanonischen Inhalten, Git-getrackten Inhaltsassets, Lizenz und Quellprüfsummen;
 - ein aus allen 86 Fachseiten neu erzeugtes `Cheatsheet-Gesamtband.md`;
 - kanonische Manifestansichten und Buildreport;
 - `SOURCE-SHA256SUMS.txt` und `DOWNLOAD-SHA256SUMS.txt`;
@@ -108,29 +102,85 @@ Phase 6 erzeugt einen vollständigen Downloadsatz aus demselben Checkout und `SO
 - JSON- und CSV-Downloadmanifest;
 - eine aus den geprüften Datensätzen erzeugte Download-Landingpage.
 
-Der Quell-ZIP verwendet stabile Reihenfolge, feste Rechte, `ZIP_STORED` und den Commitzeitpunkt. `.git`, `.github`, `.obsidian`, Buildausgaben, Tests und Entwicklungszustände sind ausgeschlossen. Nur Git-getrackte Inhaltsassets dürfen in das Archiv gelangen; unerwartete Dateien und Symlinks unter Kategorien, `assets/` oder `media/` blockieren fail-closed. Archivnamen werden vor der Prüfung plattformübergreifend normalisiert; Traversal-, Laufwerks-, UNC-, Steuerzeichen- und leere Punktpfade sind verboten.
+Der Quell-ZIP verwendet stabile Reihenfolge, feste Rechte, `ZIP_STORED` und den Commitzeitpunkt. `.git`, `.github`, `.obsidian`, Buildausgaben, Tests und Entwicklungszustände sind ausgeschlossen. Unerwartete oder verlinkte Inhaltsassets blockieren fail-closed. Archivnamen werden vor der Prüfung plattformübergreifend normalisiert; Traversal-, Laufwerks-, UNC-, Steuerzeichen- und leere Punktpfade sind verboten.
 
 Das Gesamt-Markdown verwendet die kanonische Kategorienreihenfolge, stabile Page-ID-Anker und präfixierte Abschnittsanker. Codefences werden vor und nach der Linkkonvertierung gehasht.
 
-Der zentrale Site-Build erzeugt den Contentindex einmalig und reicht ihn an Download- und Webbuild weiter. Die Commitauflösung ist ebenfalls zentralisiert. Downloads entstehen vor MkDocs; die Landingpage verwendet reale Größen und Hashes. Die Artefakte werden erst nach erfolgreichem HTML-Build nach `site/downloads/files/` kopiert. Dadurch bleiben rohe `.md`-Downloads unverändert herunterladbar und werden nicht versehentlich als HTML-Seiten gerendert.
+Der zentrale Site-Build erzeugt den Contentindex einmalig und reicht ihn an Download- und Webbuild weiter. Downloads entstehen vor MkDocs; die Landingpage verwendet reale Größen und Hashes. Die Artefakte werden erst nach erfolgreichem HTML-Build nach `site/downloads/files/` kopiert.
 
-Der vollständige GitHub-Actions-Lauf `30335873825` auf Head `d72d931da20d40c7b9caab1e9431613b3a6b92e5` bestätigte:
+Der endgültige PR-Head `e95687389dfbd32ada4cf42a40adeef40ff736e6` bestand 108 Tests sowie alle Content-, Link-, Security-, Metadaten-, Pages-, CodeRabbit- und qlty-Gates ohne offene Review-Threads. PR #12 wurde per Squash unter `128b44b349e54dd38c9ef097a18d480c5a526c2c` gemergt.
 
-- **108 von 108 Tests bestanden**;
-- zwölf Kategorien, 86 Fachseiten und 116 Markdownseiten;
-- null Contentfehler und null Contentwarnungen;
+Der danach versehentlich aus einem divergierten historischen Phase-6-Branch eröffnete PR #13 enthielt eine konkurrierende zweite Downloadimplementierung. Er wurde entsprechend der Pflegekonvention ohne Merge geschlossen; keine seiner Änderungen gelangte nach `main`.
+
+## Phase 7 – Abnahmestand
+
+PR #14 baut exakt auf dem Phase-6-Mergecommit `128b44b349e54dd38c9ef097a18d480c5a526c2c` auf und ergänzt die bisherige statische Prüfung um echte Browser-, Accessibility- und Performancegates.
+
+### Reproduzierbare Browsertoolchain
+
+- Node.js 24 über vollständig gepinnte `actions/setup-node`-Action;
+- exakt gepinnte `@playwright/test`- und `axe-core`-Versionen in `package-lock.json`;
+- `npm ci --ignore-scripts`;
+- Chromiuminstallation nur über `npx --no-install`;
+- wöchentliche Dependabot-Updates für npm in `Europe/Berlin`;
+- ein Worker und keine verdeckten globalen npm-Abhängigkeiten;
+- sicherer lokaler Testserver unter dem realen Prefix `/Cheatsheets/`.
+
+Die Workflowpolicy erzwingt diese Verträge selbst und blockiert insbesondere Node-Abweichungen, fehlende Browsergates sowie jedes `npx`, das ein nicht lokal vorhandenes Paket nachladen könnte.
+
+### Blockierende Chromium-Szenarien
+
+Sieben End-to-End-Tests prüfen:
+
+1. Start-, Kategorie-, Download-, kurze und lange Fachseite ohne Browserfehler oder fremde Origin;
+2. axe auf Start- und repräsentativer Fachseite ohne `serious`- oder `critical`-Befund;
+3. sichtbare Inhalte und Navigation bei deaktiviertem JavaScript;
+4. Favoriten, LocalStorage, Fokusmodus, Tastaturhilfe, Escape und Suchkürzel;
+5. lokale Filter und vollständige Rücksetzung;
+6. 320-Pixel-Ansicht, sichtbaren Fokus, Reduced Motion sowie tastaturfokussierbare Code- und Tabellencontainer;
+7. erreichbare Downloadartefakte sowie eine echte tiefe HTTP-404-Seite mit sicherem Rücklink zur Project-Page-Startseite.
+
+### Statische Budgets
+
+| Messwert | Blockierende Grenze | Funktionslauf `30343694759` |
+|---|---:|---:|
+| eigenes JavaScript, Gzip-Summe | 30 KiB | 8.410 Bytes |
+| eigenes CSS, Gzip-Summe | 35 KiB | 2.187 Bytes |
+| einzelne HTML-Datei | 2 MiB | max. 288.067 Bytes |
+| externe Laufzeitassets | 0 | 0 |
+
+Lighthouse-Scores werden nicht vorgetäuscht. Der Plan sieht eine blockierende Lighthouse-Schwelle erst nach einer stabilen dreifachen Messbaseline vor. Bereits blockierend sind deterministische Größen-, Origin-, axe-, Mobil- und Funktionsgates.
+
+### Durch die echten Browserläufe gefundene und behobene Probleme
+
+- Material versuchte bei gesetztem `repo_url` GitHub-API-Zähler abzurufen; der Repositorylink ist nun statisch und erzeugt keinen Laufzeitrequest;
+- mehrere Sekundärtexte und Syntaxfarben lagen knapp unter WCAG-AA-Kontrast; ihre Farben wurden gezielt angehoben;
+- Tabellencontainer waren weder horizontal scrollend noch tastaturfokussierbar;
+- die Standard-404-Seite war nicht deutsch und besaß nicht den gewünschten Project-Page-sicheren Rücklink;
+- das mehrere Megabyte große Gesamtband wurde unnötig zusätzlich als HTML gerendert; es bleibt nun ausschließlich verifiziertes Rohdownloadartefakt;
+- drei kanonische Links auf den Gesamtband werden beim Webbuild explizit als `download`-Links auf `downloads/files/` ausgegeben;
+- das Fragezeichen-Kürzel wird in der Capture-Phase verarbeitet, bevor Theme-Shortcuts es übernehmen können.
+
+### Funktionsabnahme vor der abschließenden Statuspflege
+
+GitHub-Actions-Lauf `30343694759` auf Head `fe4ed478fc432fcb400cf258ac63e2fdb3fb6a53` bestätigte:
+
+- **116 von 116 Python-Tests bestanden**;
+- **7 von 7 Chromiumtests bestanden**, keine Wiederholung und kein Flake;
+- zwölf Kategorien, 86 Fachseiten und null Contentfehler oder -warnungen;
 - null Linkfehler und null Linkwarnungen;
 - null Securityfehler, -warnungen oder Informationsbefunde;
 - bytegleiche kanonische Metadaten;
 - vollständiger Strict-MkDocs-Build einschließlich Downloads;
-- Pages-Artefakt mit 180 regulären Dateien und 25.016.928 Bytes;
+- Pages-Artefakt mit 181 regulären Dateien und 19.869.192 Bytes;
 - keine Symlinks, Hardlinks, Sonderdateien oder Case-Kollisionen;
-- Artefakt-Baum-SHA-256 `14d151084acf39285e003529f3c05571214ce9eea6914107d1d94f39243f20d0`;
+- Artefakt-Baum-SHA-256 `8657ccc80fa87db95ddddb73100515f3dcd888ac7e603d44b095afe7b5808846`;
+- 113 HTML-Dateien und null externe Laufzeitassets;
 - versionierte Arbeitskopie nach dem Build unverändert;
-- qlty und CodeRabbit grün;
-- alle fünf Reviewbefunde behoben und keine offenen Review-Threads.
+- CodeRabbit und qlty grün;
+- keine offenen Review-Threads.
 
-Der vollständige Site-Build schreibt sein Protokoll zusätzlich nach `build/reports/build-site.txt`, sodass späte Integrationsfehler im Diagnoseartefakt vollständig verfügbar bleiben. Die vorliegende Statuspflege erzeugt einen neuen Head; dieser muss dieselbe Validate- und Reviewabnahme erneut vollständig bestehen, bevor PR #12 gemergt wird.
+Diese Dokumentations- und Statuspflege erzeugt bewusst einen neuen PR-Head. Phase 7 bleibt deshalb bis zum erneut grünen Validate-Lauf, abgeschlossenen Reviews und verifiziertem Merge als **abnahmebereit** markiert.
 
 Eine Phase wird erst nach veröffentlichten Dateien, grünen Tests und PR-Gates, ohne offene Review-Threads und nach verifiziertem Merge als vollständig umgesetzt markiert.
 

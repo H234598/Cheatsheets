@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 from conftest import manifest_row, write_manifest, write_page
-from content_index import build_content_index
+from content_index import ROOT_ROLES, build_content_index
 from link_converters import convert_for_web
 from link_resolution import resolve_occurrence
 from link_types import LinkError, LinkOccurrence, scan_wikilinks, split_link
@@ -159,6 +159,32 @@ def test_web_conversion_uses_generated_relative_paths_and_preserves_fences(
     converted = convert_for_web(text, alpha, tmp_path, index=index)
     assert "[Details](Beta.md#details)" in converted
     assert "````markdown\n[[Beta#Details|Lehrbeispiel]]\n````" in converted
+
+
+def test_download_only_link_targets_raw_artifact_instead_of_html(tmp_path: Path) -> None:
+    alpha, _beta = make_link_repository(tmp_path)
+    download_name = next(
+        name for name, role in ROOT_ROLES.items() if role == "download-only"
+    )
+    write_page(
+        tmp_path,
+        download_name,
+        title="Gesamtband",
+        body="# Gesamtband\n\nDownloadinhalt.\n",
+    )
+    index = build_content_index(tmp_path)
+
+    converted = convert_for_web(
+        f"[[{download_name}|Gesamtband herunterladen]]\n",
+        alpha,
+        tmp_path,
+        index=index,
+    )
+
+    assert converted == (
+        f'<a href="../downloads/files/{download_name}" download>'
+        "Gesamtband herunterladen</a>\n"
+    )
 
 
 def test_web_conversion_fails_closed_on_invalid_link(tmp_path: Path) -> None:

@@ -17,7 +17,7 @@ concurrency:
 jobs:
   validate:
     runs-on: ubuntu-24.04
-    timeout-minutes: 40
+    timeout-minutes: 55
 
     steps:
       - name: Repository auschecken
@@ -35,6 +35,13 @@ jobs:
             requirements-docs.txt
             requirements-test.txt
 
+      - name: Node.js einrichten
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
       - name: Berichtsverzeichnis und Quellzeit setzen
         shell: bash
         run: |
@@ -50,14 +57,31 @@ jobs:
             -r requirements-docs.txt \
             -r requirements-test.txt
           python -m pip check
+          npm ci --ignore-scripts
+          npm ls --all
+
+      - name: Chromium für Playwright installieren
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --no-install playwright install --with-deps chromium
 
       - name: Workflow-Policy prüfen
         run: >-
           python scripts/validate_workflows.py
           --report build/reports/workflows.json
 
-      - name: Pythonquellen kompilieren
-        run: python -m compileall -q scripts tests
+      - name: Python- und JavaScriptquellen kompilieren
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m compileall -q scripts tests
+          node --check web/assets/javascripts/site-state.js
+          node --check web/assets/javascripts/filters.js
+          node --check web/assets/javascripts/accessibility.js
+          node --check web/assets/javascripts/mermaid-loader.js
+          node --check playwright.config.mjs
+          node --check tests/web/site.spec.mjs
 
       - name: Unit- und Integrationstests
         run: >-
@@ -107,7 +131,7 @@ jobs:
           set -euo pipefail
           python scripts/build_site.py \
             --strict \
-            --site-url https://example.invalid/Cheatsheets/ \
+            --site-url http://127.0.0.1:4173/Cheatsheets/ \
             2>&1 | tee build/reports/build-site.txt
 
       - name: Pages-Artefakt validieren
@@ -115,6 +139,20 @@ jobs:
           python scripts/validate_pages_artifact.py
           --site-dir site
           --report build/reports/pages-artifact.json
+
+      - name: Webbudgets und lokale Laufzeitassets prüfen
+        run: >-
+          python scripts/validate_web_budgets.py
+          --site-dir site
+          --report build/reports/web-budgets.json
+
+      - name: Browser-, Accessibility- und Mobiltests
+        env:
+          CI: "true"
+          SITE_DIR: site
+          WEB_TEST_BASE_PATH: /Cheatsheets/
+          WEB_TEST_PORT: "4173"
+        run: npm run test:web
 
       - name: Unveränderte Quellarbeitskopie bestätigen
         shell: bash

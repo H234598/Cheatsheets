@@ -1,0 +1,19 @@
+{
+  "name": "cheatsheets-webtests",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "license": "CC0-1.0",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "test:web": "playwright test",
+    "test:web:headed": "playwright test --headed",
+    "test:web:update": "playwright test --update-snapshots"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.61.1",
+    "axe-core": "4.12.1"
+  }
+}

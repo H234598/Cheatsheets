@@ -185,7 +185,6 @@ def _dry_run(root: Path, max_pages: int | None, verbose: bool) -> int:
             "root-index",
             "root-readme",
             "maintenance",
-            "download-only",
         }
     ]
     if max_pages is not None:
@@ -201,7 +200,7 @@ def _dry_run(root: Path, max_pages: int | None, verbose: bool) -> int:
         for page in publishable:
             print(f"PLAN {page.relative_path.as_posix()} -> {page.generated_path.as_posix()}")
     print(
-        f"Dry-Run: {len(publishable)} Seiten geplant, "
+        f"Dry-Run: {len(publishable)} HTML-Quellseiten geplant, "
         f"{len(errors)} blockierende Modellfehler."
     )
     return 0 if not errors else 2
@@ -299,7 +298,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 strict=args.strict,
                 force=args.force,
             )
-        print(f"Build erfolgreich: {pages} Quellseiten und {assets} Assets.")
+        print(f"Build erfolgreich: {pages} HTML-Quellseiten und {assets} Assets.")
         return 0
     except (
         BuildDocsError,

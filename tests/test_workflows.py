@@ -7,6 +7,7 @@ from validate_workflows import validate_workflows
 ROOT = Path(__file__).resolve().parents[1]
 CHECKOUT_SHA = "3d3c42e5aac5ba805825da76410c181273ba90b1"
 PYTHON_SHA = "5fda3b95a4ea91299a34e894583c3862153e4b97"
+NODE_SHA = "820762786026740c76f36085b0efc47a31fe5020"
 ARTIFACT_SHA = "043fb46d1a93c77aae656e7c1c64a875d1fc6a0a"
 
 
@@ -40,8 +41,19 @@ jobs:
         uses: actions/setup-python@{PYTHON_SHA} # v7.0.0
         with:
           python-version: "3.12"
+      - name: Node
+        uses: actions/setup-node@{NODE_SHA} # v7.0.0
+        with:
+          node-version: "24"
+      - name: Dependencies
+        run: |
+          npm ci --ignore-scripts
+          npx --no-install playwright install --with-deps chromium
       - name: Test
-        run: python -m pytest -q
+        run: |
+          python -m pytest -q
+          python scripts/validate_web_budgets.py --site-dir site
+          npm run test:web
       - name: Reports
         if: always()
         uses: actions/upload-artifact@{ARTIFACT_SHA} # v7.0.1
@@ -129,3 +141,37 @@ def test_validate_workflow_rejects_deployment_actions(tmp_path: Path) -> None:
     codes = {issue.code for issue in validate_workflows(tmp_path)}
 
     assert "WF044" in codes
+
+
+def test_node_24_and_browser_gates_are_required(tmp_path: Path) -> None:
+    content = (
+        valid_workflow()
+        .replace(
+            f"      - name: Node\n        uses: actions/setup-node@{NODE_SHA} # v7.0.0\n"
+            "        with:\n          node-version: \"24\"\n",
+            "",
+        )
+        .replace("          npm ci --ignore-scripts\n", "")
+        .replace("          npx --no-install playwright install --with-deps chromium\n", "")
+        .replace("          python scripts/validate_web_budgets.py --site-dir site\n", "")
+        .replace("          npm run test:web\n", "")
+    )
+    write_workflow(tmp_path, content)
+
+    codes = {issue.code for issue in validate_workflows(tmp_path)}
+
+    assert {"WF053", "WF055", "WF056", "WF057", "WF058"}.issubset(codes)
+
+
+def test_wrong_node_version_and_remote_npx_are_rejected(tmp_path: Path) -> None:
+    content = valid_workflow().replace('node-version: "24"', 'node-version: "22"').replace(
+        "npx --no-install playwright install --with-deps chromium",
+        "npx playwright install --with-deps chromium",
+    )
+    write_workflow(tmp_path, content)
+
+    codes = {issue.code for issue in validate_workflows(tmp_path)}
+
+    assert "WF006" in codes
+    assert "WF054" in codes
+    assert "WF056" in codes

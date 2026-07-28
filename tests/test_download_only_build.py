@@ -39,7 +39,7 @@ def _write_ui_config(root: Path) -> None:
     )
 
 
-def test_download_only_page_tolerates_ambiguous_combined_headings(tmp_path: Path) -> None:
+def test_download_only_page_is_validated_but_not_rendered_as_html(tmp_path: Path) -> None:
     alpha = write_page(
         tmp_path,
         "01-Test/Alpha.md",
@@ -71,7 +71,7 @@ def test_download_only_page_tolerates_ambiguous_combined_headings(tmp_path: Path
     download_name = next(
         name for name, role in ROOT_ROLES.items() if role == "download-only"
     )
-    write_page(
+    source = write_page(
         tmp_path,
         download_name,
         title="Gesamtband",
@@ -94,7 +94,7 @@ def test_download_only_page_tolerates_ambiguous_combined_headings(tmp_path: Path
         source_commit="fixture-commit",
     )
 
-    generated = (output / "downloads" / download_name).read_text(encoding="utf-8")
-    assert result.pages == 5
-    assert 'data-link-status="ambiguous-heading"' in generated
-    assert "Tastenkürzel <small>[ambiguous-heading]</small>" in generated
+    assert source.is_file()
+    assert result.pages == 4
+    assert not (output / "downloads" / download_name).exists()
+    assert (output / "downloads" / "index.md").is_file()

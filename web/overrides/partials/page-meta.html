@@ -15,9 +15,9 @@
       {% if page.meta.reviewed %}
         <span>Geprüft: {{ page.meta.reviewed }}</span>
       {% endif %}
-      {% if config.repo_url and page.meta.web_source_path %}
+      {% if config.extra and config.extra.source_repository_url and page.meta.web_source_path %}
         <a
-          href="{{ config.repo_url }}/blob/main/{{ page.meta.web_source_path }}"
+          href="{{ config.extra.source_repository_url }}/blob/main/{{ page.meta.web_source_path }}"
           rel="noopener noreferrer"
         >Quell-Markdown</a>
       {% endif %}
