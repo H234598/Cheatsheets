@@ -150,9 +150,15 @@ def _content_asset_paths(root: Path, tracked: set[str]) -> list[Path]:
     return paths
 
 
-def _add_entry(entries: dict[str, bytes], name: str, payload: bytes) -> None:
+def _add_entry(
+    entries: dict[str, bytes],
+    name: str,
+    payload: bytes,
+    *,
+    replace: bool = False,
+) -> None:
     canonical = canonical_archive_name(name)
-    if canonical in entries:
+    if canonical in entries and not replace:
         raise DownloadBuildError(
             f"Doppelter Archivpfad nach Normalisierung: {canonical}"
         )
@@ -180,7 +186,7 @@ def source_entries(
         relative = path.relative_to(root).as_posix()
         _add_entry(entries, relative, _read_regular_source(path, root))
     for name in ("MANIFEST.csv", "MANIFEST.md", "BUILD-REPORT.yaml"):
-        _add_entry(entries, name, generated_metadata[name])
+        _add_entry(entries, name, generated_metadata[name], replace=True)
 
     license_path = root / "LICENSE"
     if license_path.exists():
