@@ -78,11 +78,28 @@ def test_ui_scripts_do_not_use_html_injection_or_telemetry() -> None:
     assert "Suchbegriffe" not in scripts["site-state.js"]
 
 
-def test_empty_time_filter_is_unbounded() -> None:
+def test_filter_contract_uses_canonical_tags_and_unbounded_empty_time() -> None:
     filters = (JS_DIR / "filters.js").read_text(encoding="utf-8")
 
+    assert "const pagesForTag = new Map(" in filters
+    assert "!pagesForTag.get(tagSelect.value)?.has(page.id)" in filters
     assert "if (timeSelect.value)" in filters
     assert "const maximumMinutes = Number(timeSelect.value)" in filters
+
+
+def test_filter_failure_is_visible_without_leaving_broken_controls_active() -> None:
+    filters = (JS_DIR / "filters.js").read_text(encoding="utf-8")
+
+    assert "panel.hidden = false;\n      form.hidden = true;" in filters
+    assert "results.hidden = true;" in filters
+    assert "error.hidden = false;" in filters
+
+
+def test_initialization_preserves_existing_reading_progress() -> None:
+    site_state = (JS_DIR / "site-state.js").read_text(encoding="utf-8")
+
+    assert "updateProgressLabel();\n    renderHomeState();" in site_state
+    assert "persistProgress(true);\n    renderHomeState();" not in site_state
 
 
 def test_css_contains_focus_mobile_and_reduced_motion_contracts() -> None:
