@@ -36,6 +36,15 @@ def _write_publication_config(root: Path) -> None:
     )
 
 
+def _write_ui_config(root: Path) -> None:
+    path = root / "config" / "page-id-aliases.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        '{\n  "aliases": {},\n  "schema_version": 1\n}\n',
+        encoding="utf-8",
+    )
+
+
 def make_build_repository(root: Path) -> tuple[Path, Path]:
     alpha = write_page(
         root,
@@ -99,6 +108,7 @@ def make_build_repository(root: Path) -> tuple[Path, Path]:
     )
     (root / "web" / "overrides").mkdir(parents=True)
     _write_publication_config(root)
+    _write_ui_config(root)
     (root / "mkdocs.yml").write_text(
         "site_name: Fixture\n"
         "site_url: https://example.invalid/Cheatsheets/\n"
@@ -132,7 +142,7 @@ def test_build_docs_transforms_only_generated_copy(
     assert result.pages == 5
     assert result.assets == 1
     assert result.generated_markdown_pages == 6
-    assert result.data_files == 4
+    assert result.data_files == 5
     assert result.navigation[0] == {"Start hier": "index.md"}
     assert (output / BUILD_SENTINEL).is_file()
     assert (output / "index.md").is_file()
@@ -154,18 +164,27 @@ def test_build_docs_transforms_only_generated_copy(
         "data/categories.json",
         "data/tags.json",
         "data/build-info.json",
+        "data/page-id-aliases.json",
     ):
         assert (output / relative).is_file(), relative
 
     build_info = json.loads((output / "data" / "build-info.json").read_text(encoding="utf-8"))
     assert build_info["source_commit"] == "fixture-commit"
     assert build_info["site_url"] == "https://example.invalid/Cheatsheets/"
+    alias_data = json.loads(
+        (output / "data" / "page-id-aliases.json").read_text(encoding="utf-8")
+    )
+    assert alias_data == {"aliases": {}, "schema_version": 1}
 
     generated = (output / "01-Test" / "Alpha.md").read_text(encoding="utf-8")
     assert "[Details](Beta.md#details)" in generated
     assert '??? warning "Vorsicht"\n    Erst prüfen.\n' in generated
     assert "[[Beta#Details|Lehrbeispiel]]" in generated
     assert "> [!danger] Nur Syntax" in generated
+    assert 'web_page_id: "p_' in generated
+    assert "web_page_type: \"reference\"" in generated
+    assert "web_minutes:" in generated
+    assert 'web_source_path: "01-Test/Alpha.md"' in generated
     assert fenced_segment_hashes(alpha.read_text(encoding="utf-8")) == fenced_segment_hashes(
         generated
     )
@@ -239,6 +258,7 @@ def test_build_site_runs_mkdocs_with_generated_navigation_and_data(
     assert pages == 5 and assets == 1
     assert captured["nav"][0] == {"Start hier": "index.md"}
     assert (tmp_path / "build" / "docs" / "data" / "pages.json").is_file()
+    assert (tmp_path / "build" / "docs" / "data" / "page-id-aliases.json").is_file()
     assert (tmp_path / "site" / "index.html").is_file()
     assert (tmp_path / "site" / "404.html").is_file()
     assert (tmp_path / "site" / BUILD_SENTINEL).is_file()

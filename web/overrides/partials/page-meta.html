@@ -1,0 +1,53 @@
+{% if page and page.meta and page.meta.web_page_type == "reference" and page.meta.web_page_id %}
+  <section
+    class="cheat-page-context"
+    aria-label="Seiteninformationen und lokale Werkzeuge"
+  >
+    <div class="cheat-page-meta" aria-label="Seiteninformationen">
+      {% if page.meta.web_category_title and page.meta.web_category_id %}
+        <a href="{{ (page.meta.web_category_id ~ '/') | url }}">
+          {{ page.meta.web_category_title }}
+        </a>
+      {% endif %}
+      {% if page.meta.web_minutes is defined and page.meta.web_minutes is not none %}
+        <span>ca. {{ page.meta.web_minutes }} Min. Lesezeit</span>
+      {% endif %}
+      {% if page.meta.reviewed %}
+        <span>Geprüft: {{ page.meta.reviewed }}</span>
+      {% endif %}
+      {% if config.repo_url and page.meta.web_source_path %}
+        <a
+          href="{{ config.repo_url }}/blob/main/{{ page.meta.web_source_path }}"
+          rel="noopener noreferrer"
+        >Quell-Markdown</a>
+      {% endif %}
+    </div>
+
+    <nav
+      class="cheat-page-tools"
+      data-cheatsheet-page-tools
+      data-page-id="{{ page.meta.web_page_id }}"
+      aria-label="Lokale Seitenwerkzeuge"
+      hidden
+    >
+      <button type="button" class="md-button" data-cheat-favorite aria-pressed="false">
+        <span aria-hidden="true">☆</span>
+        <span data-cheat-button-label>Merken</span>
+      </button>
+      <button type="button" class="md-button" data-cheat-focus aria-pressed="false">
+        <span aria-hidden="true">◉</span>
+        <span data-cheat-button-label>Fokusmodus</span>
+      </button>
+      <button type="button" class="md-button" data-cheat-keyboard-open hidden>
+        <span aria-hidden="true">?</span>
+        <span>Tastaturhilfe</span>
+      </button>
+      <span class="cheat-progress-label" data-cheat-progress aria-live="polite">
+        0 % gelesen
+      </span>
+      <span class="cheat-storage-note" data-cheat-storage-note role="status" hidden>
+        Lokale Speicherung ist in diesem Browser nicht verfügbar.
+      </span>
+    </nav>
+  </section>
+{% endif %}

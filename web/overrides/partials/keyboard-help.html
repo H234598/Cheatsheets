@@ -1,0 +1,49 @@
+{% set is_reference = page and page.meta and page.meta.web_page_type == "reference" %}
+{% if page and not is_reference %}
+  <nav class="cheat-global-tools" aria-label="Lokale Seitenwerkzeuge">
+    <button type="button" class="md-button" data-cheat-focus aria-pressed="false" hidden>
+      <span aria-hidden="true">◉</span>
+      <span data-cheat-button-label>Fokusmodus</span>
+    </button>
+    <button type="button" class="md-button" data-cheat-keyboard-open hidden>
+      Tastaturhilfe
+    </button>
+  </nav>
+{% endif %}
+
+<dialog
+  class="cheat-keyboard-dialog"
+  data-cheat-keyboard-dialog
+  aria-labelledby="cheat-keyboard-title"
+>
+  <div class="cheat-keyboard-dialog__content">
+    <h2 id="cheat-keyboard-title">Tastaturhilfe</h2>
+    <p>Alle Funktionen besitzen zusätzlich sichtbare Links oder Schaltflächen.</p>
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Taste</th>
+          <th scope="col">Funktion</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><kbd>/</kbd></td><td>Suche fokussieren</td></tr>
+        <tr><td><kbd>?</kbd></td><td>Diese Hilfe öffnen</td></tr>
+        <tr><td><kbd>Esc</kbd></td><td>Hilfe oder Fokusmodus schließen</td></tr>
+        <tr><td><kbd>f</kbd></td><td>Aktuelle Fachseite als Favorit umschalten</td></tr>
+        <tr><td><kbd>g</kbd>, dann <kbd>i</kbd></td><td>Gesamtindex öffnen</td></tr>
+        <tr><td><kbd>g</kbd>, dann <kbd>k</kbd></td><td>Kategorien öffnen</td></tr>
+        <tr><td><kbd>g</kbd>, dann <kbd>d</kbd></td><td>Downloads öffnen</td></tr>
+      </tbody>
+    </table>
+    <label class="cheat-shortcut-setting">
+      <input type="checkbox" data-cheat-shortcuts-toggle checked>
+      Tastaturkürzel aktivieren
+    </label>
+    <div class="cheat-dialog-actions">
+      <button type="button" class="md-button" data-cheat-keyboard-close>
+        Schließen
+      </button>
+    </div>
+  </div>
+</dialog>
