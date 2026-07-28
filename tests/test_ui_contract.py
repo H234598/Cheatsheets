@@ -39,6 +39,8 @@ def test_templates_keep_progressive_controls_hidden_without_javascript() -> None
     )
 
     assert 'meta name="cheatsheets-base-url"' in main
+    assert 'content="{{ base_url }}/"' in main
+    assert "config.site_url" not in main
     assert 'include "partials/page-meta.html"' in main
     assert 'include "partials/local-state.html"' in main
     assert 'include "partials/keyboard-help.html"' in main
@@ -90,6 +92,8 @@ def test_filter_contract_uses_canonical_tags_and_unbounded_empty_time() -> None:
     assert "!pagesForTag.get(tagSelect.value)?.has(page.id)" in filters
     assert "if (timeSelect.value)" in filters
     assert "const maximumMinutes = Number(timeSelect.value)" in filters
+    assert 'form.addEventListener("submit", (event) =>' in filters
+    assert "event.preventDefault();" in filters
 
 
 def test_filter_failure_is_visible_without_leaving_broken_controls_active() -> None:
@@ -118,6 +122,22 @@ def test_corrupt_local_state_is_discarded_without_disabling_working_storage() ->
     assert "discardInvalidStoredState();\n      return emptyState();" in site_state
 
 
+def test_favorite_limits_keep_the_most_recent_entries_consistently() -> None:
+    site_state = (JS_DIR / "site-state.js").read_text(encoding="utf-8")
+
+    assert site_state.count("slice(-MAX_FAVORITES)") >= 3
+    assert ".slice(0, MAX_FAVORITES)" not in site_state
+
+
+def test_page_metadata_guards_optional_reading_time() -> None:
+    page_meta = (TEMPLATE_DIR / "partials" / "page-meta.html").read_text(
+        encoding="utf-8"
+    )
+
+    assert "page.meta.web_minutes is defined" in page_meta
+    assert "page.meta.web_minutes is not none" in page_meta
+
+
 def test_css_contains_focus_mobile_and_reduced_motion_contracts() -> None:
     css = (ROOT / "web" / "assets" / "stylesheets" / "extra.css").read_text(
         encoding="utf-8"
@@ -128,6 +148,8 @@ def test_css_contains_focus_mobile_and_reduced_motion_contracts() -> None:
     assert "@media (max-width: 44rem)" in css
     assert "@media (prefers-reduced-motion: reduce)" in css
     assert "overflow-x: auto" in css
+    assert ".cheat-table-scroll" in css
+    assert ".md-typeset table:not([class])" not in css
 
 
 def test_page_id_alias_register_has_minimal_schema() -> None:
