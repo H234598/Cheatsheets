@@ -78,6 +78,7 @@ jobs:
           python -m compileall -q scripts tests
           node --check web/assets/javascripts/site-state.js
           node --check web/assets/javascripts/filters.js
+          node --check web/assets/javascripts/accessibility.js
           node --check web/assets/javascripts/mermaid-loader.js
           node --check playwright.config.mjs
           node --check tests/web/site.spec.mjs
