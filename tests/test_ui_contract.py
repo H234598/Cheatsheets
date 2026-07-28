@@ -20,7 +20,6 @@ def test_mkdocs_loads_local_ui_assets_in_stable_order() -> None:
     assert config["repo_url"] == "https://github.com/H234598/Cheatsheets"
     assert config["extra_javascript"] == [
         "assets/javascripts/site-state.js",
-        "assets/javascripts/preferences.js",
         "assets/javascripts/filters.js",
         "assets/javascripts/mermaid-loader.js",
     ]
@@ -71,6 +70,7 @@ def test_ui_scripts_do_not_use_html_injection_or_telemetry() -> None:
     ):
         assert forbidden not in combined
     assert "cheatsheets.ui.v1" in scripts["site-state.js"]
+    assert "setShortcutsEnabled" in scripts["site-state.js"]
     assert "localStorage" not in scripts["filters.js"]
     assert "url.origin !== window.location.origin" in scripts["site-state.js"]
     assert "url.origin !== window.location.origin" in scripts["filters.js"]
@@ -99,7 +99,7 @@ def test_page_id_alias_register_has_minimal_schema() -> None:
 
 @pytest.mark.parametrize(
     "script_name",
-    ["site-state.js", "preferences.js", "filters.js", "mermaid-loader.js"],
+    ["site-state.js", "filters.js", "mermaid-loader.js"],
 )
 def test_javascript_syntax_when_node_is_available(script_name: str) -> None:
     node = shutil.which("node")
