@@ -145,6 +145,7 @@ def test_mkdocs_and_ui_wire_graph_as_secondary_optional_feature() -> None:
     assert config["hooks"] == ["scripts/mkdocs_graph_hook.py"]
     assert "/wissensgraph/**" in config["not_in_nav"]
     assert "assets/stylesheets/knowledge-graph.css" in config["extra_css"]
+    assert "assets/javascripts/graph-shortcut.js" in config["extra_javascript"]
     assert "assets/javascripts/knowledge-graph.js" in config["extra_javascript"]
 
     local_state = (
@@ -153,17 +154,14 @@ def test_mkdocs_and_ui_wire_graph_as_secondary_optional_feature() -> None:
     keyboard = (
         ROOT / "web" / "overrides" / "partials" / "keyboard-help.html"
     ).read_text(encoding="utf-8")
-    online_shortcuts = (
-        ROOT / "web" / "assets" / "javascripts" / "site-state.js"
-    ).read_text(encoding="utf-8")
-    offline_shortcuts = (
-        ROOT / "web" / "assets" / "javascripts" / "offline-navigation.js"
+    shortcut = (
+        ROOT / "web" / "assets" / "javascripts" / "graph-shortcut.js"
     ).read_text(encoding="utf-8")
 
     assert "Wissensgraph erkunden" in local_state
     assert "wissensgraph/index.html" in local_state
     assert "wissensgraph/" in local_state
     assert "g</kbd>, dann <kbd>w" in keyboard
-    assert 'w: "wissensgraph/"' in online_shortcuts
-    assert 'w: "wissensgraph/index.html"' in offline_shortcuts
+    assert 'return offline ? "wissensgraph/index.html" : "wissensgraph/";' in shortcut
+    assert 'key !== "w"' in shortcut
     assert (ROOT / "web" / "assets" / "stylesheets" / "knowledge-graph.css").is_file()
