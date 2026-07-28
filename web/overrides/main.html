@@ -4,4 +4,13 @@
   {{ super() }}
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="color-scheme" content="light dark">
+  <meta name="cheatsheets-base-url" content="{{ config.site_url }}">
+  <meta name="cheatsheets-ui-schema" content="1">
+{% endblock %}
+
+{% block content %}
+  {% include "partials/page-meta.html" %}
+  {% include "partials/local-state.html" %}
+  {{ super() }}
+  {% include "partials/keyboard-help.html" %}
 {% endblock %}
