@@ -26,6 +26,7 @@ from build_offline import (
 )
 from conftest import manifest_row, write_manifest, write_page
 from content_index import build_content_index
+from download_model import DownloadBuildError
 
 COMMIT = "b" * 40
 EPOCH = 1767225601
@@ -302,5 +303,5 @@ def test_independent_archive_inspection_rejects_traversal_entry(
         info.external_attr = (stat.S_IFREG | 0o644) << 16
         archive.writestr(info, b"escape")
 
-    with pytest.raises(OfflineBuildError):
+    with pytest.raises(DownloadBuildError):
         inspect_offline_zip(buffer.getvalue())
