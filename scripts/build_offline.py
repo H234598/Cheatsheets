@@ -7,11 +7,11 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from html.parser import HTMLParser
 import hashlib
+import io
 import json
 import os
 from pathlib import Path, PurePosixPath
 import re
-import shutil
 import stat
 import tempfile
 from typing import Callable, Iterable
@@ -21,14 +21,16 @@ import zipfile
 import yaml
 
 from content_model import ContentIndex
-from download_model import DownloadBuildError, DownloadBuildResult, ZIP_MIN_EPOCH
+from download_model import DownloadBuildError, DownloadBuildResult, READ_CHUNK_SIZE, ZIP_MIN_EPOCH
 from download_sources import canonical_archive_name
 from io_utils import (
+    atomic_write_bytes,
     atomic_write_text,
     generated_at_iso,
     sha256_bytes,
     source_date_epoch,
     stable_json_dumps,
+    staged_directory,
 )
 
 OFFLINE_ARCHIVE_NAME = "Cheatsheets-Offline-HTML.zip"
@@ -37,21 +39,36 @@ OFFLINE_CHECKSUMS_NAME = "OFFLINE-SHA256SUMS.txt"
 OFFLINE_README_NAME = "OFFLINE-LESEN.txt"
 OFFLINE_SERVER_NAME = "offline-server.py"
 BUILD_SENTINEL = ".cheatsheets-build-root"
-URL_ATTRIBUTES: dict[str, tuple[str, ...]] = {
-    "a": ("href",),
+RUNTIME_URL_ATTRIBUTES: dict[str, tuple[str, ...]] = {
     "audio": ("src",),
+    "base": ("href",),
     "embed": ("src",),
     "iframe": ("src",),
     "img": ("src", "srcset"),
     "input": ("src",),
-    "link": ("href",),
     "object": ("data",),
     "script": ("src",),
     "source": ("src", "srcset"),
     "track": ("src",),
     "video": ("src", "poster"),
 }
+RUNTIME_LINK_RELS = {
+    "apple-touch-icon",
+    "icon",
+    "manifest",
+    "modulepreload",
+    "preconnect",
+    "prefetch",
+    "dns-prefetch",
+    "preload",
+    "stylesheet",
+}
 CSS_URL_RE = re.compile(r"url\(\s*(['\"]?)(.*?)\1\s*\)", re.I)
+CSS_IMPORT_RE = re.compile(
+    r"@import\s+(?:url\(\s*)?['\"]?(?P<url>[^'\"\s;)]+)", re.I
+)
+CHECKSUM_LINE_RE = re.compile(r"^(?P<sha>[0-9a-f]{64})  (?P<name>[^\r\n]+)$")
+SOURCE_COMMIT_RE = re.compile(r"^[0-9a-f]{40}$")
 
 
 class OfflineBuildError(DownloadBuildError):
@@ -66,12 +83,28 @@ class OfflineBuildResult:
     tree_sha256: str
 
 
+@dataclass(frozen=True, slots=True)
+class OfflineReference:
+    tag: str
+    attribute: str
+    value: str
+    runtime: bool
+
+
+@dataclass(frozen=True, slots=True)
+class ParsedHtml:
+    references: tuple[OfflineReference, ...]
+    ids: frozenset[str]
+
+
 class ReferenceParser(HTMLParser):
-    """Sammle lokale und externe URL-Attribute ohne HTML umzuschreiben."""
+    """Sammle IDs sowie lokale, externe und laufzeitwirksame URL-Attribute."""
 
     def __init__(self) -> None:
         super().__init__(convert_charrefs=True)
-        self.references: list[str] = []
+        self.references: list[OfflineReference] = []
+        self.ids: set[str] = set()
+        self._style_depth = 0
 
     @staticmethod
     def _srcset(value: str) -> Iterable[str]:
@@ -80,19 +113,97 @@ class ReferenceParser(HTMLParser):
             if candidate:
                 yield candidate.split()[0]
 
-    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
-        names = URL_ATTRIBUTES.get(tag.casefold())
-        if not names:
+    def _add_reference(
+        self,
+        *,
+        tag: str,
+        attribute: str,
+        value: str,
+        runtime: bool,
+    ) -> None:
+        value = value.strip()
+        if not value:
             return
+        if attribute == "srcset":
+            for item in self._srcset(value):
+                self.references.append(OfflineReference(tag, attribute, item, runtime))
+            return
+        self.references.append(OfflineReference(tag, attribute, value, runtime))
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        tag = tag.casefold()
         values = {name.casefold(): value or "" for name, value in attrs}
-        for name in names:
-            value = values.get(name, "").strip()
-            if not value:
-                continue
-            if name == "srcset":
-                self.references.extend(self._srcset(value))
-            else:
-                self.references.append(value)
+        identifier = values.get("id", "").strip()
+        if identifier:
+            self.ids.add(identifier)
+
+        style = values.get("style", "")
+        for match in CSS_URL_RE.finditer(style):
+            self._add_reference(
+                tag=tag,
+                attribute="style",
+                value=match.group(2),
+                runtime=True,
+            )
+
+        if tag == "base":
+            raise OfflineBuildError("Offline-HTML darf kein <base>-Element enthalten")
+        if tag == "style":
+            self._style_depth += 1
+        if tag == "meta" and values.get("http-equiv", "").casefold() == "refresh":
+            raise OfflineBuildError("Offline-HTML darf keinen Meta-Refresh enthalten")
+
+        if tag == "a":
+            self._add_reference(
+                tag=tag,
+                attribute="href",
+                value=values.get("href", ""),
+                runtime=False,
+            )
+            return
+
+        if tag == "link":
+            relations = {item.casefold() for item in values.get("rel", "").split()}
+            self._add_reference(
+                tag=tag,
+                attribute="href",
+                value=values.get("href", ""),
+                runtime=bool(relations & RUNTIME_LINK_RELS),
+            )
+            return
+
+        for attribute in RUNTIME_URL_ATTRIBUTES.get(tag, ()):
+            self._add_reference(
+                tag=tag,
+                attribute=attribute,
+                value=values.get(attribute, ""),
+                runtime=True,
+            )
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag.casefold() == "style" and self._style_depth:
+            self._style_depth -= 1
+
+    def handle_data(self, data: str) -> None:
+        if not self._style_depth:
+            return
+        for match in CSS_URL_RE.finditer(data):
+            self._add_reference(
+                tag="style",
+                attribute="url",
+                value=match.group(2),
+                runtime=True,
+            )
+        for match in CSS_IMPORT_RE.finditer(data):
+            self._add_reference(
+                tag="style",
+                attribute="import",
+                value=match.group("url"),
+                runtime=True,
+            )
+
+    def result(self) -> ParsedHtml:
+        return ParsedHtml(tuple(self.references), frozenset(self.ids))
 
 
 def _load_base_config(root: Path) -> dict[str, object]:
@@ -100,7 +211,9 @@ def _load_base_config(root: Path) -> dict[str, object]:
     try:
         payload = yaml.safe_load(path.read_text(encoding="utf-8"))
     except (OSError, UnicodeError, yaml.YAMLError) as exc:
-        raise OfflineBuildError(f"Offline-Konfiguration kann mkdocs.yml nicht lesen: {exc}") from exc
+        raise OfflineBuildError(
+            f"Offline-Konfiguration kann mkdocs.yml nicht lesen: {exc}"
+        ) from exc
     if not isinstance(payload, dict):
         raise OfflineBuildError("mkdocs.yml muss ein YAML-Mapping sein")
     return payload
@@ -156,15 +269,90 @@ def _offline_url_for_generated_path(path: PurePosixPath) -> str:
     return path.with_suffix(".html").as_posix()
 
 
+def _assert_no_symlinks(root: Path) -> None:
+    if root.is_symlink():
+        raise OfflineBuildError(f"Offline-Quellbaum darf kein Symlink sein: {root}")
+    for directory, dirnames, filenames in os.walk(root, followlinks=False):
+        for name in [*dirnames, *filenames]:
+            path = Path(directory) / name
+            if path.is_symlink():
+                raise OfflineBuildError(
+                    f"Offline-Quellbaum enthält Symlink: {path.relative_to(root)}"
+                )
+
+
+def read_regular_file(path: Path, root: Path) -> bytes:
+    """Lese eine reguläre Datei positionsstabil und ohne Symlinkfolge."""
+
+    root = root.resolve()
+    absolute = Path(os.path.abspath(path))
+    try:
+        absolute.relative_to(root)
+        absolute.parent.resolve().relative_to(root)
+    except ValueError as exc:
+        raise OfflineBuildError(f"Dateipfad verlässt den erlaubten Root: {path}") from exc
+
+    before = absolute.lstat()
+    if stat.S_ISLNK(before.st_mode) or not stat.S_ISREG(before.st_mode):
+        raise OfflineBuildError(f"Dateipfad ist keine reguläre Datei: {path}")
+
+    flags = os.O_RDONLY | getattr(os, "O_BINARY", 0)
+    flags |= getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    descriptor = os.open(absolute, flags)
+    try:
+        opened = os.fstat(descriptor)
+        if not stat.S_ISREG(opened.st_mode):
+            raise OfflineBuildError(f"Geöffneter Dateipfad ist nicht regulär: {path}")
+        if (before.st_dev, before.st_ino) != (opened.st_dev, opened.st_ino):
+            raise OfflineBuildError(f"Dateipfad wurde während des Lesens ausgetauscht: {path}")
+        chunks: list[bytes] = []
+        while chunk := os.read(descriptor, READ_CHUNK_SIZE):
+            chunks.append(chunk)
+        return b"".join(chunks)
+    finally:
+        os.close(descriptor)
+
+
+def _regular_files(root: Path) -> list[Path]:
+    _assert_no_symlinks(root)
+    files: list[Path] = []
+    casefolded: dict[str, str] = {}
+    for path in sorted(root.rglob("*"), key=lambda item: item.as_posix().casefold()):
+        relative = path.relative_to(root).as_posix()
+        if not path.is_file():
+            continue
+        info = path.stat()
+        if not stat.S_ISREG(info.st_mode) or info.st_nlink != 1:
+            raise OfflineBuildError(
+                f"Offlinebaum enthält keine einfache reguläre Datei: {relative}"
+            )
+        key = relative.casefold()
+        previous = casefolded.get(key)
+        if previous is not None and previous != relative:
+            raise OfflineBuildError(
+                f"Case-insensitive Pfadkollision im Offlinebaum: {previous} / {relative}"
+            )
+        casefolded[key] = relative
+        files.append(path)
+    return files
+
+
+def _copy_regular_tree(source: Path, target: Path) -> None:
+    if target.exists():
+        raise OfflineBuildError(f"Temporäres Offline-Docs-Ziel existiert bereits: {target}")
+    target.mkdir(parents=True)
+    for path in _regular_files(source):
+        relative = path.relative_to(source)
+        atomic_write_bytes(target / relative, read_regular_file(path, source))
+
+
 def _copy_and_rewrite_docs(
     source: Path,
     target: Path,
     index: ContentIndex,
     online_site_url: str,
 ) -> None:
-    if target.exists():
-        raise OfflineBuildError(f"Temporäres Offline-Docs-Ziel existiert bereits: {target}")
-    shutil.copytree(source, target, symlinks=False)
+    _copy_regular_tree(source, target)
     (target / BUILD_SENTINEL).unlink(missing_ok=True)
 
     pages_path = target / "data" / "pages.json"
@@ -177,7 +365,9 @@ def _copy_and_rewrite_docs(
     except (OSError, UnicodeError, json.JSONDecodeError) as exc:
         raise OfflineBuildError(f"Generierte Webdaten sind nicht offlinefähig: {exc}") from exc
 
-    if not isinstance(pages, list) or not isinstance(categories, list) or not isinstance(build_info, dict):
+    if not isinstance(pages, list) or not isinstance(categories, list) or not isinstance(
+        build_info, dict
+    ):
         raise OfflineBuildError("Generierte Webdaten besitzen unerwartete JSON-Strukturen")
 
     for item in pages:
@@ -257,54 +447,69 @@ finally:
 '''
 
 
-def _regular_files(root: Path) -> list[Path]:
-    files: list[Path] = []
-    casefolded: dict[str, str] = {}
-    for path in sorted(root.rglob("*"), key=lambda item: item.as_posix().casefold()):
-        relative = path.relative_to(root).as_posix()
-        if path.is_symlink():
-            raise OfflineBuildError(f"Offlinebaum enthält Symlink: {relative}")
-        if not path.is_file():
-            continue
-        info = path.stat()
-        if not stat.S_ISREG(info.st_mode) or info.st_nlink != 1:
-            raise OfflineBuildError(f"Offlinebaum enthält keine einfache reguläre Datei: {relative}")
-        key = relative.casefold()
-        previous = casefolded.get(key)
-        if previous is not None and previous != relative:
-            raise OfflineBuildError(
-                f"Case-insensitive Pfadkollision im Offlinebaum: {previous} / {relative}"
-            )
-        casefolded[key] = relative
-        files.append(path)
-    return files
+def _parse_html(path: Path) -> ParsedHtml:
+    parser = ReferenceParser()
+    try:
+        parser.feed(path.read_text(encoding="utf-8"))
+        parser.close()
+    except (OSError, UnicodeError) as exc:
+        raise OfflineBuildError(f"Offline-HTML ist nicht lesbar: {path}: {exc}") from exc
+    return parser.result()
 
 
-def _resolve_local_reference(root: Path, source: Path, value: str) -> Path | None:
-    value = value.strip()
-    if not value or value.startswith("#"):
-        return None
+def _reference_target(
+    root: Path,
+    source: Path,
+    reference: OfflineReference,
+) -> tuple[Path | None, str]:
+    value = reference.value.strip()
+    if not value:
+        return None, ""
+    if any(ord(char) < 32 or ord(char) == 127 for char in value):
+        raise OfflineBuildError(
+            f"Steuerzeichen in Offline-Link {source.relative_to(root)}: {value!r}"
+        )
     if value.startswith("//") or value.startswith("\\\\"):
         raise OfflineBuildError(
             f"Protokollrelativer oder UNC-Link in {source.relative_to(root)}: {value}"
         )
+
     split = urlsplit(value)
     scheme = split.scheme.casefold()
     if scheme in {"http", "https", "mailto", "tel"}:
-        return None
+        if reference.runtime:
+            raise OfflineBuildError(
+                f"Externes Laufzeitasset in {source.relative_to(root)} "
+                f"({reference.tag}/{reference.attribute}): {value}"
+            )
+        return None, ""
     if scheme == "data":
-        return None
+        if reference.runtime:
+            return None, ""
+        raise OfflineBuildError(
+            f"Data-URL ist als anklickbarer Offline-Link unzulässig in "
+            f"{source.relative_to(root)}: {value}"
+        )
     if scheme:
         raise OfflineBuildError(
             f"Nicht unterstütztes URL-Schema in {source.relative_to(root)}: {value}"
         )
+
     decoded = unquote(split.path)
-    if not decoded:
-        return None
-    if decoded.startswith(("/", "\\")):
+    fragment = unquote(split.fragment)
+    if "\\" in decoded:
         raise OfflineBuildError(
-            f"Root-relativer Link ist offline nicht portabel in {source.relative_to(root)}: {value}"
+            f"Backslash ist in Offline-Links nicht portabel in "
+            f"{source.relative_to(root)}: {value}"
         )
+    if not decoded:
+        return source, fragment
+    if decoded.startswith("/"):
+        raise OfflineBuildError(
+            f"Root-relativer Link ist offline nicht portabel in "
+            f"{source.relative_to(root)}: {value}"
+        )
+
     candidate = (source.parent / decoded).resolve(strict=False)
     try:
         candidate.relative_to(root.resolve())
@@ -314,51 +519,82 @@ def _resolve_local_reference(root: Path, source: Path, value: str) -> Path | Non
         ) from exc
     if decoded.endswith("/"):
         candidate /= "index.html"
-    return candidate
+    return candidate, fragment
 
 
 def validate_offline_tree(root: Path) -> dict[str, object]:
-    """Prüfe Dateitypen und jede lokale HTML-/CSS-Referenz fail-closed."""
+    """Prüfe Dateitypen sowie jede lokale HTML-/CSS-Referenz fail-closed."""
 
     root = root.resolve()
-    required = [root / "index.html", root / "404.html", root / OFFLINE_README_NAME]
+    required = [
+        root / "index.html",
+        root / "404.html",
+        root / OFFLINE_README_NAME,
+        root / OFFLINE_SERVER_NAME,
+    ]
     missing = [path.name for path in required if not path.is_file()]
     if missing:
-        raise OfflineBuildError("Offlinebaum ist unvollständig; fehlend: " + ", ".join(missing))
+        raise OfflineBuildError(
+            "Offlinebaum ist unvollständig; fehlend: " + ", ".join(missing)
+        )
 
     files = _regular_files(root)
+    html_documents = {
+        path.resolve(): _parse_html(path)
+        for path in files
+        if path.suffix.casefold() == ".html"
+    }
     checked_references = 0
+    external_links = 0
+
     for path in files:
-        suffix = path.suffix.casefold()
-        references: list[str] = []
-        if suffix == ".html":
-            parser = ReferenceParser()
-            try:
-                parser.feed(path.read_text(encoding="utf-8"))
-            except (OSError, UnicodeError) as exc:
-                raise OfflineBuildError(f"Offline-HTML ist nicht lesbar: {path}: {exc}") from exc
-            references.extend(parser.references)
-        elif suffix == ".css":
+        references: list[OfflineReference] = []
+        if path.suffix.casefold() == ".html":
+            references.extend(html_documents[path.resolve()].references)
+        elif path.suffix.casefold() == ".css":
             try:
                 text = path.read_text(encoding="utf-8")
             except (OSError, UnicodeError) as exc:
                 raise OfflineBuildError(f"Offline-CSS ist nicht lesbar: {path}: {exc}") from exc
-            references.extend(match.group(2).strip() for match in CSS_URL_RE.finditer(text))
+            references.extend(
+                OfflineReference("css", "url", match.group(2).strip(), True)
+                for match in CSS_URL_RE.finditer(text)
+            )
+            references.extend(
+                OfflineReference("css", "import", match.group("url"), True)
+                for match in CSS_IMPORT_RE.finditer(text)
+            )
 
-        for value in references:
-            target = _resolve_local_reference(root, path, value)
+        for reference in references:
+            target, fragment = _reference_target(root, path, reference)
             if target is None:
+                if urlsplit(reference.value).scheme.casefold() in {
+                    "http",
+                    "https",
+                    "mailto",
+                    "tel",
+                }:
+                    external_links += 1
                 continue
             checked_references += 1
             if not target.is_file() or target.is_symlink():
                 raise OfflineBuildError(
-                    f"Fehlendes lokales Offlineziel in {path.relative_to(root)}: {value}"
+                    f"Fehlendes lokales Offlineziel in {path.relative_to(root)}: "
+                    f"{reference.value}"
                 )
+            if fragment and target.suffix.casefold() == ".html":
+                document = html_documents.get(target.resolve())
+                if document is None or fragment not in document.ids:
+                    raise OfflineBuildError(
+                        f"Fehlender Offlineanker in {path.relative_to(root)}: "
+                        f"{reference.value}"
+                    )
 
     return {
+        "bytes": sum(path.stat().st_size for path in files),
+        "external_links": external_links,
         "files": len(files),
         "references": checked_references,
-        "bytes": sum(path.stat().st_size for path in files),
     }
 
 
@@ -371,7 +607,7 @@ def _entry_payloads(root: Path) -> dict[str, bytes]:
         name = canonical_archive_name(relative)
         if name in entries:
             raise OfflineBuildError(f"Doppelter Offline-Archiveintrag: {name}")
-        entries[name] = path.read_bytes()
+        entries[name] = read_regular_file(path, root)
     return entries
 
 
@@ -418,15 +654,19 @@ def _augment_integrity_files(
     return entries, tree_sha256
 
 
-def _zip_timestamp() -> tuple[int, int, int, int, int, int]:
-    value = datetime.fromtimestamp(max(source_date_epoch(), ZIP_MIN_EPOCH), tz=timezone.utc)
+def _zip_timestamp_for_epoch(epoch: int) -> tuple[int, int, int, int, int, int]:
+    normalized = max(epoch, ZIP_MIN_EPOCH)
+    normalized -= normalized % 2
+    value = datetime.fromtimestamp(normalized, tz=timezone.utc)
     return value.year, value.month, value.day, value.hour, value.minute, value.second
+
+
+def _zip_timestamp() -> tuple[int, int, int, int, int, int]:
+    return _zip_timestamp_for_epoch(source_date_epoch())
 
 
 def render_offline_zip(entries: dict[str, bytes]) -> bytes:
     """Erzeuge ein bytegleich reproduzierbares ZIP ohne Kompressionsdrift."""
-
-    import io
 
     buffer = io.BytesIO()
     seen: set[str] = set()
@@ -456,20 +696,33 @@ def render_offline_zip(entries: dict[str, bytes]) -> bytes:
 def validate_offline_zip(payload: bytes, expected: dict[str, bytes]) -> None:
     """Lese das fertige Archiv erneut ein und vergleiche alle Bytes und Metadaten."""
 
-    import io
-
+    if len(payload) > 900 * 1024 * 1024:
+        raise OfflineBuildError("Offline-ZIP überschreitet das Sicherheitslimit")
     try:
         with zipfile.ZipFile(io.BytesIO(payload)) as archive:
             names = archive.namelist()
+            if len(names) > 20_000:
+                raise OfflineBuildError("Offline-ZIP enthält zu viele Einträge")
             if names != sorted(expected, key=str.casefold):
                 raise OfflineBuildError("Offline-ZIP-Reihenfolge oder Dateimenge ist instabil")
             if len(names) != len(set(names)):
                 raise OfflineBuildError("Offline-ZIP enthält doppelte Einträge")
+            normalized_names: set[str] = set()
             for info in archive.infolist():
                 name = canonical_archive_name(info.filename)
+                if name in normalized_names:
+                    raise OfflineBuildError(
+                        f"Offline-ZIP kollidiert nach Pfadnormalisierung: {name}"
+                    )
+                normalized_names.add(name)
+                if info.file_size > 100 * 1024 * 1024:
+                    raise OfflineBuildError(f"Offline-ZIP-Eintrag ist zu groß: {name}")
+                mode = info.external_attr >> 16
+                if not stat.S_ISREG(mode):
+                    raise OfflineBuildError(f"Offline-ZIP enthält keinen regulären Eintrag: {name}")
                 if info.compress_type != zipfile.ZIP_STORED:
                     raise OfflineBuildError(f"Offline-ZIP komprimiert unerwartet: {name}")
-                if (info.external_attr >> 16) & 0o777 != 0o644:
+                if mode & 0o777 != 0o644:
                     raise OfflineBuildError(f"Offline-ZIP besitzt instabile Rechte: {name}")
                 if info.date_time != _zip_timestamp():
                     raise OfflineBuildError(f"Offline-ZIP besitzt instabilen Zeitstempel: {name}")
@@ -477,6 +730,187 @@ def validate_offline_zip(payload: bytes, expected: dict[str, bytes]) -> None:
                     raise OfflineBuildError(f"Offline-ZIP-Inhalt weicht ab: {name}")
     except zipfile.BadZipFile as exc:
         raise OfflineBuildError("Offline-ZIP ist beschädigt") from exc
+
+
+def _parse_checksum_file(payload: bytes) -> dict[str, str]:
+    try:
+        lines = payload.decode("utf-8").splitlines()
+    except UnicodeDecodeError as exc:
+        raise OfflineBuildError("Offline-Prüfsummen sind kein gültiges UTF-8") from exc
+    checksums: dict[str, str] = {}
+    for line in lines:
+        match = CHECKSUM_LINE_RE.fullmatch(line)
+        if match is None:
+            raise OfflineBuildError(f"Ungültige Offline-Prüfsummenzeile: {line!r}")
+        name = canonical_archive_name(match.group("name"))
+        if name in checksums:
+            raise OfflineBuildError(f"Doppelte Offline-Prüfsumme: {name}")
+        checksums[name] = match.group("sha")
+    return checksums
+
+
+def _parse_manifest(payload: bytes) -> dict[str, object]:
+    try:
+        manifest = json.loads(payload.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise OfflineBuildError(f"Offline-Manifest ist ungültig: {exc}") from exc
+    if not isinstance(manifest, dict) or manifest.get("schema_version") != 1:
+        raise OfflineBuildError("Offline-Manifest besitzt keine unterstützte Schema-Version")
+    source_commit = manifest.get("source_commit")
+    if not isinstance(source_commit, str) or not (
+        SOURCE_COMMIT_RE.fullmatch(source_commit) or source_commit == "unknown"
+    ):
+        raise OfflineBuildError("Offline-Manifest besitzt keinen gültigen Quellcommit")
+    epoch = manifest.get("source_date_epoch")
+    if not isinstance(epoch, int) or epoch < 0:
+        raise OfflineBuildError("Offline-Manifest besitzt keinen gültigen Quellzeitpunkt")
+    if manifest.get("url_mode") != "relative-html":
+        raise OfflineBuildError("Offline-Manifest besitzt einen unerwarteten URL-Modus")
+    return manifest
+
+
+def _read_zip_entries(
+    payload: bytes,
+) -> tuple[dict[str, bytes], dict[str, zipfile.ZipInfo]]:
+    if len(payload) > 900 * 1024 * 1024:
+        raise OfflineBuildError("Offline-ZIP überschreitet das Sicherheitslimit")
+    try:
+        with zipfile.ZipFile(io.BytesIO(payload)) as archive:
+            names = archive.namelist()
+            if len(names) > 20_000:
+                raise OfflineBuildError("Offline-ZIP enthält zu viele Einträge")
+            if names != sorted(names, key=str.casefold) or len(names) != len(set(names)):
+                raise OfflineBuildError("Offline-ZIP ist nicht eindeutig sortiert")
+            entries: dict[str, bytes] = {}
+            infos: dict[str, zipfile.ZipInfo] = {}
+            for info in archive.infolist():
+                name = canonical_archive_name(info.filename)
+                if name in entries:
+                    raise OfflineBuildError(
+                        f"Offline-ZIP kollidiert nach Pfadnormalisierung: {name}"
+                    )
+                if info.file_size > 100 * 1024 * 1024:
+                    raise OfflineBuildError(f"Offline-ZIP-Eintrag ist zu groß: {name}")
+                mode = info.external_attr >> 16
+                if not stat.S_ISREG(mode) or mode & 0o777 != 0o644:
+                    raise OfflineBuildError(f"Unsicherer Offline-ZIP-Eintrag: {name}")
+                if info.compress_type != zipfile.ZIP_STORED:
+                    raise OfflineBuildError(f"Offline-ZIP-Eintrag ist nicht reproduzierbar: {name}")
+                entries[name] = archive.read(info)
+                infos[name] = info
+            return entries, infos
+    except zipfile.BadZipFile as exc:
+        raise OfflineBuildError("Offline-ZIP ist beschädigt") from exc
+
+
+def _materialize_entries(entries: dict[str, bytes], target: Path) -> dict[str, object]:
+    target.mkdir(parents=True, exist_ok=False)
+    for name, payload in entries.items():
+        destination = target / canonical_archive_name(name)
+        atomic_write_bytes(destination, payload)
+    return validate_offline_tree(target)
+
+
+def inspect_offline_zip(
+    payload: bytes,
+    *,
+    extract_to: Path | None = None,
+    force: bool = False,
+) -> dict[str, object]:
+    """Validiere ein fertiges Offline-ZIP unabhängig vom Buildprozess."""
+
+    entries, infos = _read_zip_entries(payload)
+    required = {
+        "index.html",
+        "404.html",
+        OFFLINE_README_NAME,
+        OFFLINE_SERVER_NAME,
+        OFFLINE_MANIFEST_NAME,
+        OFFLINE_CHECKSUMS_NAME,
+    }
+    missing = sorted(required - set(entries))
+    if missing:
+        raise OfflineBuildError("Offline-ZIP ist unvollständig; fehlend: " + ", ".join(missing))
+
+    manifest = _parse_manifest(entries[OFFLINE_MANIFEST_NAME])
+    rows = manifest.get("files")
+    if not isinstance(rows, list):
+        raise OfflineBuildError("Offline-Manifest besitzt keine Dateiliste")
+    manifest_files: dict[str, tuple[int, str]] = {}
+    for row in rows:
+        if not isinstance(row, dict):
+            raise OfflineBuildError("Offline-Manifest enthält keinen Objektdatensatz")
+        name = canonical_archive_name(str(row.get("name") or ""))
+        size = row.get("bytes")
+        digest = row.get("sha256")
+        if (
+            name in manifest_files
+            or not isinstance(size, int)
+            or size < 0
+            or not isinstance(digest, str)
+            or not re.fullmatch(r"[0-9a-f]{64}", digest)
+        ):
+            raise OfflineBuildError(f"Ungültiger Offline-Manifestdatensatz: {name}")
+        manifest_files[name] = (size, digest)
+
+    expected_manifest_names = set(entries) - {OFFLINE_MANIFEST_NAME}
+    if set(manifest_files) != expected_manifest_names:
+        raise OfflineBuildError("Offline-Manifest und ZIP-Dateimenge weichen ab")
+    for name, (size, digest) in manifest_files.items():
+        if len(entries[name]) != size or sha256_bytes(entries[name]) != digest:
+            raise OfflineBuildError(f"Offline-Manifest stimmt nicht mit ZIP-Inhalt überein: {name}")
+
+    checksums = _parse_checksum_file(entries[OFFLINE_CHECKSUMS_NAME])
+    expected_checksum_names = set(entries) - {
+        OFFLINE_MANIFEST_NAME,
+        OFFLINE_CHECKSUMS_NAME,
+    }
+    if set(checksums) != expected_checksum_names:
+        raise OfflineBuildError("Offline-Prüfsummen und ZIP-Dateimenge weichen ab")
+    for name, digest in checksums.items():
+        if sha256_bytes(entries[name]) != digest:
+            raise OfflineBuildError(f"Offline-Prüfsumme ist falsch: {name}")
+
+    digest_entries = {
+        name: content
+        for name, content in entries.items()
+        if name != OFFLINE_MANIFEST_NAME
+    }
+    tree_sha256 = _tree_digest(digest_entries)
+    if manifest.get("tree_sha256") != tree_sha256:
+        raise OfflineBuildError("Offline-Baumhash stimmt nicht mit dem Manifest überein")
+
+    expected_timestamp = _zip_timestamp_for_epoch(int(manifest["source_date_epoch"]))
+    for name, info in infos.items():
+        if info.date_time != expected_timestamp:
+            raise OfflineBuildError(f"Offline-ZIP besitzt falschen Zeitstempel: {name}")
+
+    if extract_to is None:
+        with tempfile.TemporaryDirectory(prefix="cheatsheets-offline-inspect-") as tmp:
+            tree_report = _materialize_entries(entries, Path(tmp) / "site")
+    else:
+        extract_to = extract_to.resolve(strict=False)
+        with staged_directory(
+            extract_to,
+            allowed_root=extract_to.parent.resolve(),
+            force=force,
+        ) as staging:
+            for name, content in entries.items():
+                atomic_write_bytes(staging / canonical_archive_name(name), content)
+            tree_report = validate_offline_tree(staging)
+
+    return {
+        "archive_bytes": len(payload),
+        "archive_sha256": sha256_bytes(payload),
+        "files": len(entries),
+        "references": tree_report["references"],
+        "external_links": tree_report["external_links"],
+        "schema_version": 1,
+        "source_commit": manifest["source_commit"],
+        "source_date_epoch": manifest["source_date_epoch"],
+        "tree_sha256": tree_sha256,
+        "uncompressed_bytes": sum(len(content) for content in entries.values()),
+    }
 
 
 def build_offline_archive(
@@ -490,7 +924,7 @@ def build_offline_archive(
     source_commit: str,
     run_mkdocs: Callable[[Path], None],
 ) -> OfflineBuildResult:
-    """Baue Offline-HTML, kopiere Basisk Downloads und liefere ZIP-Bytes zurück."""
+    """Baue Offline-HTML, kopiere Basisdownloads und liefere ZIP-Bytes zurück."""
 
     root = root.resolve()
     build_root = root / "build"
@@ -528,6 +962,7 @@ def build_offline_archive(
         )
         payload = render_offline_zip(entries)
         validate_offline_zip(payload, entries)
+        inspect_offline_zip(payload)
         return OfflineBuildResult(
             payload=payload,
             files=len(entries),
