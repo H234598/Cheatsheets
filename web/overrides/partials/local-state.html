@@ -1,0 +1,104 @@
+{% if page and page.is_homepage %}
+  <section class="cheat-home-actions" aria-labelledby="cheat-home-actions-title">
+    <h2 id="cheat-home-actions-title">Schnellstart</h2>
+    <div class="cheat-action-grid">
+      <a class="cheat-action-card" href="#cheatsheets">
+        <strong>Hier anfangen</strong>
+        <span>Zur Einführung und den wichtigsten Einstiegen</span>
+      </a>
+      <a class="cheat-action-card" href="{{ 'kategorien/' | url }}">
+        <strong>Kategorie wählen</strong>
+        <span>Einen klar abgegrenzten Themenbereich öffnen</span>
+      </a>
+      <a class="cheat-action-card" href="{{ 'index/gesamt/' | url }}">
+        <strong>Alle durchsuchen</strong>
+        <span>Gesamtindex, Tags und lokale Filter verwenden</span>
+      </a>
+    </div>
+  </section>
+
+  <section
+    class="cheat-local-dashboard"
+    data-cheat-home-state
+    aria-labelledby="cheat-local-dashboard-title"
+    hidden
+  >
+    <h2 id="cheat-local-dashboard-title">Dein lokaler Überblick</h2>
+    <p class="cheat-local-privacy">
+      Favoriten, Verlauf und Fortschritt bleiben ausschließlich in diesem Browser.
+    </p>
+    <div class="cheat-dashboard-grid">
+      <section aria-labelledby="cheat-last-title">
+        <h3 id="cheat-last-title">Zuletzt gelesen</h3>
+        <div data-cheat-home-last></div>
+      </section>
+      <section aria-labelledby="cheat-progress-title">
+        <h3 id="cheat-progress-title">Weiterlesen</h3>
+        <div data-cheat-home-progress></div>
+      </section>
+      <section aria-labelledby="cheat-favorites-title">
+        <h3 id="cheat-favorites-title">Favoriten</h3>
+        <div data-cheat-home-favorites></div>
+      </section>
+    </div>
+  </section>
+
+  <section
+    class="cheat-filter-panel"
+    data-cheat-filter-panel
+    aria-labelledby="cheat-filter-title"
+    hidden
+  >
+    <h2 id="cheat-filter-title">Cheatsheets filtern</h2>
+    <p>
+      Die Filter arbeiten lokal im Browser. Suchbegriffe werden weder gespeichert noch übertragen.
+    </p>
+    <form class="cheat-filter-form" data-cheat-filter-form>
+      <label>
+        Suchbegriff
+        <input
+          type="search"
+          autocomplete="off"
+          inputmode="search"
+          data-cheat-filter-query
+          placeholder="Titel, Alias oder Tag"
+        >
+      </label>
+      <label>
+        Kategorie
+        <select data-cheat-filter-category>
+          <option value="">Alle Kategorien</option>
+        </select>
+      </label>
+      <label>
+        Tag
+        <select data-cheat-filter-tag>
+          <option value="">Alle Tags</option>
+        </select>
+      </label>
+      <label>
+        Maximale Lesezeit
+        <select data-cheat-filter-time>
+          <option value="">Beliebig</option>
+          <option value="5">Bis 5 Minuten</option>
+          <option value="10">Bis 10 Minuten</option>
+          <option value="20">Bis 20 Minuten</option>
+        </select>
+      </label>
+      <button type="reset" class="md-button">Filter zurücksetzen</button>
+    </form>
+    <p class="cheat-filter-count" data-cheat-filter-count aria-live="polite"></p>
+    <p class="cheat-filter-error" data-cheat-filter-error role="status" hidden></p>
+    <div class="cheat-filter-results" data-cheat-filter-results></div>
+    <button type="button" class="md-button" data-cheat-filter-more hidden>
+      Weitere Treffer zeigen
+    </button>
+  </section>
+
+  <noscript>
+    <p class="cheat-noscript-note">
+      Lokale Favoriten, Fortschritt und Filter benötigen JavaScript. Alle Inhalte,
+      Kategorien und Indizes bleiben ohne JavaScript vollständig zugänglich.
+    </p>
+  </noscript>
+{% endif %}
