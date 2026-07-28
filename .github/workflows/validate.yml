@@ -87,7 +87,7 @@ jobs:
           python scripts/build_manifest.py
           --output build/reports/expected-metadata
 
-      - name: Metadatendrift dokumentieren
+      - name: Kanonische Metadaten vergleichen
         shell: bash
         run: |
           set -euo pipefail
@@ -96,6 +96,10 @@ jobs:
             diff -u "$name" "build/reports/expected-metadata/$name" \
               >> build/reports/metadata-diff.patch || true
           done
+          if test -s build/reports/metadata-diff.patch; then
+            cat build/reports/metadata-diff.patch >&2
+            exit 1
+          fi
 
       - name: Vollständigen Strict-Build prüfen
         run: >-
