@@ -118,7 +118,20 @@ jobs:
         run: python scripts/build_manifest.py --check
 
       - name: Webbuild prüfen
-        run: python scripts/build_site.py --check --site-url https://example.invalid/Cheatsheets/
+        id: webbuild
+        shell: bash
+        run: |
+          set -o pipefail
+          python scripts/build_site.py --check --site-url https://example.invalid/Cheatsheets/ 2>&1 | tee /tmp/webbuild.log
+
+      - name: Webbuild-Diagnose hochladen
+        if: failure() && steps.webbuild.conclusion == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: webbuild-diagnostic
+          path: /tmp/webbuild.log
+          if-no-files-found: error
+          retention-days: 1
 
       - name: Diff prüfen
         run: git diff --check
