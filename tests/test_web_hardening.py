@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+from http import HTTPStatus
 from pathlib import Path
 
 import pytest
 
-from serve_site import SiteServerError, normalize_base_path
+from serve_site import SiteServerError, normalize_base_path, translate_mounted_request
 from validate_web_budgets import analyze_web_budgets
 
 
@@ -45,6 +46,7 @@ def write_minimal_site(root: Path, *, html: str | None = None) -> Path:
 def test_base_path_is_canonicalized_and_rejects_unsafe_values() -> None:
     assert normalize_base_path("/Cheatsheets") == "/Cheatsheets/"
     assert normalize_base_path("//Cheatsheets//") == "/Cheatsheets/"
+    assert normalize_base_path("/") == "/"
 
     for value in (
         "Cheatsheets",
@@ -55,6 +57,37 @@ def test_base_path_is_canonicalized_and_rejects_unsafe_values() -> None:
     ):
         with pytest.raises(SiteServerError):
             normalize_base_path(value)
+
+
+def test_root_mount_serves_root_without_redirect_loop() -> None:
+    assert translate_mounted_request("/", "/") == ("/", None, None)
+    assert translate_mounted_request("/index.html?mode=offline", "/") == (
+        "/index.html?mode=offline",
+        None,
+        None,
+    )
+
+
+def test_project_page_mount_redirects_and_translates_only_its_prefix() -> None:
+    assert translate_mounted_request("/", "/Cheatsheets/") == (
+        None,
+        "/Cheatsheets/",
+        HTTPStatus.FOUND,
+    )
+    assert translate_mounted_request("/Cheatsheets", "/Cheatsheets/") == (
+        None,
+        "/Cheatsheets/",
+        HTTPStatus.MOVED_PERMANENTLY,
+    )
+    assert translate_mounted_request(
+        "/Cheatsheets/index/gesamt/?q=test",
+        "/Cheatsheets/",
+    ) == ("/index/gesamt/?q=test", None, None)
+    assert translate_mounted_request("/anderes/", "/Cheatsheets/") == (
+        None,
+        None,
+        None,
+    )
 
 
 def test_local_runtime_assets_and_small_custom_bundle_pass(tmp_path: Path) -> None:
