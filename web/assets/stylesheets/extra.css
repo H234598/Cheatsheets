@@ -39,13 +39,6 @@ html {
   scrollbar-gutter: stable;
 }
 
-.md-typeset table:not([class]) {
-  display: block;
-  max-width: 100%;
-  overflow-x: auto;
-  white-space: nowrap;
-}
-
 :where(a, button, summary, input, select, dialog, [tabindex]):focus-visible {
   outline: var(--cheat-focus-width) solid var(--md-accent-fg-color);
   outline-offset: 0.2rem;
