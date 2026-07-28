@@ -1,0 +1,25 @@
+schema_version: 1
+
+home: 00-START-HIER.md
+source_index: INDEX.md
+
+publish_types:
+  - reference
+  - index
+
+maintenance:
+  - README.md
+  - CHANGELOG.md
+  - 00-Anforderungsabdeckung.md
+  - QUALITAETSPRUEFUNG.md
+  - MANIFEST.md
+
+download_only:
+  - Premium-Spickzettel-Gesamtband.md
+
+exclude_globs:
+  - build/**
+  - site/**
+  - .git/**
+  - .github/**
+  - .obsidian/**
