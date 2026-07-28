@@ -67,6 +67,7 @@ jobs:
 
           changed_files = 0
           replacement_count = 0
+          root_index_links = 0
           for relative in tracked_paths():
               if relative == workflow:
                   continue
@@ -81,10 +82,13 @@ jobs:
               except UnicodeDecodeError:
                   continue
               updated, count = label_pattern.subn(replacement, text)
-              if count:
+              link_count = updated.count('[[INDEX|Gesamtindex]]')
+              updated = updated.replace('[[INDEX|Gesamtindex]]', '[[/INDEX|Gesamtindex]]')
+              if count or link_count:
                   path.write_bytes(updated.encode('utf-8'))
                   changed_files += 1
                   replacement_count += count
+                  root_index_links += link_count
 
           renamed_paths = 0
           for relative in sorted(tracked_paths(), key=lambda item: (len(item.parts), item.as_posix()), reverse=True):
@@ -102,6 +106,7 @@ jobs:
               renamed_paths += 1
 
           print(f'Inhaltsersetzungen: {replacement_count} in {changed_files} Dateien')
+          print(f'Eindeutig gemachte Root-Indexlinks: {root_index_links}')
           print(f'Umbenannte Pfade: {renamed_paths}')
           PY
 
