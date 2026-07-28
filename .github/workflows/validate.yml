@@ -102,10 +102,13 @@ jobs:
           fi
 
       - name: Vollständige Project-Page-Site einmalig bauen
-        run: >-
-          python scripts/build_site.py
-          --strict
-          --site-url https://example.invalid/Cheatsheets/
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/build_site.py \
+            --strict \
+            --site-url https://example.invalid/Cheatsheets/ \
+            2>&1 | tee build/reports/build-site.txt
 
       - name: Pages-Artefakt validieren
         run: >-

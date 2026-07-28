@@ -11,14 +11,14 @@ Dieser Fortschrittsnachweis wird mit jeder Planphase aktualisiert. Verbindliche 
 | 3 – Navigation, Indizes und Suche | ✅ umgesetzt | PR #6, Merge `7db8f713aca07e67b481f9fbcb00553f6a555495`; CodeRabbit und qlty grün |
 | 4 – ADHS-freundliche Oberfläche | ✅ umgesetzt | PR #7, Merge `0682c7f8e508d56b60d8d8e72024121e1bcd815d`; CodeRabbit und qlty grün |
 | 5A – PR-CI | ✅ umgesetzt | PR #9, Merge `69c72997eed4fc0ac831eba696bac12b3a2f69b9`; 78 Tests und alle Gates grün |
-| 5B – Pages-Deployment | 🚧 im Review | Branch `agent/pages-deployment`; getrennte Build-/Deploy-Jobs, Artefaktvalidator und Betriebsrunbook |
-| 6 – Downloads und Provenienz | ⬜ offen | – |
+| 5B – Pages-Deployment | ⚠️ technisch umgesetzt | PR #11, Merge `59724c5256a5bed001164fe908dacff2d01fb11a`; 90 Tests und Artefaktprüfung grün, produktive `page_url` noch extern zu bestätigen |
+| 6 – Downloads und Provenienz | 🚧 abnahmebereit | PR #12; 108 Tests, Downloadsatz, Reviews und Pages-Artefakt grün |
 | 7 – Browser, Accessibility und Performance | ⬜ offen | – |
 | 8 – optionale Erweiterungen | ⬜ offen | – |
 
 ## Abgeschlossene Phase 3
 
-PR #6 erzeugt die Navigation, Kategorie-, Gesamt-, Alphabet- und Tagindizes sowie die maschinenlesbaren Dateien `pages.json`, `categories.json`, `tags.json` und `build-info.json`. Die Generatoren laufen im selben atomaren Stagingverzeichnis wie die transformierten Markdown-Seiten; die resultierende Navigation wird strukturiert in `mkdocs.generated.yml` übernommen.
+PR #6 erzeugt Navigation, Kategorie-, Gesamt-, Alphabet- und Tagindizes sowie `pages.json`, `categories.json`, `tags.json` und `build-info.json`. Die Generatoren laufen im selben atomaren Stagingverzeichnis wie die transformierten Markdown-Seiten; die resultierende Navigation wird strukturiert in `mkdocs.generated.yml` übernommen.
 
 Vor dem Merge wurden zusätzlich behoben:
 
@@ -55,65 +55,30 @@ PR #8 wurde unabhängig vom Phasenstrang als repositoryweite Inhalts- und Datein
 05b8d7469ba8c1129ddfde016e43852f88bfc499
 ```
 
-Der PR ersetzt die bisherige Zusatzbezeichnung durch **Cheatsheet**, benennt die betroffenen Dateien und Links um und regeneriert die kanonischen Metadaten. Er behebt zugleich die im ersten Phase-5A-Lauf sichtbar gewordenen Baseline-Linkprobleme:
-
-- Kategorieindizes verweisen eindeutig auf den Root-Gesamtindex;
-- die Thales-Inhaltsmarke verwendet `Java JCA/JCE`;
-- der mobile AMD-Unterabschnitt besitzt einen eindeutigen Titel.
-
-Der anschließend eröffnete PR #10 wurde deshalb ohne Merge und mit leerem Diff geschlossen.
+Der PR ersetzt die frühere Zusatzbezeichnung durch **Cheatsheet**, benennt betroffene Dateien und Links um und regeneriert die kanonischen Metadaten. Er behebt zugleich die im ersten Phase-5A-Lauf sichtbar gewordenen Baseline-Linkprobleme. Der anschließend eröffnete PR #10 wurde deshalb ohne Merge und mit leerem Diff geschlossen.
 
 ## Abgeschlossene Phase 5A
 
-PR #9 wurde nach den Merges von PR #7 und PR #8 ohne alte Branchhistorie exakt auf den damaligen `main`-Stand aufgebaut. Der Diff enthielt ausschließlich CI-, Security-, Test-, Konfigurations- und Dokumentationsdateien.
+PR #9 führt die schreibgeschützte Pull-Request-CI ein:
 
-Umgesetzt wurden:
-
-- `.github/workflows/validate.yml` für Pull Requests, `main` und manuelle Läufe;
-- ausschließlich `contents: read`, keine Secrets, kein Environment und kein Deployment;
-- vollständige Commit-SHA-Pins mit Versionskommentaren;
+- `contents: read`, keine Secrets, kein Environment und kein Deployment;
+- vollständig gepinnte Actions;
 - fester Runner `ubuntu-24.04`, Python 3.12, Timeouts und Concurrency;
 - Workflow-Selbstvalidierung;
 - Unit-, Integrations-, Content-, Link-, Sicherheits- und Strict-MkDocs-Gates;
 - byteweiser, blockierender Vergleich der kanonischen Metadaten;
 - Diagnoseartefakte auch nach Fehlern;
 - Dependabot für GitHub Actions und Python;
-- hochpräziser Secret-/Raw-HTML-/Laufzeitasset-Scanner mit exakten, hashgebundenen Ausnahmen.
+- hochpräziser Secret-/Raw-HTML-/Laufzeitasset-Scanner.
 
-Die Pipeline hat während ihrer Einführung reale Fehler sichtbar gemacht. Behoben wurden:
+Der finale PR-Lauf bestätigte 78 bestandene Tests, null Content-, Link- oder Sicherheitsbefunde, bytegleiche kanonische Metadaten, einen grünen Strict-Build, CodeRabbit, qlty und keine offenen Review-Threads. PR #9 wurde unter `69c72997eed4fc0ac831eba696bac12b3a2f69b9` gemergt.
 
-- falscher Modulimport im Securityscanner;
-- strukturierte Prüfung von Checkout-Credentials, Pythonversion und `if: always()`;
-- spröde beziehungsweise unvollständige Test-Fixtures;
-- vollständige Linkdiagnostik als JSON und Text;
-- zunächst nur diagnostischer Metadatenvergleich wurde nach PR #8 in ein hartes Gate überführt.
+## Phase 5B – technischer Abschluss und verbleibende Laufzeitbestätigung
 
-Der vollständige GitHub-Actions-Lauf `30324962948` auf dem finalen PR-Head `52db970bd5d8c13e9d96d371ae8bf33aac92cb42` bestätigte:
+PR #11 ergänzt `.github/workflows/pages.yml` mit strikt getrennten Jobs:
 
-- **78 von 78 Tests bestanden**;
-- zwölf Kategorien und 86 Fachseiten;
-- null Contentfehler und null Contentwarnungen;
-- null Linkfehler und null Linkwarnungen;
-- null Securityfehler, -warnungen oder Informationsbefunde;
-- bytegleiche kanonische Metadaten, `metadata-diff.patch` leer;
-- vollständiger Strict-MkDocs-Build erfolgreich;
-- versionierte Arbeitskopie nach dem Build unverändert;
-- Diagnoseartefakt erfolgreich erzeugt;
-- CodeRabbit und qlty grün;
-- keine offenen Review-Threads.
-
-PR #9 wurde anschließend per Squash unter folgendem Commit gemergt:
-
-```text
-69c72997eed4fc0ac831eba696bac12b3a2f69b9
-```
-
-## Laufende Phase 5B
-
-Phase 5B ergänzt `.github/workflows/pages.yml` mit zwei strikt getrennten Jobs:
-
-1. `build` liest Inhalte, validiert das Repository, ermittelt die tatsächliche Pages-Basis-URL und erzeugt `site/` genau einmal;
-2. `deploy` benötigt den erfolgreichen Build und veröffentlicht ausschließlich dessen Pages-Artefakt im Environment `github-pages`.
+1. `build` liest Inhalte, validiert das Repository, ermittelt die Pages-Basis-URL und erzeugt `site/` genau einmal;
+2. `deploy` benötigt den erfolgreichen Build und veröffentlicht ausschließlich das Pages-Artefakt im Environment `github-pages`.
 
 Sicherheits- und Betriebsmerkmale:
 
@@ -122,20 +87,52 @@ Sicherheits- und Betriebsmerkmale:
 - leere globale Berechtigungen;
 - Buildjob: `contents: read`, `pages: write`;
 - Deploymentjob: `pages: write`, `id-token: write`;
-- vollständige Action-SHA-Pins mit Versionskommentaren;
+- vollständige Action-SHA-Pins;
 - dynamische `site_url` aus `configure-pages.outputs.base_url`;
-- genau ein zentraler Strict-Build;
 - kein Checkout und kein Build im Deploymentjob;
-- `needs: build` und Environment `github-pages`;
-- kein direktes Pushen oder manuelles Austauschen von Artefakten.
+- `needs: build` und Environment `github-pages`.
 
-Neu ist `scripts/validate_pages_artifact.py`. Das Modul blockiert fehlende `index.html`/`404.html`, Symlinks, Hardlinks, Sonderdateien, Case-Kollisionen und ein überschrittenes Größenlimit. Es erzeugt zusätzlich einen deterministischen Baum-SHA-256 und einen JSON-Bericht.
+Der PR-Lauf bestätigte 90 Tests und ein sicheres Pages-Artefakt mit 170 regulären Dateien. CodeRabbit, qlty und alle Review-Threads waren grün. PR #11 wurde unter `59724c5256a5bed001164fe908dacff2d01fb11a` gemergt.
 
-Die Workflow- und Artefaktverträge werden durch `tests/test_pages_workflow.py` und `tests/test_pages_artifact.py` geprüft. Betrieb, Erstaktivierung, Custom Domain, Fehlerdiagnose und Rollback sind in `docs/WEB-WARTUNG.md` dokumentiert.
+Der verfügbare GitHub-Connector listet derzeit nur Pull-Request-bezogene Workflowläufe. Deshalb konnte der erste produktive Push-Lauf einschließlich ausgegebener `page_url` noch nicht unabhängig ausgelesen werden. Diese externe Laufzeitbestätigung bleibt sichtbar offen und wird nicht als bereits erfolgt behauptet.
 
-Der Pull Request muss zunächst die vorhandene Validate-Pipeline, CodeRabbit und qlty bestehen. Nach dem Merge wird der erstmals auf `main` laufende Pages-Workflow bis zum tatsächlichen Deployment und zur ausgegebenen `page_url` verifiziert.
+## Phase 6 – Abnahmestand
 
-Eine Phase wird erst nach grünen Gates, ohne offene Review-Threads und nach verifiziertem Merge als vollständig umgesetzt markiert.
+Phase 6 erzeugt einen vollständigen Downloadsatz aus demselben Checkout und `SOURCE_DATE_EPOCH` wie die Website:
+
+- `Cheatsheets-Quellen.zip` mit kanonischen Inhalten, Inhaltsassets, Lizenz und Quellprüfsummen;
+- ein aus allen 86 Fachseiten neu erzeugtes `Cheatsheet-Gesamtband.md`;
+- kanonische Manifestansichten und Buildreport;
+- `SOURCE-SHA256SUMS.txt` und `DOWNLOAD-SHA256SUMS.txt`;
+- `PROVENANCE.json` mit Commit, Zeitpunkt, Umfang und Quellbaumhash;
+- JSON- und CSV-Downloadmanifest;
+- eine aus den geprüften Datensätzen erzeugte Download-Landingpage.
+
+Der Quell-ZIP verwendet stabile Reihenfolge, feste Rechte, `ZIP_STORED` und den Commitzeitpunkt. `.git`, `.github`, `.obsidian`, Buildausgaben, Tests und Entwicklungszustände sind ausgeschlossen. Nur Git-getrackte Inhaltsassets dürfen in das Archiv gelangen; unerwartete Dateien und Symlinks unter Kategorien, `assets/` oder `media/` blockieren fail-closed. Archivnamen werden vor der Prüfung plattformübergreifend normalisiert; Traversal-, Laufwerks-, UNC-, Steuerzeichen- und leere Punktpfade sind verboten.
+
+Das Gesamt-Markdown verwendet die kanonische Kategorienreihenfolge, stabile Page-ID-Anker und präfixierte Abschnittsanker. Codefences werden vor und nach der Linkkonvertierung gehasht.
+
+Der zentrale Site-Build erzeugt den Contentindex einmalig und reicht ihn an Download- und Webbuild weiter. Die Commitauflösung ist ebenfalls zentralisiert. Downloads entstehen vor MkDocs; die Landingpage verwendet reale Größen und Hashes. Die Artefakte werden erst nach erfolgreichem HTML-Build nach `site/downloads/files/` kopiert. Dadurch bleiben rohe `.md`-Downloads unverändert herunterladbar und werden nicht versehentlich als HTML-Seiten gerendert.
+
+Der vollständige GitHub-Actions-Lauf `30335873825` auf Head `d72d931da20d40c7b9caab1e9431613b3a6b92e5` bestätigte:
+
+- **108 von 108 Tests bestanden**;
+- zwölf Kategorien, 86 Fachseiten und 116 Markdownseiten;
+- null Contentfehler und null Contentwarnungen;
+- null Linkfehler und null Linkwarnungen;
+- null Securityfehler, -warnungen oder Informationsbefunde;
+- bytegleiche kanonische Metadaten;
+- vollständiger Strict-MkDocs-Build einschließlich Downloads;
+- Pages-Artefakt mit 180 regulären Dateien und 25.016.928 Bytes;
+- keine Symlinks, Hardlinks, Sonderdateien oder Case-Kollisionen;
+- Artefakt-Baum-SHA-256 `14d151084acf39285e003529f3c05571214ce9eea6914107d1d94f39243f20d0`;
+- versionierte Arbeitskopie nach dem Build unverändert;
+- qlty und CodeRabbit grün;
+- alle fünf Reviewbefunde behoben und keine offenen Review-Threads.
+
+Der vollständige Site-Build schreibt sein Protokoll zusätzlich nach `build/reports/build-site.txt`, sodass späte Integrationsfehler im Diagnoseartefakt vollständig verfügbar bleiben. Die vorliegende Statuspflege erzeugt einen neuen Head; dieser muss dieselbe Validate- und Reviewabnahme erneut vollständig bestehen, bevor PR #12 gemergt wird.
+
+Eine Phase wird erst nach veröffentlichten Dateien, grünen Tests und PR-Gates, ohne offene Review-Threads und nach verifiziertem Merge als vollständig umgesetzt markiert.
 
 ## Verbindliche Ausgangsstände
 
@@ -147,7 +144,7 @@ Die drei Stände wurden vor Beginn erneut gegen die jeweiligen Default-Branches 
 
 ## Pflegekonvention
 
-- Eine Phase wird erst als umgesetzt markiert, wenn ihre Dateien veröffentlicht, ihre lokalen Tests grün und die PR-Gates abgeschlossen sind.
+- Eine Phase wird erst als umgesetzt markiert, wenn ihre Dateien veröffentlicht, ihre Tests und PR-Gates grün, keine Review-Threads offen und der Merge verifiziert ist.
 - Der Nachweis nennt PR, Merge-Commit und die wichtigsten ausführbaren Prüfungen.
 - Noch nicht implementierte optionale Bestandteile bleiben sichtbar offen; sie werden nicht stillschweigend aus dem Plan entfernt.
 - Neue Erkenntnisse ändern nicht rückwirkend die kanonischen Markdown-Fachinhalte, sondern werden als eigene Content- oder Infrastrukturänderung umgesetzt.

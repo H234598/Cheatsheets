@@ -224,6 +224,7 @@ def build_docs(
     root: Path,
     output: Path,
     *,
+    index: ContentIndex | None = None,
     strict: bool = True,
     force: bool = False,
     max_pages: int | None = None,
@@ -243,7 +244,7 @@ def build_docs(
     if strict and max_pages is not None:
         raise ValueError("Ein strenger Build darf nicht mit max_pages begrenzt werden")
 
-    index = build_content_index(root)
+    index = index or build_content_index(root)
     errors = _validation_errors(index)
     if errors:
         preview = "\n".join(errors[:25])
