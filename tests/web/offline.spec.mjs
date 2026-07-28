@@ -72,6 +72,11 @@ test("entpacktes Offlinepaket funktioniert über den lokalen Server vollständig
   await expect(page.locator(".cheat-offline-notice")).toBeVisible();
   await waitForUi(page);
 
+  await page.keyboard.press("g");
+  await page.keyboard.press("k");
+  await expect(page).toHaveURL(/\/kategorien\/index\.html$/);
+  await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
+
   expect(problems).toEqual([]);
   expect(external).toEqual([]);
 });
@@ -100,9 +105,9 @@ test("file-Fallback bleibt ohne JavaScript lesbar und navigierbar", async ({ bro
   const category = page.getByRole("link", { name: "Kategorie wählen" });
   await expect(category).toBeVisible();
   const href = await category.getAttribute("href");
-  expect(href).toMatch(/kategorien\.html$/);
+  expect(href).toMatch(/kategorien\/index\.html$/);
   await category.click();
-  await expect(page).toHaveURL(/\/kategorien\.html$/);
+  await expect(page).toHaveURL(/\/kategorien\/index\.html$/);
   await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
 
   expect(problems).toEqual([]);
