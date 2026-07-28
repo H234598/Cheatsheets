@@ -8,17 +8,36 @@ Dieser Fortschrittsnachweis wird mit jeder Planphase aktualisiert. Verbindliche 
 | 0B – Inventur und Baseline | ✅ umgesetzt | PR #2, Merge `48f2a518f52e4d595a0887bd2de3ee45fcc3f19a`, 8 Tests |
 | 1 – Linkmodell und Callouts | ✅ umgesetzt | PR #3, Merge `7fcccdca800b60dc2fee55de1b5e3b99614e1c3c`, 21 Tests |
 | 2 – MkDocs-Basis | ✅ umgesetzt | PR #4, Merge `81ef6b66abb64116d153d8558ea6a230eee676e9`, 26 Tests |
-| 3 – Navigation, Indizes und Suche | 🚧 im Review | PR #6; Navigation, Manifest, Suchdaten und Verkabelung mit dem atomaren Gesamtbuild |
-| 4 – ADHS-freundliche Oberfläche | ⬜ offen | – |
+| 3 – Navigation, Indizes und Suche | ✅ umgesetzt | PR #6, Merge `7db8f713aca07e67b481f9fbcb00553f6a555495`; CodeRabbit und qlty grün, drei Reviewregressionen ergänzt |
+| 4 – ADHS-freundliche Oberfläche | 🚧 in Umsetzung | Branch `agent/adhs-ui`; progressive UI, lokale Zustände, Filter, Fokusmodus und Tastaturhilfe |
 | 5A – PR-CI | ⬜ offen | – |
 | 5B – Pages-Deployment | ⬜ offen | – |
 | 6 – Downloads und Provenienz | ⬜ offen | – |
 | 7 – Browser, Accessibility und Performance | ⬜ offen | – |
 | 8 – optionale Erweiterungen | ⬜ offen | – |
 
-## Laufende Phase 3
+## Abgeschlossene Phase 3
 
-PR #6 erzeugt die Navigation, Kategorie-, Gesamt-, Alphabet- und Tagindizes sowie die maschinenlesbaren Dateien `pages.json`, `categories.json`, `tags.json` und `build-info.json`. Die Generatoren werden im selben atomaren Staginglauf wie die transformierten Markdown-Seiten ausgeführt; die resultierende Navigation wird strukturiert in `mkdocs.generated.yml` übernommen.
+PR #6 erzeugt die Navigation, Kategorie-, Gesamt-, Alphabet- und Tagindizes sowie die maschinenlesbaren Dateien `pages.json`, `categories.json`, `tags.json` und `build-info.json`. Die Generatoren laufen im selben atomaren Stagingverzeichnis wie die transformierten Markdown-Seiten; die resultierende Navigation wird strukturiert in `mkdocs.generated.yml` übernommen.
+
+Vor dem Merge wurden zusätzlich behoben:
+
+- doppelte Page-IDs im Manifest trotz gleicher ID-Menge;
+- potenzielles Folgen von Symlinks beim Vergleich kanonischer Metadaten;
+- abweichende Unicode-Normalisierung zwischen Sortierung und Alphabetüberschrift;
+- zunächst fehlende Verkabelung der Generatoren mit dem tatsächlichen Gesamtbuild.
+
+## Laufende Phase 4
+
+Die kanonischen Markdown-Dateien bleiben unverändert. Der generierte Webbaum erhält stabile UI-Metadaten und ein geprüftes Page-ID-Migrationsregister. Die Oberfläche ergänzt progressiv:
+
+- drei primäre Startaktionen;
+- lokale Favoriten, zuletzt gelesen und Lesefortschritt;
+- Fokusmodus;
+- lokale Kategorie-, Tag-, Text- und Zeitfilter;
+- Tastaturhilfe mit lokal abschaltbaren Kürzeln;
+- robuste Fallbacks bei deaktiviertem JavaScript oder nicht verfügbarem `localStorage`;
+- responsive, reizreduzierte Karten-, Fokus- und Dialogdarstellung.
 
 Eine Phase wird erst nach grünen Gates, ohne offene Review-Threads und nach verifiziertem Merge als vollständig umgesetzt markiert.
 
