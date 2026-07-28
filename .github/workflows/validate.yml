@@ -101,12 +101,17 @@ jobs:
             exit 1
           fi
 
-      - name: Vollständigen Strict-Build prüfen
+      - name: Vollständige Project-Page-Site einmalig bauen
         run: >-
           python scripts/build_site.py
-          --check
           --strict
           --site-url https://example.invalid/Cheatsheets/
+
+      - name: Pages-Artefakt validieren
+        run: >-
+          python scripts/validate_pages_artifact.py
+          --site-dir site
+          --report build/reports/pages-artifact.json
 
       - name: Unveränderte Quellarbeitskopie bestätigen
         shell: bash
