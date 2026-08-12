@@ -1,0 +1,319 @@
+.cheat-home-secondary {
+  margin-block: 0.75rem 1.5rem;
+  font-size: 0.92rem;
+}
+
+.cheat-home-secondary a,
+.cheat-dialog-links a {
+  font-weight: 600;
+}
+
+.cheat-knowledge-graph {
+  display: grid;
+  gap: 1rem;
+}
+
+.cheat-graph-status {
+  margin: 0;
+  color: var(--md-default-fg-color--light);
+}
+
+.cheat-graph-controls {
+  display: grid;
+  grid-template-columns: minmax(12rem, 1.5fr) repeat(2, minmax(10rem, 1fr));
+  gap: 0.8rem 1rem;
+  align-items: end;
+  padding: 1rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.6rem;
+  background: var(--md-code-bg-color);
+}
+
+.cheat-graph-controls fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.8rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.45rem;
+}
+
+.cheat-graph-controls legend {
+  padding-inline: 0.25rem;
+  font-weight: 700;
+}
+
+.cheat-graph-search {
+  display: grid;
+  gap: 0.3rem;
+  font-weight: 700;
+}
+
+.cheat-graph-search input {
+  min-width: 0;
+  width: 100%;
+}
+
+.cheat-graph-option {
+  display: inline-flex;
+  gap: 0.35rem;
+  align-items: center;
+  font-weight: 500;
+}
+
+.cheat-graph-zoom {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.cheat-graph-stage {
+  max-width: 100%;
+  min-height: 34rem;
+  overflow: auto;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.6rem;
+  background: var(--md-default-bg-color);
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+.cheat-graph-stage svg {
+  display: block;
+  width: 100%;
+  min-width: 52rem;
+  min-height: 34rem;
+}
+
+.cheat-graph-edge {
+  stroke: var(--md-default-fg-color--lightest);
+  stroke-width: 1.1;
+  vector-effect: non-scaling-stroke;
+}
+
+.cheat-graph-edge--tagged {
+  stroke-dasharray: 4 4;
+}
+
+.cheat-graph-edge--links {
+  stroke: var(--md-accent-fg-color);
+  stroke-dasharray: 2 5;
+  stroke-width: 1.4;
+}
+
+.cheat-graph-node {
+  color: var(--md-default-fg-color);
+  cursor: pointer;
+  outline: none;
+}
+
+.cheat-graph-node > :is(circle, rect, polygon) {
+  fill: var(--md-default-bg-color);
+  stroke: currentcolor;
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.cheat-graph-node--category {
+  color: var(--md-primary-fg-color);
+}
+
+.cheat-graph-node--category > rect {
+  fill: var(--md-primary-fg-color--light);
+}
+
+.cheat-graph-node--tag {
+  color: var(--md-accent-fg-color);
+}
+
+.cheat-graph-node--tag > polygon {
+  fill: var(--md-accent-fg-color--transparent);
+}
+
+.cheat-graph-node.is-selected > :is(circle, rect, polygon),
+.cheat-graph-node:focus-visible > :is(circle, rect, polygon) {
+  stroke-width: 4;
+  filter: drop-shadow(0 0 0.2rem var(--md-accent-fg-color));
+}
+
+.cheat-graph-node.is-match > :is(circle, rect, polygon) {
+  fill: var(--md-accent-fg-color--transparent);
+  stroke-width: 3;
+}
+
+.cheat-graph-node.is-dimmed,
+.cheat-graph-edge.is-dimmed {
+  opacity: 0.12;
+}
+
+.cheat-graph-node__label {
+  display: none;
+  fill: var(--md-default-fg-color);
+  font-size: 13px;
+  font-weight: 700;
+  paint-order: stroke;
+  stroke: var(--md-default-bg-color);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+
+.cheat-graph-node--category .cheat-graph-node__label,
+.cheat-graph-node.is-selected .cheat-graph-node__label,
+.cheat-graph-node.is-match .cheat-graph-node__label,
+.cheat-graph-node:focus-visible .cheat-graph-node__label {
+  display: block;
+}
+
+.cheat-graph-details,
+.cheat-graph-legend,
+.cheat-graph-noscript {
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.6rem;
+}
+
+.cheat-graph-details h2,
+.cheat-graph-legend h2,
+.cheat-graph-noscript h2 {
+  margin-top: 0;
+}
+
+.cheat-graph-details h3 {
+  margin-block: 0.25rem 0.6rem;
+}
+
+.cheat-graph-details dl {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 0.2rem 0.8rem;
+}
+
+.cheat-graph-details dt {
+  font-weight: 700;
+}
+
+.cheat-graph-details dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.cheat-graph-details__type {
+  margin: 0;
+  color: var(--md-default-fg-color--light);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.cheat-graph-legend ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 0.55rem 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cheat-graph-legend li {
+  display: flex;
+  gap: 0.55rem;
+  align-items: center;
+}
+
+.cheat-graph-symbol {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  flex: 0 0 auto;
+  border: 2px solid currentcolor;
+}
+
+.cheat-graph-symbol--category {
+  color: var(--md-primary-fg-color);
+  border-radius: 0.2rem;
+}
+
+.cheat-graph-symbol--page {
+  border-radius: 50%;
+}
+
+.cheat-graph-symbol--tag {
+  color: var(--md-accent-fg-color);
+  transform: rotate(45deg) scale(0.75);
+}
+
+.cheat-graph-line {
+  display: inline-block;
+  width: 2rem;
+  flex: 0 0 auto;
+  border-top: 2px solid var(--md-default-fg-color--light);
+}
+
+.cheat-graph-line--tagged {
+  border-top-style: dashed;
+}
+
+.cheat-graph-line--links {
+  border-top: 2px dotted var(--md-accent-fg-color);
+}
+
+@media (max-width: 60rem) {
+  .cheat-graph-controls {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .cheat-graph-search {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 44rem) {
+  .cheat-graph-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .cheat-graph-search {
+    grid-column: auto;
+  }
+
+  .cheat-graph-stage {
+    min-height: 28rem;
+  }
+
+  .cheat-graph-stage svg {
+    min-width: 48rem;
+    min-height: 28rem;
+  }
+
+  .cheat-graph-details dl {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cheat-graph-node,
+  .cheat-graph-edge {
+    transition: none !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .cheat-graph-stage,
+  .cheat-graph-controls,
+  .cheat-graph-details,
+  .cheat-graph-legend,
+  .cheat-graph-noscript {
+    border-color: CanvasText;
+  }
+
+  .cheat-graph-node > :is(circle, rect, polygon) {
+    fill: Canvas;
+    stroke: LinkText;
+  }
+
+  .cheat-graph-edge {
+    stroke: CanvasText;
+  }
+}

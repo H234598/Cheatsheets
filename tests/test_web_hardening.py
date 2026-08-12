@@ -19,11 +19,13 @@ def write_minimal_site(root: Path, *, html: str | None = None) -> Path:
         "accessibility.js",
         "mermaid-loader.js",
         "offline-navigation.js",
+        "graph-shortcut.js",
+        "knowledge-graph.js",
     ):
         (site / "assets" / "javascripts" / name).write_text(
             'console.log("fixture");\n', encoding="utf-8"
         )
-    for name in ("extra.css", "accessibility.css"):
+    for name in ("extra.css", "accessibility.css", "knowledge-graph.css"):
         (site / "assets" / "stylesheets" / name).write_text(
             "body { max-width: 100%; }\n", encoding="utf-8"
         )

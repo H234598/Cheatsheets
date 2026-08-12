@@ -34,12 +34,15 @@ def test_mkdocs_loads_only_local_ui_assets_in_stable_order() -> None:
     assert config["extra_css"] == [
         "assets/stylesheets/extra.css",
         "assets/stylesheets/accessibility.css",
+        "assets/stylesheets/knowledge-graph.css",
     ]
     assert config["extra_javascript"] == [
         "assets/javascripts/site-state.js",
         "assets/javascripts/filters.js",
         "assets/javascripts/accessibility.js",
         "assets/javascripts/mermaid-loader.js",
+        "assets/javascripts/graph-shortcut.js",
+        "assets/javascripts/knowledge-graph.js",
     ]
     assert all("//" not in asset for asset in config["extra_javascript"])
 
@@ -77,6 +80,8 @@ def test_templates_keep_progressive_controls_hidden_without_javascript() -> None
     assert 'href="#cheatsheets"' not in local_state
     assert "kategorien/index.html" in local_state
     assert "index/gesamt.html" in local_state
+    assert "wissensgraph/index.html" in local_state
+    assert "Wissensgraph erkunden" in local_state
     assert "data-cheat-keyboard-open" not in local_state
     assert "data-cheat-filter-panel" in local_state
     assert "<noscript>" in local_state
@@ -84,6 +89,7 @@ def test_templates_keep_progressive_controls_hidden_without_javascript() -> None
     assert "data-cheat-focus" in keyboard
     assert "data-cheat-keyboard-open" in keyboard
     assert "data-cheat-shortcuts-toggle" in keyboard
+    assert "Wissensgraph öffnen" in keyboard
     assert "<dialog" in keyboard
     assert "Seite nicht gefunden" in not_found
     assert "home_target" in not_found
@@ -120,6 +126,9 @@ def test_ui_scripts_do_not_use_html_injection_or_telemetry() -> None:
     assert "index/gesamt.html" in scripts["offline-navigation.js"]
     assert "kategorien/index.html" in scripts["offline-navigation.js"]
     assert "downloads/index.html" in scripts["offline-navigation.js"]
+    assert 'key !== "w"' in scripts["graph-shortcut.js"]
+    assert "replaceChildren" in scripts["knowledge-graph.js"]
+    assert "credentials: \"same-origin\"" in scripts["knowledge-graph.js"]
 
 
 def test_filter_contract_uses_canonical_tags_and_unbounded_empty_time() -> None:
@@ -179,7 +188,7 @@ def test_page_metadata_guards_optional_reading_time() -> None:
 def test_css_contains_focus_mobile_reduced_motion_and_contrast_contracts() -> None:
     css = "\n".join(
         (STYLE_DIR / name).read_text(encoding="utf-8")
-        for name in ("extra.css", "accessibility.css")
+        for name in ("extra.css", "accessibility.css", "knowledge-graph.css")
     )
 
     assert ":focus-visible" in css
@@ -191,6 +200,8 @@ def test_css_contains_focus_mobile_reduced_motion_and_contrast_contracts() -> No
     assert ".md-typeset__table" in css
     assert ".md-copyright" in css
     assert "color: var(--md-default-fg-color);" in css
+    assert ".cheat-knowledge-graph" in css
+    assert ".cheat-graph-node:focus-visible" in css
     assert ".md-typeset table:not([class])" not in css
 
 
@@ -210,6 +221,8 @@ def test_page_id_alias_register_has_minimal_schema() -> None:
         "accessibility.js",
         "mermaid-loader.js",
         "offline-navigation.js",
+        "graph-shortcut.js",
+        "knowledge-graph.js",
     ],
 )
 def test_javascript_syntax_when_node_is_available(script_name: str) -> None:

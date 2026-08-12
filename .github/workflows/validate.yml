@@ -81,9 +81,12 @@ jobs:
           node --check web/assets/javascripts/accessibility.js
           node --check web/assets/javascripts/mermaid-loader.js
           node --check web/assets/javascripts/offline-navigation.js
+          node --check web/assets/javascripts/graph-shortcut.js
+          node --check web/assets/javascripts/knowledge-graph.js
           node --check playwright.config.mjs
           node --check tests/web/site.spec.mjs
           node --check tests/web/offline.spec.mjs
+          node --check tests/web/graph.spec.mjs
 
       - name: Unit- und Integrationstests
         run: >-
@@ -135,6 +138,13 @@ jobs:
             --strict \
             --site-url http://127.0.0.1:4173/Cheatsheets/ \
             2>&1 | tee build/reports/build-site.txt
+
+      - name: Wissensgraph unabhängig prüfen
+        run: >-
+          python scripts/validate_graph.py
+          --graph build/docs/data/knowledge-graph.json
+          --site-dir site
+          --report build/reports/knowledge-graph.json
 
       - name: Offline-HTML unabhängig prüfen und entpacken
         run: >-

@@ -20,10 +20,13 @@ CUSTOM_JAVASCRIPT = (
     "assets/javascripts/accessibility.js",
     "assets/javascripts/mermaid-loader.js",
     "assets/javascripts/offline-navigation.js",
+    "assets/javascripts/graph-shortcut.js",
+    "assets/javascripts/knowledge-graph.js",
 )
 CUSTOM_STYLESHEETS = (
     "assets/stylesheets/extra.css",
     "assets/stylesheets/accessibility.css",
+    "assets/stylesheets/knowledge-graph.css",
 )
 CUSTOM_JS_GZIP_LIMIT = 30 * 1024
 CUSTOM_CSS_GZIP_LIMIT = 35 * 1024
