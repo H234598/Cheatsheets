@@ -9,15 +9,27 @@ status: fertig
 tags:
 - changelog
 - cheatsheet
-version: '2.2.0'
+version: '2.3.0'
 date: '2026-10-12'
 updates:
 - date: '2026-10-12'
   change: 'Vim und .vimrc ergänzt; Umfang und Verweise aktualisiert.'
+- date: '2026-10-12'
+  change: 'HashiCorp Terraform ergänzt; Umfang, Navigation und Downloads aktualisiert.'
 ---
 # Changelog
 
 [[00-START-HIER|← Startseite]]
+
+## 2.3.0 – 12. Oktober 2026
+
+### HashiCorp Terraform
+
+- [[02-Versionierung-Entwicklung/Terraform-Cheatsheet|Terraform – Cheatsheet]] ergänzt: CLI, Installation, HCL, Variablen, Provider und Module auf Basis von Terraform 1.16.5.
+- Vollständiges lokales `terraform_data`-Beispiel und native Plan-Tests mit echter Terraform-CLI geprüft; gespeicherte Pläne und Exitcodes erklärt.
+- State, Backends, S3-Locking, Workspaces, Import, `moved`, `removed`, Drift, Lifecycle, Geheimnisse und CI mit offiziellen Quellen dokumentiert.
+- Navigation, Startseite, README, Gesamtband und kanonische Metadaten auf 89 Fachseiten aktualisiert; vorhandene Inhalte und Änderungsvermerke erhalten.
+- Terraform in Suche, Markdown-Downloads und Offline-HTML integriert; Obsidian-Pflichtfelder des generierten Manifests vervollständigt.
 
 ## 2.2.0 – 12. Oktober 2026
 

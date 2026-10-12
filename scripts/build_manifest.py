@@ -36,6 +36,8 @@ CANONICAL_FILES = (
     "SHA256SUMS.txt",
 )
 READ_CHUNK_SIZE = 1024 * 1024
+# Erstanlage von MANIFEST.md in af0fc9057f0a2c6d43e9bb3532acb96b1ebb9520.
+MANIFEST_CREATED = "2026-07-17"
 
 
 class ManifestBuildError(RuntimeError):
@@ -110,12 +112,27 @@ def render_manifest_csv(records: list[ManifestRecord]) -> str:
 def render_manifest_markdown(records: list[ManifestRecord]) -> str:
     total_lines = sum(record.page.line_count for record in records)
     total_bytes = sum(record.page.byte_size for record in records)
+    content_date = _content_date(records) or MANIFEST_CREATED
+    metadata = {
+        "title": "Cheatsheets – Manifest",
+        "aliases": ["Cheatsheets Manifest", "Fachseitenmanifest"],
+        "tags": ["cheatsheets", "index", "manifest"],
+        "type": "index",
+        "status": "fertig",
+        "date": content_date,
+        "created": MANIFEST_CREATED,
+        "modified": content_date,
+        "updates": [
+            {
+                "date": content_date,
+                "change": "Aus dem dokumentierten Inhaltsstand deterministisch erzeugt.",
+            }
+        ],
+        "pages": len(records),
+    }
     lines = [
         "---\n",
-        "title: Cheatsheets – Manifest\n",
-        "type: index\n",
-        "status: fertig\n",
-        f"pages: {len(records)}\n",
+        yaml.safe_dump(metadata, allow_unicode=True, sort_keys=False, width=100),
         "---\n\n",
         "# Manifest\n\n",
         "Diese Datei wird deterministisch aus den realen Fachseiten, ihren "

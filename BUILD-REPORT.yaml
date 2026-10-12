@@ -1,15 +1,15 @@
 schema_version: 1
 content_date: '2026-10-12'
-content_fingerprint_sha256: 669d785cbb7f04c9e5b96b4106502e2c43ebe9fa27decf405e192012b023789f
+content_fingerprint_sha256: e4ed84537211e67c3d025348641c8422817dfe282b0b88eca4e1af75879a9803
 categories: 12
-reference_pages: 88
-total_lines: 46282
-total_bytes: 1115708
+reference_pages: 89
+total_lines: 47087
+total_bytes: 1173921
 statuses:
-  fertig: 88
+  fertig: 89
 category_pages:
   Enterprise & Windows: 7
-  Versionierung, Entwicklung & Editoren: 14
+  Versionierung, Entwicklung & Editoren: 15
   Linux-, Unix- & Paketverwaltung: 25
   Webserver: 2
   Netzwerk & Firewalls: 8
