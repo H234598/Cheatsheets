@@ -14,17 +14,19 @@ tags:
 - cheatsheet
 - it-administration
 - cheatsheet
-version: '2.2.0'
-pages: 88
+version: '2.3.0'
+pages: 89
 date: '2026-10-12'
 updates:
 - date: '2026-10-12'
   change: 'Vim und .vimrc ergänzt; Umfang und Verweise aktualisiert.'
+- date: '2026-10-12'
+  change: 'HashiCorp Terraform ergänzt; Umfang, Navigation und Downloads aktualisiert.'
 ---
 # Cheatsheet – Start hier
 
 > [!summary] Gesamtausgabe
-> **88 ausführliche Spickzettel** in 12 Themenbereichen, zusammen 46,282 Zeilen und 1089.6 KiB Markdown. Enthalten sind die überarbeiteten Seiten aus „Cheatsheet I“, die Restthemen aus „Cheatsheet II“ und die Ergänzung **Thales Luna Network HSM A750**.
+> **89 ausführliche Spickzettel** in 12 Themenbereichen, zusammen 47,087 Zeilen und 1146.4 KiB Markdown. Enthalten sind die überarbeiteten Seiten aus „Cheatsheet I“, die Restthemen aus „Cheatsheet II“ und die Ergänzung **Thales Luna Network HSM A750**.
 
 ## Direkteinstieg
 
@@ -40,7 +42,7 @@ updates:
 | Bereich | Inhalt | Seiten |
 |---|---|---:|
 | [[01-Enterprise-Windows/INDEX|Enterprise & Windows]] | Enterprise-Anwendungen, Microsoft-Werkzeuge, RPC, Terminal und IIS. | 7 |
-| [[02-Versionierung-Entwicklung/INDEX|Versionierung, Entwicklung & Editoren]] | Git-Plattformen, Programmiersprachen, Rails, Flutter, Buildsysteme, Vim und Neovim. | 14 |
+| [[02-Versionierung-Entwicklung/INDEX|Versionierung, Entwicklung & Editoren]] | Git-Plattformen, Programmiersprachen, Rails, Flutter, Buildsysteme, Terraform, Vim und Neovim. | 15 |
 | [[03-Linux-Administration/INDEX|Linux-, Unix- & Paketverwaltung]] | Fedora/RHEL, systemd, Benutzer, Rechte, Paketmanager, Shell- und Diagnosewerkzeuge. | 25 |
 | [[04-Webserver/INDEX|Webserver]] | nginx und Apache HTTP Server mit TLS, Reverse Proxy, Härtung und Diagnose. | 2 |
 | [[05-Netzwerk-Sicherheit/INDEX|Netzwerk & Firewalls]] | Client- und Serverkonfiguration unter Linux, Windows und BSD sowie Wireshark, pfSense und OPNsense. | 8 |
@@ -54,6 +56,7 @@ updates:
 
 ## Neueste Ergänzungen
 
+- [[02-Versionierung-Entwicklung/Terraform-Cheatsheet|Terraform – Cheatsheet]]
 - [[02-Versionierung-Entwicklung/Vim-Cheatsheet|Vim – Cheatsheet]]
 - [[02-Versionierung-Entwicklung/Vimrc-Konfiguration-Cheatsheet|.vimrc – Konfiguration und Praxis]]
 

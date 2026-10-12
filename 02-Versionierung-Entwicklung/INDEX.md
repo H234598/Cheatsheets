@@ -11,18 +11,20 @@ tags:
 - index
 - cheatsheet
 - 02-versionierung-entwicklung
-pages: 14
+pages: 15
 date: '2026-10-12'
 updates:
 - date: '2026-10-12'
   change: 'Vim und .vimrc ergänzt; Umfang und Verweise aktualisiert.'
+- date: '2026-10-12'
+  change: 'HashiCorp Terraform ergänzt; Umfang, Navigation und Downloads aktualisiert.'
 ---
 # Versionierung, Entwicklung & Editoren
 
 > [!abstract] Bereich
-> Git-Plattformen, Programmiersprachen, Rails, Flutter, Buildsysteme, Vim und Neovim.
+> Git-Plattformen, Programmiersprachen, Rails, Flutter, Buildsysteme, Terraform, Vim und Neovim.
 
-**Umfang:** 14 Spickzettel · 196.1 KiB Quelltext
+**Umfang:** 15 Spickzettel · 253.0 KiB Quelltext
 
 [[00-START-HIER|← Startseite]] · [[/INDEX|Gesamtindex]]
 
@@ -40,6 +42,7 @@ updates:
 - [[02-Versionierung-Entwicklung/Python-3-Cheatsheet|Python 3 – Cheatsheet]] — 672 Zeilen · 13.5 KiB · `#python`, `#programming`, `#pip`, `#venv`, `#testing`
 - [[02-Versionierung-Entwicklung/Ruby-on-Rails-Cheatsheet|Ruby on Rails – Cheatsheet]] — 510 Zeilen · 10.9 KiB · `#ruby`, `#rails`, `#web-development`, `#mvc`, `#active-record`
 - [[02-Versionierung-Entwicklung/Rust-Cheatsheet|Rust – Cheatsheet]] — 759 Zeilen · 14.2 KiB · `#rust`, `#cargo`, `#programming`, `#systems`, `#memory-safety`
+- [[02-Versionierung-Entwicklung/Terraform-Cheatsheet|Terraform – Cheatsheet]] — 805 Zeilen · 56.8 KiB · `#terraform`, `#hashicorp`, `#infrastructure-as-code`, `#entwicklung`, `#automatisierung`
 - [[02-Versionierung-Entwicklung/Vim-Cheatsheet|Vim – Cheatsheet]] — 580 Zeilen · 29.8 KiB · `#vim`, `#editor`, `#entwicklung`, `#terminal`, `#shortcuts`
 - [[02-Versionierung-Entwicklung/Vimrc-Konfiguration-Cheatsheet|.vimrc – Konfiguration und Praxis]] — 584 Zeilen · 29.5 KiB · `#vim`, `#vimrc`, `#vimscript`, `#editor`, `#konfiguration`
 

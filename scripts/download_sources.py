@@ -14,6 +14,8 @@ import subprocess
 from typing import Mapping, Sequence
 import zipfile
 
+import yaml
+
 from build_manifest import ordered_records
 from content_model import (
     CATEGORY_RE,
@@ -274,9 +276,35 @@ def _body_without_title(page: PageRecord) -> str:
 def render_combined_markdown(index: ContentIndex, source_commit: str) -> str:
     records = ordered_records(index)
     included = {record.page.source_path.resolve() for record in records}
+    canonical = index.page_for_path(index.root / "Cheatsheet-Gesamtband.md")
+    canonical_metadata = canonical.metadata if canonical is not None else {}
+    content_date = max(
+        (
+            value.strip()
+            for record in records
+            if isinstance(value := record.page.metadata.get("modified"), str)
+            and value.strip()
+        ),
+        default=generated_at_iso()[:10],
+    )
+    properties = {
+        "aliases": canonical_metadata.get("aliases") or ["Cheatsheets Gesamtband"],
+        "tags": canonical_metadata.get("tags") or ["cheatsheets", "compendium", "obsidian"],
+        "date": content_date,
+        "created": canonical_metadata.get("created") or content_date,
+        "modified": content_date,
+        "updates": canonical_metadata.get("updates")
+        or [
+            {
+                "date": content_date,
+                "change": "Aus den kanonischen Fachseiten deterministisch erzeugt.",
+            }
+        ],
+    }
     lines = [
         "---\n",
         'title: "Cheatsheet-Gesamtband"\n',
+        yaml.safe_dump(properties, allow_unicode=True, sort_keys=False, width=100),
         "type: reference\n",
         "status: generated\n",
         f"pages: {len(records)}\n",

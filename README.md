@@ -12,16 +12,18 @@ tags:
 - cheatsheet
 - obsidian
 - Cheatsheets
-version: '2.2.0'
-pages: 88
+version: '2.3.0'
+pages: 89
 date: '2026-10-12'
 updates:
 - date: '2026-10-12'
   change: 'Vim und .vimrc ergänzt; Umfang und Verweise aktualisiert.'
+- date: '2026-10-12'
+  change: 'HashiCorp Terraform ergänzt; Umfang, Navigation und Downloads aktualisiert.'
 ---
 # Cheatsheets
 
-Diese Sammlung ist ein Obsidian-kompatibler IT-Referenz-Vault mit **88 Fachseiten in 12 Kategorien**. Die Fachseiten umfassen **46,282 Zeilen** beziehungsweise **1089.6 KiB Markdown**.
+Diese Sammlung ist ein Obsidian-kompatibler IT-Referenz-Vault mit **89 Fachseiten in 12 Kategorien**. Die Fachseiten umfassen **47,087 Zeilen** beziehungsweise **1146.4 KiB Markdown**.
 
 ## Einstieg
 
@@ -32,6 +34,10 @@ Diese Sammlung ist ein Obsidian-kompatibler IT-Referenz-Vault mit **88 Fachseite
 - [[MANIFEST|Manifest]]
 - [[QUALITAETSPRUEFUNG|Qualitätsprüfung]]
 - [[CHANGELOG|Changelog]]
+
+## Neu: HashiCorp Terraform
+
+- [[02-Versionierung-Entwicklung/Terraform-Cheatsheet|Terraform – Cheatsheet]] – CLI, HCL, Module, State, Import, Geheimnisse und CI mit vollständig geprüftem lokalem Beispiel.
 
 ## Neu: Vim und .vimrc
 
