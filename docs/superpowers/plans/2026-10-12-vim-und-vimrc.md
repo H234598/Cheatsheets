@@ -11,15 +11,19 @@ tags:
   - dokumentation
   - github-pages
 type: plan
-status: review
+status: veröffentlicht
 date: '2026-10-12'
 created: '2026-10-12'
 modified: '2026-10-12'
 updates:
   - date: '2026-10-12'
     change: "Bestandsaufnahme abgeschlossen; Umsetzungsplan vor den Inhaltsänderungen angelegt."
+  - date: '2026-10-12'
+    change: "Beide Seiten erstellt, vollständig geprüft und mit PR #25 per GitHub Pages veröffentlicht; Cloudflare-Sperre der Liveprüfung dokumentiert."
 repository: "H234598/Cheatsheets"
 base_commit: "28c5218486479ef669d5c36e0392441ebcbe0604"
+publication_commit: "ac262d3f6a99ef0db3021996dbdcbc02f471be26"
+live_verification: "durch Cloudflare-Zugriffssperre eingeschränkt"
 ---
 
 # Vim und .vimrc – Umsetzungsplan und Veröffentlichungsnachweis
@@ -134,14 +138,14 @@ Die Basis richtet sich an reguläre Vim-9.x-Installationen. Plattform- oder Buil
 
 ### Meilenstein 4 – Veröffentlichung und Übergabe
 
-- [ ] Geprüfte Änderungen committen und den Arbeitsbranch auf GitHub bereitstellen.
-- [ ] Pull Request gegen den aktuellen `main` mit Inhalt, Zweck und Prüfnachweisen eröffnen.
-- [ ] CI und vorhandene Reviewanforderungen prüfen; neue relevante Funde bearbeiten.
-- [ ] Bei erfüllten Voraussetzungen den PR im Rahmen des Veröffentlichungsauftrags mergen.
-- [ ] Den resultierenden GitHub-Pages-Lauf bis zum abgeschlossenen Deployment verfolgen.
-- [ ] Beide produktiven Seiten abrufen und Titel, wesentliche Inhalte sowie Downloads verifizieren.
-- [ ] Diesen Plan um tatsächliche Ergebnisse, Commit/PR, Workflow-Links und gegebenenfalls verbleibende Grenzen ergänzen.
-- [ ] Beide vollständigen Markdown-Dateien und den vollständigen Umsetzungsnachweis als Downloads verlinken.
+- [x] Geprüfte Änderungen committen und den Arbeitsbranch auf GitHub bereitstellen.
+- [x] Pull Request gegen den aktuellen `main` mit Inhalt, Zweck und Prüfnachweisen eröffnen.
+- [x] CI und vorhandene Reviewanforderungen prüfen; neue relevante Funde bearbeiten.
+- [x] Den PR im Rahmen des ausdrücklichen Veröffentlichungsauftrags mergen.
+- [x] Den resultierenden GitHub-Pages-Lauf bis zum abgeschlossenen Deployment verfolgen.
+- [ ] Beide produktiven Seiten über die Custom Domain ohne Zugriffssperre abrufen und Titel, wesentliche Inhalte sowie Downloads live verifizieren. **Blockiert:** Die vorgeschaltete Cloudflare-Verarbeitung sperrt die Prüfzugriffe; Details stehen im Abschnitt zur Liveprüfung.
+- [x] Diesen Plan um tatsächliche Ergebnisse, Commit/PR, Workflow-Links und verbleibende Grenzen ergänzen.
+- [x] Beide vollständigen Markdown-Dateien und den vollständigen Umsetzungsnachweis zur Übergabe bereitstellen.
 
 ## Fortschritt und Prüfnachweise
 
@@ -152,16 +156,16 @@ Die Basis richtet sich an reguläre Vim-9.x-Installationen. Plattform- oder Buil
 - Inhaltsmodell am Ausgangsstand: **86 Fachseiten, 12 Kategorien, 0 Fehler, 0 Warnungen**.
 - Linkprüfung am Ausgangsstand: **0 Fehler, 0 Warnungen**.
 - Exakt gepinnte Pythonabhängigkeiten in eigener virtueller Umgebung installiert; `pip check`: keine Abhängigkeitskonflikte.
-- Arbeitsbranch angelegt; beide Fachartikel werden parallel ausgearbeitet.
+- Arbeitsbranch angelegt; beide Fachartikel wurden parallel ausgearbeitet.
 
 ### Prüfwerkzeuge und Ausgangs-CI
 
 - 45 vorhandene Tests für Inhaltsmodell, Manifest, Links, Navigation und Downloads bestanden am Ausgangsstand.
 - Die letzten produktiven Läufe für den Ausgangscommit waren erfolgreich: [Validate](https://github.com/H234598/Cheatsheets/actions/runs/31550918754) und [Pages](https://github.com/H234598/Cheatsheets/actions/runs/31550918762).
 - Vim 9.2.0000 wurde aus dem [offiziellen Quellcommit e7e2101](https://github.com/vim/vim/commit/e7e21018fc0b60c153c8e668f696d95e574cc5a4) als temporäres Prüfwerkzeug gebaut. Erforderliche Editorfunktionen sind vorhanden; GUI und eine echte Desktop-Zwischenablage werden damit nicht getestet.
-- Die exakt gepinnten npm-Pakete ließen sich installieren. Der lokale Chromium-Download für Playwright lieferte jedoch kein gültiges ZIP; lokale Playwright-Browsertests sind deshalb vorerst nicht ausführbar. Die vorhandene GitHub-CI bleibt für diesen Prüfumfang maßgeblich.
+- Die exakt gepinnten npm-Pakete ließen sich installieren. Der lokale Chromium-Download für Playwright lieferte jedoch kein gültiges ZIP; lokale Playwright-Browsertests waren deshalb nicht ausführbar. Die vorhandene GitHub-CI hat diesen Prüfumfang anschließend erfolgreich ausgeführt.
 
-Weitere Ergebnisse werden ausschließlich nach Durchführung ergänzt.
+Die folgenden Ergebnisse wurden ausschließlich nach ihrer tatsächlichen Durchführung ergänzt.
 
 ## Quellen für den fachlichen Einstieg
 
@@ -179,7 +183,7 @@ Die einzelnen Fachseiten führen zusätzliche, thematisch zugeordnete Primärque
 - Der echte Basistest zeigte, dass das mitgelieferte Python-Filetype-Plugin die globale Tabdarstellung auf 4 setzte. Die Python-Regel und das passende `after/ftplugin`-Beispiel setzen nun ausdrücklich `tabstop=8`; die erwartete Darstellung bleibt damit nachvollziehbar.
 - Danach bestanden **30 Assertions mit Vim 9.2.0000**, unter anderem dreifaches Laden derselben Basisdatei, unveränderte drei Autocommands, Mappings, Schutzoptionen, Python/YAML/Make-Werte, Suche/Ersetzung, Register und Dateibindung. Exitcode 0, leere Fehlerliste.
 - Zusätzlich haben die Fachautoren 13 Kernbefehlsprüfungen sowie den optionalen Zustands-/Undo-Block mit Leerzeichen und Komma im Zielpfad erfolgreich geprüft. Neue Zustandsverzeichnisse hatten Unix-Rechte `0700`; eine echte Undo-Datei wurde erzeugt.
-- Direkter Shell-Push ist mangels Git-Zugangsdaten nicht verfügbar. Für Branch, Commit und PR wird die bereits verbundene GitHub-Integration verwendet.
+- Direkter Shell-Push war mangels Git-Zugangsdaten nicht verfügbar. Branch, Commit und PR wurden über die bereits verbundene GitHub-Integration angelegt.
 
 ### Abgeschlossene lokale Prüfung
 
@@ -195,3 +199,64 @@ Die einzelnen Fachseiten führen zusätzliche, thematisch zugeordnete Primärque
 | Vollständiger Strict-Build mit Online- und Offline-Ausgabe | Erfolgreich; **107 HTML-Quellseiten** einschließlich generierter Übersichten |
 
 Vier externe Quellenanker wurden nach dem unabhängigen Review korrigiert. Ein zusätzlicher Reviewhinweis zu den relativen Planverweisen erwies sich bei direkter Pfadauflösung als unbegründet: Die fünf `../../WEB-*.md`-Ziele liegen tatsächlich unter `docs/` und sind vorhanden.
+
+### GitHub-Prüfung des veröffentlichten Arbeitsbranches
+
+Der vollständige [Pull Request #25](https://github.com/H234598/Cheatsheets/pull/25) enthält 14 geänderte Dateien. Sein [Quellcommit `fc18d35`](https://github.com/H234598/Cheatsheets/commit/fc18d35d4fdd919bd9dd08916147be7eda8d3071) wurde über die verbundene GitHub-Integration angelegt. Der lokale Git-Baum und der zurückgelesene Remote-Baum stimmen exakt überein: `ae0a6c71fc2af16aea789dee7522dfb14fa9a31d`.
+
+Der [Validate-Lauf für PR #25](https://github.com/H234598/Cheatsheets/actions/runs/38228610824) ist erfolgreich abgeschlossen. Er prüft exakt diesen Quellcommit und bestätigt:
+
+- **132 bestandene Python-Tests** sowie erfolgreiche Inhalts-, Link-, Sicherheits-, Workflow- und Metadatenprüfungen.
+- Einen erfolgreichen Strict-Build, ein gültiges Pages-Artefakt und eingehaltene Webbudgets.
+- Ein unabhängig geprüftes Offlinepaket mit **186 Dateien und 37.800 lokalen Referenzen**.
+- **9 bestandene Chromium-Tests** für Online- und Offline-Navigation, den Fallback ohne JavaScript, Browserfehler, lokale Laufzeitrequests, Barrierefreiheit, Suche und Filter, Tastaturbedienung, Favoriten, Fokusmodus, die 320-Pixel-Ansicht, reduzierte Bewegung, Downloads und die 404-Seite.
+- Eine nach dem Build unveränderte Quellarbeitskopie.
+
+Damit ist der lokale Chromium-Downloadfehler durch einen erfolgreich ausgeführten Browser-Prüfumfang in der GitHub-CI abgedeckt. Die zusätzliche Qualitätsprüfung `qlty check` ist ebenfalls erfolgreich.
+
+### Erfolgreiche Veröffentlichung
+
+| Nachweis | Tatsächliches Ergebnis |
+|---|---|
+| Pull Request | [#25](https://github.com/H234598/Cheatsheets/pull/25), erfolgreich zusammengeführt |
+| Veröffentlichter Inhaltscommit | [`ac262d3`](https://github.com/H234598/Cheatsheets/commit/ac262d3f6a99ef0db3021996dbdcbc02f471be26) auf `main` |
+| Validate auf `main` | [Lauf 38229346897](https://github.com/H234598/Cheatsheets/actions/runs/38229346897), abgeschlossen mit `success` |
+| Pages auf `main` | [Lauf 38229346893](https://github.com/H234598/Cheatsheets/actions/runs/38229346893), Build und Deployment abgeschlossen mit `success` |
+| Neue Inhaltsversion | **2.2.0**, insgesamt **88 Fachseiten in 12 Kategorien** |
+| Vollständigkeit | Beide neuen Fachseiten sind in Kategorie-/Gesamtindex, Einstieg, Suche, Gesamtband und den generierten Downloadpaketen enthalten |
+
+Der Merge-Baum stimmt mit dem vollständig geprüften PR-Baum überein. Die unabhängige fachliche Prüfung und die vollständige CI sind abgeschlossen. Das zusätzliche CodeRabbit-Review zeigte bei der letzten Abfrage weiterhin einen laufenden Vorgang ohne eingereichte Reviews oder Review-Threads. Ein abgeschlossenes CodeRabbit-Review ohne Befund wird deshalb ausdrücklich nicht behauptet.
+
+**Veröffentlichte Zielseiten:**
+
+- [Vim – Cheatsheet](https://cheatsheets.telacore.org/02-Versionierung-Entwicklung/Vim-Cheatsheet/).
+- [.vimrc – Konfiguration und Praxis](https://cheatsheets.telacore.org/02-Versionierung-Entwicklung/Vimrc-Konfiguration-Cheatsheet/).
+
+**Vollständige Markdown-Quellen:**
+
+- [Vim-Cheatsheet.md](../../../02-Versionierung-Entwicklung/Vim-Cheatsheet.md).
+- [Vimrc-Konfiguration-Cheatsheet.md](../../../02-Versionierung-Entwicklung/Vimrc-Konfiguration-Cheatsheet.md).
+
+### Liveprüfung: durch Cloudflare eingeschränkt
+
+Das erfolgreiche GitHub-Pages-Deployment ist belegt. Die Erreichbarkeit der beiden Artikel einschließlich ihrer Downloadlinks über die produktive Domain konnte aus der Prüfungsumgebung dagegen nicht abschließend bestätigt werden.
+
+Bereits vor dem Merge antwortete die bestehende Domain auf HTTP- und HTTPS-Abrufe mit folgendem Header:
+
+```http
+HTTP/1.1 301 Moved Permanently
+Location: awsas.de/403-page.html
+Server: cloudflare
+```
+
+Das relative Ziel wird als zusätzlicher Pfad auf derselben Domain aufgelöst. Zwei begrenzte Folgeabrufe lieferten denselben Header erneut und bestätigten so die Schleife. Beispiel zur Korrelation in den Cloudflare-Ereignissen: `CF-Ray: a4950800cfb9258c-ORD`.
+
+Nach dem erfolgreichen Deployment wurde die neue Vim-Seite zusätzlich für eine Navigationsprüfung im Cloud-Browser geöffnet. Die Seite zeigte **„Sorry, you have been blocked“** und **„You are unable to access telacore.org“**, mit Cloudflare-Ray-ID **`a4950c08ab37258c`**. Es erschien keine interaktive Freigabe. Die Prüfung wurde an dieser Zugriffssperre beendet; weitere Routen wurden nicht als Umgehung ausprobiert.
+
+Diese Beobachtungen belegen die Blockierung der verwendeten Prüfzugriffe. Sie belegen keinen weltweiten Ausfall und keine identische Wirkung im Browser des Betreibers. Die Titel, Inhalte, Navigation, Querverweise und Downloadpakete sind durch die lokalen Builds und die erfolgreichen GitHub-Prüfungen abgedeckt; eine erfolgreiche Liveprüfung der Custom Domain bleibt offen.
+
+Öffentliche DNS-Abfragen ergaben Cloudflare-Adressen, keinen öffentlichen `NXDOMAIN`-Befund. Die direkte GitHub-Pages-Adresse leitete zur richtigen Custom Domain weiter, allerdings auf `http://cheatsheets.telacore.org/`. Auch der erfolgreiche Pages-Build erhielt von `actions/configure-pages` diese HTTP-Basis-URL. Das dokumentierte HTTPS-Verhalten sollte daher bei einer betrieblichen Prüfung mit den aktuellen Pages-Einstellungen abgeglichen werden; der genaue Wert von `https_enforced` wurde nicht zurückgelesen.
+
+**Konkreter verbleibender Betriebsschritt:** In der vorgeschalteten Cloudflare-Konfiguration die Ray-IDs und das Ziel `awsas.de/403-page.html` zuordnen und die verantwortliche Redirect-, Worker- oder Zugriffsregel prüfen. Im Repository ist dieses Weiterleitungsziel nicht enthalten. Die Regeln wurden im Rahmen dieser Inhaltsveröffentlichung weder verändert noch umgangen. Nach einer gezielten betrieblichen Korrektur beziehungsweise einer zulässigen Freigabe können beide Zielseiten und ihre Downloads erneut live geprüft werden.
+
+Hinweis zum Verhalten des Cloud-Browsers: [Wenn eine Website die Aufgabe blockiert](https://help.openai.com/articles/20001280-using-cloud-browser-in-chatgpt#when-a-website-blocks-the-task).
