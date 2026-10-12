@@ -4,22 +4,26 @@ aliases:
 - Alle Cheatsheet
 - Cheatsheet Index
 created: '2026-07-17'
-modified: '2026-07-17'
+modified: '2026-10-12'
 type: index
 status: fertig
 tags:
 - index
 - cheatsheet
 - alphabetisch
-pages: 86
-version: 2.1.0
+pages: 88
+version: '2.2.0'
+date: '2026-10-12'
+updates:
+- date: '2026-10-12'
+  change: 'Vim und .vimrc ergänzt; Umfang und Verweise aktualisiert.'
 ---
 # Gesamtindex
 
 [[00-START-HIER|← Startseite]] · [[Cheatsheet-Gesamtband|Gesamtband]] · [[MANIFEST|Manifest]]
 
 > [!summary] Umfang
-> **86 Fachseiten** in **12 Themenbereichen**. Stand: 2026-07-17, Version 2.1.0.
+> **88 Fachseiten** in **12 Themenbereichen**. Stand: 2026-10-12, Version 2.2.0.
 
 ## Nach Themenbereich
 
@@ -29,11 +33,11 @@ Enterprise-Anwendungen, Microsoft-Werkzeuge, RPC, Terminal und IIS.
 
 [[01-Enterprise-Windows/Microsoft-Excel-Cheatsheet|Microsoft Excel – Cheatsheet]] · [[01-Enterprise-Windows/Microsoft-IIS-Cheatsheet|Microsoft IIS – Cheatsheet]] · [[01-Enterprise-Windows/MS-RPC-Verbindungen-Cheatsheet|Microsoft RPC-Verbindungen – Cheatsheet]] · [[01-Enterprise-Windows/Microsoft-Visio-Cheatsheet|Microsoft Visio – Cheatsheet]] · [[01-Enterprise-Windows/Microsoft-Word-Cheatsheet|Microsoft Word – Cheatsheet]] · [[01-Enterprise-Windows/OMNITRACKER-Cheatsheet|OMNITRACKER – Cheatsheet]] · [[01-Enterprise-Windows/Windows-Terminal-Cheatsheet|Windows Terminal – Cheatsheet]]
 
-### [[02-Versionierung-Entwicklung/INDEX|Versionierung, Entwicklung & Editoren]] (12)
+### [[02-Versionierung-Entwicklung/INDEX|Versionierung, Entwicklung & Editoren]] (14)
 
-Git-Plattformen, Programmiersprachen, Buildsysteme, Rails, Flutter, Buildsysteme und Neovim.
+Git-Plattformen, Programmiersprachen, Rails, Flutter, Buildsysteme, Vim und Neovim.
 
-[[02-Versionierung-Entwicklung/Flutter-Cheatsheet|Flutter – Cheatsheet]] · [[02-Versionierung-Entwicklung/Git-Cheatsheet|Git – Cheatsheet]] · [[02-Versionierung-Entwicklung/GitHub-Cheatsheet|GitHub – Cheatsheet]] · [[02-Versionierung-Entwicklung/GitLab-Cheatsheet|GitLab – Cheatsheet]] · [[02-Versionierung-Entwicklung/Make-und-Source-Builds-Cheatsheet|Make, Source-Builds und Buildsysteme – Cheatsheet]] · [[02-Versionierung-Entwicklung/Neovim-Konfiguration-und-Plugins-Cheatsheet|Neovim – Konfiguration und Plugins]] · [[02-Versionierung-Entwicklung/Neovim-LSP-Debugging-Cheatsheet|Neovim – LSP, Diagnostics, Formatting und Debugging]] · [[02-Versionierung-Entwicklung/Neovim-Cheatsheet|Neovim – Cheatsheet]] · [[02-Versionierung-Entwicklung/Neovim-Shortcuts-und-Bewegungen|Neovim – Shortcuts, Bewegungen und Textobjekte]] · [[02-Versionierung-Entwicklung/Python-3-Cheatsheet|Python 3 – Cheatsheet]] · [[02-Versionierung-Entwicklung/Ruby-on-Rails-Cheatsheet|Ruby on Rails – Cheatsheet]] · [[02-Versionierung-Entwicklung/Rust-Cheatsheet|Rust – Cheatsheet]]
+[[02-Versionierung-Entwicklung/Flutter-Cheatsheet|Flutter – Cheatsheet]] · [[02-Versionierung-Entwicklung/Git-Cheatsheet|Git – Cheatsheet]] · [[02-Versionierung-Entwicklung/GitHub-Cheatsheet|GitHub – Cheatsheet]] · [[02-Versionierung-Entwicklung/GitLab-Cheatsheet|GitLab – Cheatsheet]] · [[02-Versionierung-Entwicklung/Make-und-Source-Builds-Cheatsheet|Make, Source-Builds und Buildsysteme – Cheatsheet]] · [[02-Versionierung-Entwicklung/Neovim-Konfiguration-und-Plugins-Cheatsheet|Neovim – Konfiguration und Plugins]] · [[02-Versionierung-Entwicklung/Neovim-LSP-Debugging-Cheatsheet|Neovim – LSP, Diagnostics, Formatting und Debugging]] · [[02-Versionierung-Entwicklung/Neovim-Cheatsheet|Neovim – Cheatsheet]] · [[02-Versionierung-Entwicklung/Neovim-Shortcuts-und-Bewegungen|Neovim – Shortcuts, Bewegungen und Textobjekte]] · [[02-Versionierung-Entwicklung/Python-3-Cheatsheet|Python 3 – Cheatsheet]] · [[02-Versionierung-Entwicklung/Ruby-on-Rails-Cheatsheet|Ruby on Rails – Cheatsheet]] · [[02-Versionierung-Entwicklung/Rust-Cheatsheet|Rust – Cheatsheet]] · [[02-Versionierung-Entwicklung/Vim-Cheatsheet|Vim – Cheatsheet]] · [[02-Versionierung-Entwicklung/Vimrc-Konfiguration-Cheatsheet|.vimrc – Konfiguration und Praxis]]
 
 ### [[03-Linux-Administration/INDEX|Linux-, Unix- & Paketverwaltung]] (25)
 
@@ -213,6 +217,11 @@ Historie und Einordnung von Intel-, AMD- und Arm-Prozessoren sowie Benchmarkmeth
 - [[09-Fuehrung-Kommunikation/Umgang-mit-Managern-Cheatsheet|Umgang mit Managern – Cheatsheet]] — *Führung & Kommunikation*
 - [[09-Fuehrung-Kommunikation/Umgang-mit-Teamleitern-Cheatsheet|Umgang mit Teamleitern – Cheatsheet]] — *Führung & Kommunikation*
 - [[07-Android/USB-Debugging-und-ADB-Cheatsheet|USB-Debugging und ADB – Cheatsheet]] — *Android*
+### V
+
+- [[02-Versionierung-Entwicklung/Vim-Cheatsheet|Vim – Cheatsheet]] — *Versionierung, Entwicklung & Editoren*
+- [[02-Versionierung-Entwicklung/Vimrc-Konfiguration-Cheatsheet|.vimrc – Konfiguration und Praxis]] — *Versionierung, Entwicklung & Editoren*
+
 ### W
 
 - [[06-Storage-Sync/Weitere-Dateisysteme-Cheatsheet|Weitere Dateisysteme – Cheatsheet]] — *Storage, Dateisysteme & Synchronisation*

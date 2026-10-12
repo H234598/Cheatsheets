@@ -4,18 +4,22 @@ aliases:
 - Cheatsheet Leseband
 - Alle Cheatsheets in einer Datei
 created: '2026-07-17'
-modified: '2026-07-17'
+modified: '2026-10-12'
 type: compendium
 status: fertig
 tags:
 - compendium
 - cheatsheet
-version: 2.1.0
-pages: 86
+version: '2.2.0'
+pages: 88
+date: '2026-10-12'
+updates:
+- date: '2026-10-12'
+  change: 'Vim und .vimrc ergänzt; Umfang und Verweise aktualisiert.'
 ---
 # Cheatsheet – Gesamtband
 
-Stand: 2026-07-17 · Version 2.1.0 · 86 Fachseiten
+Stand: 2026-10-12 · Version 2.2.0 · 88 Fachseiten
 
 ---
 
@@ -44812,3 +44816,1132 @@ Armv9/C1 sowie kundenspezifische Arm-Server-/PC-SoCs.
 - [[Rust-Cheatsheet]]
 - [[Python-3-Cheatsheet]]
 
+
+---
+
+## 87. Vim – Cheatsheet
+
+> **Einzelseite:** [[02-Versionierung-Entwicklung/Vim-Cheatsheet|Vim – Cheatsheet]]
+> **Vault-Pfad:** `02-Versionierung-Entwicklung/Vim-Cheatsheet.md`
+
+# Vim – Cheatsheet
+
+> [!abstract] Zweck
+> Vim vom sicheren Einstieg bis zur täglichen Arbeit: Modi, Bewegungen, Textobjekte, Register, Suche, Ersetzen, mehrere Dateien, Makros, Quickfix, Diff und Wiederherstellung. Die Beispiele benötigen keine zusätzlichen Plugins.
+
+> [!info] Geltungsbereich
+> Grundlage ist reguläres **Vim 9.x** mit den üblichen Funktionen; viele Befehle funktionieren auch in älteren Ausgaben. Kleine Builds können Funktionen auslassen. Eigene Mappings verändern Tastenbelegungen. `:version` und die lokal installierte `:help` zeigen den tatsächlichen Stand. Die Online-Dokumentation wurde am **12. Oktober 2026** geprüft.
+
+Die dauerhafte Einrichtung steht in [[Vimrc-Konfiguration-Cheatsheet|.vimrc – Konfiguration und Praxis]]. Für Neovim gibt es [[Neovim-Cheatsheet|eine eigene Referenz]] und [[Neovim-Konfiguration-und-Plugins-Cheatsheet|eine eigene Konfigurationsseite]].
+
+## Inhalt
+
+- [[#Schnellstart und sicher beenden]]
+- [[#Notation und Modi]]
+- [[#Bewegungen und Sprungmarken]]
+- [[#Operatoren und Textobjekte]]
+- [[#Einfügen und visuelle Auswahl]]
+- [[#Undo und Wiederholung]]
+- [[#Dateien, Buffer, Fenster und Tabs]]
+- [[#Suchen und Ersetzen]]
+- [[#Register und Zwischenablage]]
+- [[#Makros]]
+- [[#Quickfix und Projektsuche]]
+- [[#Dateien mit vimdiff vergleichen]]
+- [[#Externe Befehle und Textfilter]]
+- [[#Hilfe, Diagnose und Wiederherstellung]]
+- [[#Kleine Praxisübung]]
+- [[#Quellen und verwandte Seiten]]
+
+## Schnellstart und sicher beenden
+
+Im Terminal:
+
+```bash
+vim notizen.txt
+vim +42 programm.py
+vim -R protokoll.txt
+vim -d alt.txt neu.txt
+vimtutor
+```
+
+`+42` positioniert den Cursor in Zeile 42. `-R` setzt Vims Schreibschutzoption. `-d` startet den Diffmodus. `vimtutor` öffnet den mitgelieferten Lernkurs, sofern das entsprechende Paket installiert ist. [Startoptionen](https://vimhelp.org/starting.txt.html), [erste Schritte und Tutor](https://vimhelp.org/usr_02.txt.html).
+
+**Erste Änderung:** `i` drücken, Text eingeben, `Esc` drücken, `:wq` eingeben und mit `Enter` bestätigen. Befehle mit Doppelpunkt werden innerhalb von Vim eingegeben.
+
+| Befehl | Wirkung |
+|---|---|
+| `:w` | Aktuellen Puffer speichern |
+| `:update` | Nur speichern, wenn der Puffer geändert wurde |
+| `:q` | Aktuelles Fenster schließen; beim letzten Bearbeitungsfenster Vim beenden |
+| `:wq` | Aktuellen Puffer schreiben und Fenster schließen |
+| `:x` oder `ZZ` | Wie oben, aber nur bei Änderungen schreiben |
+| `:q!` oder `ZQ` | Ohne Speichern schließen; ungesicherte Änderungen des aufgegebenen Puffers gehen verloren |
+| `:wall` | Alle geänderten Puffer schreiben |
+| `:wqall` | Geänderte Puffer schreiben und Vim beenden |
+| `:qall!` | Vim beenden und sämtliche ungesicherten Änderungen verwerfen |
+
+`:q` verweigert das Aufgeben ungesicherter Änderungen. `:q!` beendet nicht zwangsläufig die gesamte Sitzung: Weitere Fenster oder geänderte, versteckte Puffer können bleiben. `:wall` und `:wqall` benötigen beschreibbare Ziele; unbenannte Puffer brauchen einen Dateinamen. [Speichern und Beenden](https://vimhelp.org/editing.txt.html).
+
+## Notation und Modi
+
+`Ctrl-W` bedeutet: Strg halten und W drücken. Bei `Ctrl-W v` folgt danach ein gewöhnliches `v`. `gg` sind zwei aufeinanderfolgende Tastendrücke. `<Esc>` und `<Enter>` stehen für die entsprechenden Tasten. Platzhalter wie `{zeichen}` werden durch einen tatsächlichen Wert ersetzt.
+
+| Modus | Eintritt | Aufgabe und Rückweg |
+|---|---|---|
+| Normal | Beim gewöhnlichen Start, sonst `Esc` | Bewegen, löschen, kopieren, Befehle kombinieren |
+| Insert | `i`, `a`, `o` | Text eingeben; `Esc` zurück |
+| Replace | `R` | Vorhandene Zeichen überschreiben; `Esc` zurück |
+| Visual | `v` | Zeichenweise auswählen |
+| Visual Line | `V` | Ganze Zeilen auswählen |
+| Visual Block | `Ctrl-V` | Rechteckige Auswahl |
+| Command-line | `:`, `/`, `?` | Ex-Befehl oder Suche; `Enter` ausführen, `Esc` abbrechen |
+| Operator-pending | Zum Beispiel nach `d` | Auf Bewegung oder Textobjekt warten; `Esc` abbrechen |
+
+**Normalmodus ist die Ausgangsbasis.** `i` wechselt in die Texteingabe; dieselbe Taste innerhalb eines Textobjekts, etwa `diw`, bedeutet „inner“. `Ctrl-[` dient ebenfalls als Escape-Taste. [Modi und Tastennotation](https://vimhelp.org/intro.txt.html).
+
+## Bewegungen und Sprungmarken
+
+### Cursor und Ansicht
+
+| Tasten | Ziel |
+|---|---|
+| `h`, `j`, `k`, `l` | Links, unten, oben, rechts |
+| `w`, `b`, `e` | Nächster Wortanfang, Wortanfang zurück, Wortende |
+| `W`, `B`, `E` | Entsprechend für durch Leerraum getrennte WORDs |
+| `0`, `^`, `$` | Zeilenanfang, erstes Nichtleerzeichen, Zeilenende |
+| `g_` | Letztes Nichtleerzeichen der Zeile |
+| `f;`, `F;` | Vorwärts beziehungsweise rückwärts auf ein Semikolon derselben Zeile |
+| `t;`, `T;` | Vorwärts davor beziehungsweise rückwärts dahinter |
+| `;`, `,` | Letzte `f`-/`t`-Suche wiederholen beziehungsweise umkehren |
+| `gg`, `G`, `42G` | Dateianfang, Dateiende, Zeile 42 |
+| `%` | Passende Klammer finden |
+| `{`, `}` | Absatz zurück beziehungsweise vor |
+| `gj`, `gk` | Bei weichem Umbruch eine Bildschirmzeile abwärts beziehungsweise aufwärts |
+| `Ctrl-D`, `Ctrl-U` | Etwa eine halbe Fensterhöhe abwärts beziehungsweise aufwärts |
+| `Ctrl-F`, `Ctrl-B` | Seitenweise abwärts beziehungsweise aufwärts |
+| `zz`, `zt`, `zb` | Cursorzeile mittig, oben beziehungsweise unten anzeigen |
+
+Eine vorangestellte Zahl wiederholt viele Bewegungen: `5j`, `3w`, `2f;`. Bei `w` hängt die Wortzerlegung unter anderem von `'iskeyword'` ab; `W` übergeht Satzzeichen innerhalb eines zusammenhängenden WORDs. [Bewegungen im Handbuch](https://vimhelp.org/usr_03.txt.html).
+
+### Positionen wiederfinden
+
+| Befehl | Wirkung |
+|---|---|
+| `ma` | Lokale Marke `a` setzen |
+| `'a` | Zur ersten Nichtleerstelle der markierten Zeile |
+| `` `a `` | Zur exakten markierten Position |
+| `mA` | Dateiübergreifende Marke `A` setzen |
+| `Ctrl-O`, `Ctrl-I` | Ältere beziehungsweise neuere Sprungposition |
+| `g;`, `g,` | Ältere beziehungsweise neuere Änderungsposition |
+| `:marks`, `:jumps`, `:changes` | Die jeweiligen Listen anzeigen |
+
+Sprungliste und Änderungsliste haben unterschiedliche Aufgaben: Die erste hilft nach Suchen und Dateisprüngen zurück; die zweite führt zu bearbeiteten Stellen. [Marken und Sprünge](https://vimhelp.org/motion.txt.html).
+
+## Operatoren und Textobjekte
+
+Vims Befehlssprache folgt häufig diesem Muster:
+
+```text
+[Anzahl] Operator [Anzahl] Bewegung-oder-Textobjekt
+```
+
+| Operator | Aufgabe | Beispiel |
+|---|---|---|
+| `d` | Löschen und in Register aufnehmen | `d$`: bis Zeilenende löschen |
+| `c` | Löschen und Insertmodus beginnen | `ciw`: Wort ersetzen |
+| `y` | Kopieren, in Vim „yank“ | `yy`: ganze Zeile kopieren |
+| `>`, `<` | Einrückung erhöhen beziehungsweise verringern | `>>`, `<<`: aktuelle Zeile |
+| `=` | Einrückung neu berechnen | `gg=G`: gesamte Datei einrücken |
+| `gq` | Text entsprechend den Formatoptionen umbrechen | `gqap`: Absatz formatieren |
+| `gu`, `gU` | Klein beziehungsweise groß schreiben | `gUiw`: Wort groß schreiben |
+
+`dd`, `cc` und `yy` arbeiten zeilenweise; `3dd` löscht drei Zeilen. Bei `2d3w` werden die Zahlen multipliziert: gelöscht wird über sechs `w`-Bewegungen. Die genauen Grenzen folgen der Bewegung. `=` steuert die Einrückung; `gq` kann zusätzlich Zeilen umbrechen, etwa anhand von `'textwidth'`. [Ändern mit Operatoren](https://vimhelp.org/usr_04.txt.html), [Textformatierung](https://vimhelp.org/usr_25.txt.html).
+
+### Textobjekte
+
+| Innerhalb | Mit Umgebung | Bereich |
+|---|---|---|
+| `iw` | `aw` | Wort; `aw` erfasst angrenzenden Leerraum |
+| `iW` | `aW` | WORD |
+| `ip` | `ap` | Absatz; `ap` schließt angrenzende Leerzeilen ein |
+| `i"` | `a"` | Doppelte Anführungszeichen |
+| `i'` | `a'` | Einfache Anführungszeichen |
+| `i(` | `a(` | Runde Klammern; auch `ib` beziehungsweise `ab` |
+| `i[` | `a[` | Eckige Klammern |
+| `i{` | `a{` | Geschweifte Klammern; auch `iB` beziehungsweise `aB` |
+| `it` | `at` | Inhalt eines Tags beziehungsweise Tag samt Inhalt |
+
+Beispiele mit dem Cursor im betreffenden Bereich:
+
+```text
+ci"neu<Esc>       Inhalt eines Strings durch neu ersetzen
+yi(               Inhalt runder Klammern kopieren
+da{               Klammerblock einschließlich Klammern löschen
+vip               Absatzinhalt auswählen
+```
+
+`cw` beginnt an der Cursorposition und hat eine Sonderbehandlung am Wortende. `ciw` erfasst das ganze Wort auch dann, wenn der Cursor mittendrin steht. Textobjekte wie `iw` folgen einem Operator oder werden im Visualmodus benutzt. [Textobjekte](https://vimhelp.org/motion.txt.html), [Besonderheit von `cw`](https://vimhelp.org/change.txt.html).
+
+## Einfügen und visuelle Auswahl
+
+### Text eingeben
+
+| Taste im Normalmodus | Wirkung |
+|---|---|
+| `i`, `a` | Vor beziehungsweise nach dem Cursor einfügen |
+| `I`, `A` | Vor dem ersten Nichtleerzeichen beziehungsweise am Zeilenende einfügen |
+| `o`, `O` | Neue Zeile unterhalb beziehungsweise oberhalb öffnen |
+| `rX` | Ein Zeichen durch `X` ersetzen |
+| `x`, `D`, `C` | Zeichen löschen, bis Zeilenende löschen beziehungsweise ändern |
+| `J` | Mit Folgezeile verbinden und Abstand behandeln |
+| `gJ` | Verbinden, vorhandenen Leerraum erhalten, keinen zusätzlichen einfügen |
+
+Im Insertmodus:
+
+```text
+Ctrl-W       Vorheriges Wort löschen
+Ctrl-N       Nächsten Vervollständigungsvorschlag auswählen
+Ctrl-P       Vorherigen Vervollständigungsvorschlag auswählen
+Ctrl-R a     Inhalt von Register a einfügen
+Ctrl-O       Einen Normalmodusbefehl ausführen, dann weiter einfügen
+```
+
+Die Vervollständigung mit `Ctrl-N`/`Ctrl-P` nutzt vorhandene Textquellen gemäß `'complete'`; sie benötigt keinen Sprachserver. [Einfügen und Vervollständigung](https://vimhelp.org/insert.txt.html), [Register beim Einfügen](https://vimhelp.org/usr_24.txt.html).
+
+### Auswahl bearbeiten
+
+Nach `v`, `V` oder `Ctrl-V` mit Bewegungen auswählen und anschließend etwa `y`, `d`, `c`, `>` oder `=` anwenden. `o` wechselt das aktive Auswahlende; `gv` stellt die letzte Auswahl wieder her.
+
+**Mehrere Zeilen gleich beginnen lassen:**
+
+1. Den Cursor auf die erste gewünschte Spalte setzen.
+2. Mit `Ctrl-V` und `j` weitere Zeilen markieren.
+3. `I` drücken und beispielsweise `# ` eingeben.
+4. Mit `Esc` abschließen; erst dabei erscheint die Einfügung auch in den übrigen ausgewählten Zeilen.
+
+Das ist eine rechteckige Auswahl. Bei Tabs und unterschiedlich langen Zeilen den Spaltenbereich prüfen. [Visualmodus und Blockbearbeitung](https://vimhelp.org/visual.txt.html).
+
+## Undo und Wiederholung
+
+| Befehl | Aufgabe |
+|---|---|
+| `u` | Letzte Änderung rückgängig machen |
+| `Ctrl-R` | Rückgängig gemachte Änderung erneut anwenden |
+| `.` | Letzte wiederholbare Textänderung an der aktuellen Position ausführen |
+| `:earlier 5m` | Zu einem früheren Bearbeitungszustand wechseln |
+| `:later 5m` | In der Änderungshistorie wieder vorwärts wechseln |
+| `:undolist` | Endpunkte der vorhandenen Undo-Zweige anzeigen |
+
+Beispiel: `ciwName<Esc>` ersetzt ein Wort. Zum nächsten Ziel wechseln und `.` drücken. Cursorbewegungen und das Kopieren mit `y` werden dadurch nicht wiederholt.
+
+Undo besitzt Verzweigungen: Nach `u` neu zu schreiben löscht nicht einfach jeden früheren Bearbeitungsweg. Dauerhafte Undo-Dateien müssen mit `'undofile'` eingerichtet werden; siehe [[Vimrc-Konfiguration-Cheatsheet]]. [Undo und Zeitnavigation](https://vimhelp.org/undo.txt.html), [Wiederholen](https://vimhelp.org/repeat.txt.html).
+
+## Dateien, Buffer, Fenster und Tabs
+
+| Begriff | Bedeutung |
+|---|---|
+| Datei | Gespeicherter Inhalt im Dateisystem |
+| Buffer/Puffer | Von Vim verwalteter Text; kann ungesichert oder unbenannt sein |
+| Fenster | Ansicht auf einen Puffer; mehrere Fenster können denselben Puffer zeigen |
+| Tabpage | Anordnung mehrerer Fenster; keine zwingende Eins-zu-eins-Zuordnung zu Dateien |
+
+[Puffer und Fenster](https://vimhelp.org/windows.txt.html), [Tabpages](https://vimhelp.org/tabpage.txt.html).
+
+### Dateien und Puffer
+
+```vim
+:edit andere.txt
+:ls
+:bnext
+:bprevious
+:buffer 3
+:buffer #
+:bdelete
+:pwd
+:lcd /pfad/zum/projekt
+```
+
+`:ls` zeigt Puffer, `:buffer #` den alternativen Puffer. `:bdelete` nimmt einen Puffer aus der normalen Pufferliste; es löscht keine Datei auf dem Datenträger. `:lcd` setzt das Arbeitsverzeichnis für das aktuelle Fenster. [Pufferbefehle](https://vimhelp.org/windows.txt.html).
+
+| Speichern unter anderem Namen | Ergebnis |
+|---|---|
+| `:write kopie.txt` | Schreibt eine Kopie; bei einem bereits benannten Puffer bleibt der aktuelle Dateiname erhalten |
+| `:saveas neuer-name.txt` | Schreibt unter neuem Namen und bindet den aktuellen Puffer an diesen Namen |
+
+`:saveas` entfernt die vorherige Datei nicht. Bei unbenannten Puffern kann schon `:write name.txt` den Namen setzen. [Mehrere Dateien und Speichern unter neuem Namen](https://vimhelp.org/usr_07.txt.html).
+
+Bei „No write since last change“ zuerst speichern oder bewusst `:set hidden` verwenden. `hidden` erlaubt ungesicherte Puffer ohne sichtbares Fenster; es speichert sie nicht automatisch. Das `+` in `:ls` kennzeichnet Änderungen.
+
+### Fenster und Tabs
+
+| Befehl | Wirkung |
+|---|---|
+| `:split datei.txt`, `:vsplit datei.txt` | Horizontal beziehungsweise vertikal teilen |
+| `Ctrl-W h/j/k/l` | Zum benachbarten Fenster wechseln |
+| `Ctrl-W w` | Fenster zyklisch wechseln |
+| `Ctrl-W =` | Fenstergrößen ausgleichen |
+| `Ctrl-W H/J/K/L` | Fenster an den entsprechenden äußeren Rand verschieben |
+| `:close` | Aktuelles Fenster schließen; letztes Fenster bleibt bestehen |
+| `:only` | Andere Fenster der Tabpage schließen, sofern Änderungen das zulassen |
+| `:tabedit datei.txt` | Neue Tabpage mit Datei öffnen |
+| `gt`, `gT`, `3gt` | Nächste, vorherige beziehungsweise dritte Tabpage |
+| `:tabs`, `:tabclose` | Tabpages auflisten beziehungsweise aktuelle schließen |
+
+Beispiel: Links Quellcode, rechts Tests als zwei Fenster; eine zweite Tabpage enthält ein Diff. Alle Ansichten können dieselbe Pufferliste nutzen. [Fensterpraxis](https://vimhelp.org/usr_08.txt.html), [Tabpage-Befehle](https://vimhelp.org/tabpage.txt.html).
+
+## Suchen und Ersetzen
+
+### Suche und Groß-/Kleinschreibung
+
+| Eingabe | Wirkung |
+|---|---|
+| `/fehler` | Vorwärts nach Muster suchen, mit `Enter` starten |
+| `?fehler` | Rückwärts suchen |
+| `n`, `N` | In der letzten Suchrichtung beziehungsweise entgegengesetzt weitersuchen |
+| `*`, `#` | Wort unter dem Cursor vorwärts beziehungsweise rückwärts suchen |
+| `:nohlsearch` | Aktuelle Trefferhervorhebung ausblenden |
+
+Mit diesen Optionen werden Treffer während der Eingabe gesucht und anschließend hervorgehoben:
+
+```vim
+:set incsearch hlsearch
+:set ignorecase smartcase
+```
+
+Unter `ignorecase smartcase` gilt für manuell eingegebene Muster:
+
+| Muster | Findet beispielsweise |
+|---|---|
+| `/fehler` | `fehler`, `Fehler`, `FEHLER` |
+| `/Fehler` | `Fehler` mit genau dieser Groß-/Kleinschreibung |
+| `/\cFehler` | Alle drei Varianten, unabhängig von den Suchoptionen |
+| `/\Cfehler` | Nur `fehler`, unabhängig von den Suchoptionen |
+
+`\c` erzwingt eine Suche ohne Beachtung der Groß-/Kleinschreibung, `\C` eine Suche mit deren Beachtung. Beide wirken auf das ganze Muster. `smartcase` setzt `ignorecase` voraus. `*` und `#` berücksichtigen `smartcase` nicht. [Suchpraxis](https://vimhelp.org/usr_27.txt.html), [Option `'smartcase'`](https://vimhelp.org/options.txt.html#%27smartcase%27).
+
+### Reguläre Ausdrücke
+
+```vim
+/\<fehler\>
+/\Vdatei[1].txt
+/\v(fehler|warnung)+
+```
+
+Das erste Muster nutzt Wortgrenzen. `\V` reduziert Sonderzeichen auf ein Minimum; Backslashes und das verwendete Suchtrennzeichen müssen weiterhin passend behandelt werden. `\v` aktiviert „very magic“, sodass beispielsweise Klammern und `|` direkt Regex-Bedeutung haben. Vims Regex-Syntax ist nicht in allen Einzelheiten mit PCRE identisch. [Musterreferenz](https://vimhelp.org/pattern.txt.html).
+
+### Ersetzen mit Kontrolle
+
+```vim
+:s/alt/neu/
+:s/alt/neu/g
+:%s/alt/neu/gc
+:10,20s/alt/neu/gc
+:'<,'>s/alt/neu/gc
+:%s/\<alt\>/neu/gc
+:%s#alter/pfad#neuer/pfad#gc
+:%s/alt/neu/gn
+```
+
+| Bestandteil | Bedeutung |
+|---|---|
+| Kein Bereich | Aktuelle Zeile |
+| `%` | Alle Zeilen |
+| `10,20` | Zeilen 10 bis 20 |
+| `'<,'>` | Die von der letzten visuellen Auswahl erfassten Zeilen |
+| `g` | Alle Treffer je Zeile |
+| `c` | Jede Ersetzung bestätigen |
+| `n` | Treffer nur zählen |
+| `i`, `I` | Groß-/Kleinschreibung ignorieren beziehungsweise beachten |
+
+Die Beispiele setzen `nogdefault` und `noedcompatible` voraus. Mit `gdefault` kehrt das `g`-Flag seine Bedeutung um. Beim Bestätigen heißt `y` ersetzen, `n` überspringen, `a` alle übrigen ersetzen, `q` beenden. Die Auswahlgrenzen `'<,'>` begrenzen **Zeilen**, nicht automatisch einzelne ausgewählte Spalten. [Ersetzungen und Flags](https://vimhelp.org/change.txt.html).
+
+Eine Gruppierung kann Text umstellen:
+
+```vim
+:%s/\v([A-Za-z]+), ([A-Za-z]+)/\2 \1/gc
+```
+
+Damit wird etwa `Muster, Anna` zu `Anna Muster`. Die Beispielklassen erfassen bewusst nur ASCII-Buchstaben. Im Ersetzungsteil bezeichnet `&` den gesamten Treffer, `\1` die erste Gruppe und `\r` einen neuen Zeilenumbruch. Ein wörtliches `&` wird dort als `\&` geschrieben. [Ersetzungen im Handbuch](https://vimhelp.org/usr_12.txt.html), [komplexe Änderungen](https://vimhelp.org/usr_10.txt.html).
+
+## Register und Zwischenablage
+
+Vim speichert kopierten und gelöschten Text in Registern. Das Präfix `"a` wählt Register `a`; es gehört unmittelbar vor den Befehl.
+
+| Register | Zweck |
+|---|---|
+| `"` | Standardregister für gewöhnliche Kopier-, Lösch- und Einfügevorgänge |
+| `0` | Letzter Yank, sofern kein anderes Register ausdrücklich angegeben war |
+| `1`–`9` | Historie größerer Lösch-/Änderungsoperationen |
+| `-` | Kleine Löschungen; bestimmte Bewegungen haben Sonderregeln |
+| `a`–`z` | Benannte Register; Großbuchstaben beim Schreiben hängen an |
+| `_` | Verwerfen, ohne die üblichen Textregister zu überschreiben |
+| `+`, `*` | Systemzwischenablage beziehungsweise systemabhängige Auswahl |
+
+```text
+"ayy        Zeile nach Register a kopieren
+"Ayy        Weitere Zeile an a anhängen
+"ap         Register a einfügen
+"0p         Letzten gewöhnlichen Yank einfügen
+"_dd        Zeile verwerfen, Kopierregister bewahren
+```
+
+`:registers` zeigt die Inhalte. `p` setzt zeichenweisen Text nach dem Cursor und zeilenweisen Text unter die aktuelle Zeile; `P` entsprechend davor beziehungsweise darüber. [Kopieren und Register](https://vimhelp.org/change.txt.html).
+
+### Austausch mit anderen Anwendungen
+
+```text
+"+yy        Zeile in die Systemzwischenablage kopieren
+"+p         Systemzwischenablage einfügen
+```
+
+Im Visualmodus kopiert `"+y` die Auswahl. Unter X11 unterscheidet Vim `+` für CLIPBOARD und `*` für PRIMARY; auf anderen Plattformen hängt die Zuordnung von der Integration ab. Die beiden Register sind nicht allgemein austauschbar. [Zwischenablage im Handbuch](https://vimhelp.org/usr_09.txt.html), [X11-Auswahl und Clipboard](https://vimhelp.org/gui_x11.txt.html).
+
+Voraussetzung ist eine funktionierende Clipboard-Anbindung des jeweiligen Builds und der Sitzung. Prüfen:
+
+```vim
+:version
+:set clipboard?
+:help clipboard
+```
+
+Neuere Vim-Versionen unterstützen zusätzlich Clipboard-Provider und Wayland-Integration. Deshalb beweist `has('clipboard')` allein nicht für jede Ausgabe die gesamte Verfügbarkeit. Auch eine entfernte SSH-Sitzung erhält nicht automatisch Zugriff auf die Zwischenablage des lokalen Rechners. Konfiguration und Optionen: [[Vimrc-Konfiguration-Cheatsheet]], [Clipboard-Dokumentation](https://vimhelp.org/options.txt.html#%27clipboard%27).
+
+> [!tip] Nach dem Kopieren kommt plötzlich anderer Text
+> Gewöhnliches Löschen verändert das Standardregister. Nach `yy` und anschließendem `dd` holt `"0p` den kopierten Text zurück. Für länger benötigten Text ausdrücklich `"ayy` und `"ap` verwenden. Auch das Ersetzen einer visuellen Auswahl mit `p` kann das Standardregister verändern.
+
+## Makros
+
+| Eingabe | Wirkung |
+|---|---|
+| `qa` | Tastenfolge in Register `a` aufzeichnen |
+| `q` | Aufzeichnung beenden |
+| `@a` | Makro aus Register `a` ausführen |
+| `5@a` | Fünfmal ausführen |
+| `@@` | Zuletzt ausgeführtes Makro wiederholen |
+| `qA` | Weitere Tasten an Makro `a` anhängen |
+
+Beispiel: Mehreren aufeinanderfolgenden Zeilen `# ` voranstellen. Auf der ersten Zeile beginnen; unter ihr müssen weitere Zielzeilen folgen:
+
+```text
+qa0i# <Esc>jq
+```
+
+`qa` startet die Aufnahme, `0` geht an den Zeilenanfang, `i# ` fügt den Präfix ein, `Esc` beendet die Eingabe, `j` wechselt zur Folgezeile, `q` stoppt. **Die erste Zeile wurde bereits während der Aufnahme verändert.** Danach mit `@a` die nächste bearbeiten und das Ergebnis prüfen, bevor ein größerer Zähler verwendet wird.
+
+Makros und kopierter Text teilen sich Register. `"ayy` würde Makro `a` überschreiben. Für belastbare Makros Bewegungen wie `0`, `f;` oder Suchen verwenden, deren Ziel klar bestimmt ist. [Makroaufnahme und Wiedergabe](https://vimhelp.org/repeat.txt.html).
+
+## Quickfix und Projektsuche
+
+Quickfix sammelt Positionen aus mehreren Dateien. Diese interne Suche benötigt kein externes `grep`:
+
+```vim
+:vimgrep /\cTODO/gj **/*.md
+:copen
+:cfirst
+:cnext
+:cprevious
+:cclose
+```
+
+`**/*.md` durchsucht passende Markdown-Dateien unter dem Arbeitsverzeichnis. `g` nimmt jeden Treffer auf; `j` verhindert den sofortigen Sprung beim Suchen. `:copen` zeigt die Ergebnisliste, `Enter` auf einem Eintrag öffnet dessen Position. `:colder` und `:cnewer` wechseln zwischen älteren Ergebnislisten.
+
+**`:vimgrep` verwendet `ignorecase`, aber kein `smartcase`.** Deshalb steht im Beispiel ausdrücklich `\c`; für exakte Groß-/Kleinschreibung `\C` verwenden.
+
+Die Location List gehört zu einem Fenster: `:lvimgrep`, `:lopen`, `:lnext` und `:lprevious` sind die entsprechenden Befehle. `:make` kann Compilerfehler liefern, wenn `'makeprg'` und `'errorformat'` passen. Die Verfügbarkeit setzt die Quickfix-Funktion des Builds voraus. [Offizielle Quickfix-Referenz](https://vimhelp.org/quickfix.txt.html).
+
+## Dateien mit vimdiff vergleichen
+
+```bash
+vimdiff alt.txt neu.txt
+```
+
+Alternativ `vim -d alt.txt neu.txt`. Innerhalb einer Sitzung kann `:vert diffsplit andere.txt` die zweite Vergleichsansicht öffnen.
+
+| Befehl | Wirkung |
+|---|---|
+| `]c`, `[c` | Nächster beziehungsweise vorheriger Unterschied |
+| `do` oder `:diffget` | Unterschied aus anderem Puffer in den aktuellen übernehmen |
+| `dp` oder `:diffput` | Unterschied aus aktuellem Puffer in den anderen übertragen |
+| `:diffget 3` | Puffer Nummer 3 ausdrücklich als Quelle wählen |
+| `:diffupdate` | Vergleich neu berechnen |
+| `:diffoff!` | Diffmodus in den Fenstern der aktuellen Tabpage ausschalten |
+
+Die Richtung richtet sich immer nach dem **aktuellen Fenster**. Bei mehreren Vergleichspuffern mit `:ls` die Nummern prüfen und Quelle beziehungsweise Ziel ausdrücklich angeben. `diffget` verändert den aktuellen, `diffput` einen anderen Puffer; gespeichert wird anschließend separat mit `:w` oder `:wall`. [Diffmodus und Übernahmerichtung](https://vimhelp.org/diff.txt.html).
+
+## Externe Befehle und Textfilter
+
+| Befehl innerhalb von Vim | Wirkung |
+|---|---|
+| `:!git status --short` | Externes Git ausführen und Ausgabe anzeigen |
+| `:read zusatz.txt` | Datei unterhalb der aktuellen Zeile einfügen |
+| `:read !date` | Ausgabe des externen `date`-Programms einfügen |
+| `:'<,'>!sort` | Ausgewählte Zeilen durch Ausgabe des externen Sortierprogramms ersetzen |
+
+Shellbefehle laufen mit den Rechten des Vim-Prozesses. Die Programme und ihre Syntax hängen vom Betriebssystem ab; `date` und `sort` sind hier Unix-Beispiele. Ein Filter verändert den Text im Puffer. Rückgängig machen ist mit `u` möglich, externe Nebenwirkungen eines Programms werden dadurch nicht rückgängig gemacht. [Shellbefehle](https://vimhelp.org/usr_20.txt.html), [Filter](https://vimhelp.org/usr_10.txt.html).
+
+## Hilfe, Diagnose und Wiederherstellung
+
+### Die eingebaute Referenz benutzen
+
+```vim
+:help
+:help user-manual
+:help quickref
+:help :substitute
+:help 'number'
+:help text-objects
+:help i_CTRL-R
+:help E325
+```
+
+Optionen stehen in Apostrophen, Ex-Befehle beginnen im Hilfebegriff mit `:`, Insertbefehle haben häufig das Präfix `i_`. Mit `Ctrl-]` einem Hilfelink folgen, mit `Ctrl-T` zurückgehen und mit `:q` das Hilfefenster schließen. [Hilfe im Handbuch](https://vimhelp.org/usr_02.txt.html).
+
+### Auffälliges Verhalten eingrenzen
+
+```vim
+:version
+:messages
+:scriptnames
+:verbose set ignorecase? smartcase?
+:verbose nmap <C-W>
+:setlocal fileformat? fileencoding?
+```
+
+`:verbose set` nennt neben dem Wert häufig die Datei, die eine Option zuletzt gesetzt hat. Die ausführliche Mappinganzeige hilft bei überschriebenen Tasten. [Diagnosebefehle](https://vimhelp.org/various.txt.html), [[Vimrc-Konfiguration-Cheatsheet|Konfiguration systematisch prüfen]].
+
+Zum Vergleich ohne eigene Einrichtung eine zusätzliche Sitzung starten:
+
+```bash
+vim --clean notizen.txt
+vim -Nu NONE -i NONE notizen.txt
+```
+
+`--clean` lädt Vims `defaults.vim`, ohne Benutzerkonfiguration, Plugins oder Viminfo. Die zweite Variante lässt auch `defaults.vim` weg; `-N` aktiviert ausdrücklich Vims Verhalten statt Vi-Kompatibilität. Beide Varianten liefern daher nicht dieselben Voreinstellungen. [Sauberer Start](https://vimhelp.org/starting.txt.html).
+
+| Symptom | Erklärung und nächster Schritt |
+|---|---|
+| `E37: No write since last change` | Puffer geändert: speichern oder bewusst versteckt weiterführen |
+| `E45: 'readonly' option is set` | Vim-Schreibschutz aktiv; `:w!` kann diese Option übergehen, aber keine fehlenden Betriebssystemrechte ersetzen |
+| `E212: Can't open file for writing` | Zielpfad, Verzeichnis und Schreibrechte prüfen; benötigten Inhalt unter beschreibbarem Namen sichern |
+| `n` sucht in die unerwartete Richtung | `n` folgt der zuletzt begonnenen Suchrichtung, also auch einer `?`-Suche |
+| Unerwartete Einrückung nach Einfügen | Clipboard- und Terminalverhalten sowie `'paste'` prüfen; Details auf der `.vimrc`-Seite |
+| `E325: ATTENTION`, vorhandene Swap-Datei | Prüfen, ob eine andere Sitzung aktiv ist oder eine abgestürzte Sitzung wiederhergestellt werden muss |
+
+### Nach einem Absturz retten
+
+Eine Swap-Datei kann ungesicherte Änderungen enthalten. **Zuerst klären, ob die angegebene Sitzung noch läuft.** Eine aktive Swap-Datei nicht entfernen und denselben Inhalt nicht parallel überschreiben.
+
+Bei einer abgestürzten Sitzung:
+
+1. Im Verzeichnis der betroffenen Datei `vim -r` ausführen, um auffindbare Swap-Dateien aufzulisten.
+2. Mit `vim -r notizen.txt` die Wiederherstellung starten.
+3. Meldungen lesen und den wiederhergestellten Inhalt prüfen.
+4. Mit `:write notizen.gerettet.txt` zunächst separat sichern.
+5. Original und gerettete Datei mit `vimdiff notizen.txt notizen.gerettet.txt` vergleichen.
+6. Erst nach erfolgreicher Sicherung und Vergleich die tatsächlich verwaiste Swap-Datei entfernen.
+
+Die allerletzten Änderungen können fehlen, wenn Vim sie vor dem Absturz noch nicht in die Swap-Datei geschrieben hatte. Swap, dauerhaftes Undo und Sicherungskopien erfüllen unterschiedliche Aufgaben; ihre Einrichtung steht in [[Vimrc-Konfiguration-Cheatsheet]]. [Wiederherstellung Schritt für Schritt](https://vimhelp.org/usr_11.txt.html), [technische Recovery-Referenz](https://vimhelp.org/recover.txt.html).
+
+## Kleine Praxisübung
+
+Diese Übung verbindet die wichtigsten Handgriffe in einer wegwerfbaren Testdatei:
+
+1. `vim vim-uebung.txt` starten; mit `i` einige Zeilen eingeben, darunter `status = "alt"`, `Esc` und `:w`.
+2. Mit `/alt` und `Enter` zum String gehen; `ci"neu<Esc>` ersetzt seinen Inhalt.
+3. Mit `yy` die Zeile kopieren, mit `o` eine neue Zeile öffnen, `Esc` und `"0p` zum Einfügen verwenden.
+4. Mit `u` rückgängig machen, mit `Ctrl-R` wiederholen.
+5. `:%s/\Cneu/aktuell/gc` ausführen und die Ersetzungen einzeln prüfen.
+6. Mit `:vsplit` denselben Puffer ein zweites Mal anzeigen; `Ctrl-W w` wechselt die Ansicht.
+7. `:wall` speichert den Inhalt; `:qall` beendet die Sitzung.
+
+Als nächste Erweiterung die [[Vimrc-Konfiguration-Cheatsheet|kommentierte `.vimrc`]] ausprobieren und die Bedeutung der übernommenen Optionen prüfen.
+
+## Quellen und verwandte Seiten
+
+Die verlinkten Seiten enthalten die offizielle Vim-Dokumentation. [vim.org verweist auf vimhelp.org](https://www.vim.org/docs.php) als aufbereitete Online-Ausgabe. Maßgeblich für einen installierten Build bleibt dessen lokale Hilfe. **Recherche- und Dokumentstand: 12. Oktober 2026.**
+
+| Thema | Primärquelle und lokaler Einstieg |
+|---|---|
+| Gesamte Dokumentation | [Vim-Hilfe](https://vimhelp.org/), `:help` |
+| Befehlsübersicht | [Quick Reference](https://vimhelp.org/quickref.txt.html), `:help quickref` |
+| Bewegungen und Textobjekte | [Motion Reference](https://vimhelp.org/motion.txt.html), `:help motion.txt` |
+| Suche und Ersetzen | [Muster](https://vimhelp.org/pattern.txt.html), [Änderungen](https://vimhelp.org/change.txt.html), `:help :substitute` |
+| Puffer, Fenster und Tabs | [Fenster](https://vimhelp.org/windows.txt.html), [Tabpages](https://vimhelp.org/tabpage.txt.html), `:help windows.txt` |
+| Automatisierung und Trefferlisten | [Makros](https://vimhelp.org/repeat.txt.html), [Quickfix](https://vimhelp.org/quickfix.txt.html) |
+| Diff und Rettung | [Diff](https://vimhelp.org/diff.txt.html), [Recovery](https://vimhelp.org/recover.txt.html) |
+| Konfiguration und Features | [Start](https://vimhelp.org/starting.txt.html), [Optionen](https://vimhelp.org/options.txt.html), `:version` |
+| Offizieller Quellcode und Dokumentation | [vim/vim](https://github.com/vim/vim) |
+
+Verwandte Notizen:
+
+- [[Vimrc-Konfiguration-Cheatsheet|.vimrc – Konfiguration und Praxis]]
+- [[Neovim-Cheatsheet|Neovim – Cheatsheet]]
+- [[Neovim-Shortcuts-und-Bewegungen|Neovim – Bewegungen und Textobjekte]]
+- [[02-Versionierung-Entwicklung/INDEX|Versionierung, Entwicklung und Editoren]]
+
+---
+
+## 88. .vimrc – Konfiguration und Praxis
+
+> **Einzelseite:** [[02-Versionierung-Entwicklung/Vimrc-Konfiguration-Cheatsheet|.vimrc – Konfiguration und Praxis]]
+> **Vault-Pfad:** `02-Versionierung-Entwicklung/Vimrc-Konfiguration-Cheatsheet.md`
+
+# .vimrc – Konfiguration und Praxis
+
+> [!abstract] Zweck
+> Eine verständliche, wartbare Konfiguration für **Vim 9.x**: richtige Datei finden, eine vollständige Basis übernehmen, Optionen und Tastenkürzel gezielt ändern und Fehler nachvollziehbar eingrenzen. Alle Konfigurationsbeispiele verwenden **klassisches Vimscript**.
+
+> [!info] Geltungsbereich
+> Ausgangspunkt ist eine reguläre Vim-Installation mit Skriptunterstützung und zugehörigen Runtime-Dateien. Kleine Rettungsinstallationen können Funktionen weglassen. `:version` zeigt den tatsächlichen Build; dessen lokale `:help` ist für verfügbare Optionen maßgeblich. Die Bedienung behandelt [[Vim-Cheatsheet]]; Neovims `init.lua` steht in [[Neovim-Konfiguration-und-Plugins-Cheatsheet]].
+
+## Inhalt
+
+- [[#Die tatsächlich verwendete Datei finden]]
+- [[#Kopierbare Basis-vimrc]]
+- [[#Startreihenfolge und defaults.vim]]
+- [[#Klassisches Vimscript lesen]]
+- [[#Optionen und ihre Gültigkeit]]
+- [[#Mappings und Leader]]
+- [[#Dateitypen und Autocommands]]
+- [[#Swap, Backup und persistentes Undo]]
+- [[#Zwischenablage gezielt anbinden]]
+- [[#Farben, Maus und Terminal]]
+- [[#Native Pakete und Plugins]]
+- [[#Konfiguration aufteilen]]
+- [[#Neuladen und Fehleranalyse]]
+- [[#Konfigurationscode und Vertrauen]]
+- [[#Quellen]]
+- [[#Verwandte Notizen]]
+
+## Die tatsächlich verwendete Datei finden
+
+Zuerst in einem **normal gestarteten Vim** `:echo $MYVIMRC`, `:echo expand('~')` und `:scriptnames` ausführen. So lässt sich erkennen, welche Datei geladen wurde und welches Home-Verzeichnis dieser Prozess verwendet.
+
+| Umgebung | Übliche persönliche Konfiguration | Ergänzungen |
+|---|---|---|
+| Linux, Unix, macOS-Terminal | `~/.vimrc` oder `~/.vim/vimrc` | Eigene Runtime-Dateien gewöhnlich unter `~/.vim/` |
+| Natives Windows-Vim | `$HOME/_vimrc` oder `$HOME/vimfiles/vimrc` | Außerdem existieren weitere Suchpfade, etwa `$VIM/_vimrc` |
+| Vim innerhalb von WSL | Linux-Pfade im WSL-Benutzerkonto | Getrennt von einer nativen Windows-Installation |
+| Neuere Builds mit XDG-Unterstützung | `$XDG_CONFIG_HOME/vim/vimrc` beziehungsweise dessen Standardpfad | Mit der installierten Hilfe `:help xdg-vimrc` prüfen |
+
+Die üblichen persönlichen Dateien sind Alternativen: Vim lädt beim normalen Suchen die erste passende Datei. Eine bestehende `~/.vimrc` kann deshalb eine andere gewünschte Konfiguration verdecken. Unter Windows Dateiendungen einblenden, damit nicht versehentlich `_vimrc.txt` entsteht.
+
+`$MYVIMRC` kann leer sein, etwa ohne persönliche Konfiguration oder beim Start mit `-u`. Dann direkt den beabsichtigten Pfad öffnen. `:edit $MYVIMRC` erst verwenden, wenn die Variable tatsächlich einen Dateinamen enthält. Die vollständigen Regeln einschließlich `VIMINIT` stehen in der [Vim-Starthilfe](https://vimhelp.org/starting.txt.html#vimrc).
+
+## Kopierbare Basis-vimrc
+
+**Vollständiger Inhalt für eine neue persönliche vimrc.** Eine vorhandene Datei vorher sichern und gezielt ergänzen. Der folgende Block definiert seine Einstellungen selbst; optionale Erweiterungen folgen in eigenen Abschnitten.
+
+```vim
+" Basis-vimrc: klassisches Vimscript fuer regulaeres Vim 9.x.
+set nocompatible
+scriptencoding utf-8
+
+" Leader vor den zugehoerigen Mappings festlegen.
+let mapleader = ' '
+let maplocalleader = ','
+
+" Anzeige und Fenster.
+set number
+set ruler
+set showcmd
+set cursorline
+set scrolloff=5
+set splitbelow
+set splitright
+
+" Bearbeiten und Einruecken.
+set backspace=indent,eol,start
+set hidden
+set autoindent
+set expandtab
+set shiftwidth=4
+set softtabstop=4
+set tabstop=8
+
+" Suche und Vervollstaendigung der Befehlszeile.
+set incsearch
+set hlsearch
+set ignorecase
+set smartcase
+set wildmenu
+set wildmode=longest:full,full
+
+" Wiederherstellung und Schutz beim Schreiben erhalten.
+set swapfile
+set nobackup
+set writebackup
+
+" Projektdateien nicht automatisch als Konfiguration ausfuehren.
+set noexrc
+set nomodeline
+if exists('+modelineexpr')
+  set nomodelineexpr
+endif
+
+" Mitgelieferte Dateityp-, Einrueckungs- und Syntaxregeln.
+filetype plugin indent on
+if has('syntax')
+  syntax enable
+endif
+
+" Speichern und Suchmarkierung ausblenden.
+nnoremap <Leader>w :write<CR>
+nnoremap <silent> <Leader>h :nohlsearch<CR>
+
+" Auswahl nach Ein- oder Ausruecken behalten.
+xnoremap < <gv
+xnoremap > >gv
+
+" Nur die eigenen Regeln beim erneuten Laden ersetzen.
+augroup UserVimrc
+  autocmd!
+  autocmd FileType python setlocal expandtab shiftwidth=4 softtabstop=4 tabstop=8
+  autocmd FileType yaml setlocal expandtab shiftwidth=2 softtabstop=2
+  autocmd FileType make setlocal noexpandtab shiftwidth=8 softtabstop=0 tabstop=8
+augroup END
+```
+
+Danach speichern, Vim neu starten und `:messages` prüfen. Mit `Leertaste`, danach `w`, wird gespeichert; `Leertaste`, danach `h`, blendet die aktuellen Suchmarkierungen aus.
+
+Die Basis installiert keine zusätzlichen Pakete. `filetype plugin indent on` aktiviert die mitgelieferten Mechanismen. Die Einrückungsbreiten sind ein Ausgangspunkt; Projektvorgaben bleiben maßgeblich. Klassische Make-Rezepte erhalten echte Tabulatoren. `tabstop=8` steuert deren Darstellung, während `shiftwidth` und `softtabstop` die gewählte Einrückung bestimmen. Die Python-Regel setzt auch `tabstop` ausdrücklich, damit eine abweichende Vorgabe des mitgelieferten Python-Plugins diesen Wert nicht verändert.
+
+`hidden` erlaubt ungesicherte Buffer im Hintergrund. Das ist **kein automatisches Speichern**: `:ls` zeigt den Zustand, `:wall` schreibt geänderte Buffer, und `:qa` weist auf verbliebene Änderungen hin. Weitere Erläuterungen: [Vim-Einstellungen](https://vimhelp.org/usr_05.txt.html), [Dateien wechseln](https://vimhelp.org/usr_07.txt.html).
+
+## Startreihenfolge und defaults.vim
+
+Bei einem normalen Terminalstart ist folgende Reihenfolge für die Fehlersuche hilfreich:
+
+| Phase | Was Einstellungen beeinflussen kann |
+|---|---|
+| Frühe Initialisierung | Eingebaute Werte, Startargumente, `--cmd` |
+| Grundkonfiguration | System-vimrc, danach persönliche Konfiguration oder alternative Initialisierung |
+| Erweiterungen | Runtime-Plugins, automatisch geladene Pakete, `after/`-Dateien |
+| Geöffnete Dateien | Dateityperkennung, Filetype-Plugins, Einrückungsskripte, eigene Ereignisregeln |
+| Abschluss | `-c`-Befehle und `VimEnter` |
+
+Spätere Skripte können frühere Einstellungen überschreiben. Die tatsächlich ausgeführten Dateien zeigt `:scriptnames`; bei einer konkreten Option hilft beispielsweise `:verbose setlocal shiftwidth?`. Details: [Initialisierung](https://vimhelp.org/starting.txt.html#initialization).
+
+### Warum eine leere vimrc das Verhalten verändert
+
+Ohne eigene vimrc kann Vim `$VIMRUNTIME/defaults.vim` laden. Sobald eine persönliche vimrc existiert, erfolgt dieser automatische Rückgriff nicht mehr. Wer die mitgelieferten Vorgaben übernehmen möchte, setzt nahe an den Anfang:
+
+```vim
+unlet! skip_defaults_vim
+source $VIMRUNTIME/defaults.vim
+
+" Eigene Abweichungen erst danach.
+set number
+```
+
+`defaults.vim` setzt auch Bedienverhalten und Mappings. Den Inhalt bei Bedarf mit `:edit $VIMRUNTIME/defaults.vim` ansehen. Die oben angebotene Basis ist bereits eigenständig; für sie ist dieser Zusatz nicht erforderlich. [Erklärung von defaults.vim](https://vimhelp.org/usr_05.txt.html#defaults.vim-explained), [offizieller Skriptquelltext](https://github.com/vim/vim/blob/master/runtime/defaults.vim).
+
+## Klassisches Vimscript lesen
+
+Befehle stehen in der Datei gewöhnlich **ohne führenden Doppelpunkt**. `"` beginnt einen Kommentar; einfache Zeichenketten verwenden `'...'`. In doppelten Anführungszeichen werden Escape-Sequenzen ausgewertet.
+
+```vim
+" Option.
+set number
+
+" Globale Variable und skriptlokale Variable.
+let g:mein_projektmodus = 1
+let s:config_dir = expand('~/.vim')
+
+" Nur ausfuehren, wenn die Option verfuegbar ist.
+if exists('+relativenumber')
+  set relativenumber
+endif
+```
+
+| Schreibweise | Bedeutung |
+|---|---|
+| `g:name` | Globale Variable |
+| `s:name` | Variable innerhalb dieses Skripts |
+| `b:name` | Variable des aktuellen Buffers |
+| `w:name` | Variable des aktuellen Fensters |
+| `&option` | Wert einer Editoroption |
+| `has('merkmal')` | Merkmal des Builds oder der Laufzeit prüfen |
+| `exists('+option')` | Nutzbarkeit einer Option prüfen |
+| `exists('*Funktion')` | Vorhandensein einer Funktion prüfen |
+
+Vim 9 unterstützt weiterhin klassisches Vimscript. Die Zeile `vim9script` schaltet auf eine andere Skriptsprache um; sie gehört **nicht** vor die Beispiele dieser Seite. `vim.opt` und `vim.keymap.set` sind wiederum Neovim-Lua-APIs. [Vimscript](https://vimhelp.org/usr_41.txt.html), [Featureprüfungen](https://vimhelp.org/builtin.txt.html#has()), [Vim9-Sprache](https://vimhelp.org/vim9.txt.html).
+
+## Optionen und ihre Gültigkeit
+
+### Einstellungen prüfen und ändern
+
+| Befehl | Wirkung |
+|---|---|
+| `:set number` | Zeilennummern aktivieren |
+| `:set nonumber` | Zeilennummern deaktivieren |
+| `:set number!` | Boolean umschalten; für interaktive Nutzung |
+| `:set number?` | Aktuellen Wert anzeigen |
+| `:verbose set number?` | Zusätzlich die letzte bekannte Herkunft anzeigen |
+| `:set shiftwidth=4` | Zahlenwert setzen |
+| `:set wildignore+=*.o` | Eintrag ergänzen |
+| `:set wildignore-=*.o` | Eintrag entfernen |
+| `:setlocal shiftwidth<` | Lokalen Wert auf die globale Vorgabe zurücksetzen |
+
+In wiederholt geladenen Dateien feste Werte verwenden. `set number!` würde bei jedem Laden erneut umschalten.
+
+### Global, bufferlokal und fensterlokal
+
+`:set` setzt bei gewöhnlichen lokalen Optionen den aktuellen Wert und ihre Vorgabe. `:setlocal` ändert gezielt den aktuellen Buffer beziehungsweise das Fenster; `:setglobal` die globale Vorgabe. Eine rein globale Option wird durch `:setlocal` nicht lokal.
+
+```vim
+" Allgemeine Vorgabe.
+set shiftwidth=4
+
+" Nur dieser Buffer.
+setlocal shiftwidth=2
+
+" Nur dieses Fenster.
+setlocal nowrap
+```
+
+Einige Optionen sind ausdrücklich `global-local` und besitzen zusätzliche Vererbungsregeln. Bei Unklarheiten `:help 'optionsname'` lesen. Die Referenz erläutert [lokale Optionen](https://vimhelp.org/options.txt.html#local-options).
+
+### Bewusste Entscheidungen
+
+| Einstellung | Praktische Entscheidung |
+|---|---|
+| `expandtab` | Neu eingegebene Einrückung als Leerzeichen; ändert vorhandene Tabs nicht rückwirkend |
+| `tabstop` | Anzeige vorhandener Tabs; nicht mit Einrückungsbreite gleichsetzen |
+| `shiftwidth` | Breite von Einrückungsoperationen wie `>>` |
+| `softtabstop` | Verhalten von Tab und Backspace beim Einfügen |
+| `wrap` / `nowrap` | Lange Zeilen am Fenster umbrechen oder horizontal anzeigen |
+| `ignorecase smartcase` | Suchmuster ohne Großbuchstaben toleranter behandeln |
+| `textwidth` | Automatische beziehungsweise angeforderte Textformatierung beeinflussen |
+| `formatoptions` | Unter anderem Kommentarfortsetzung und Umbruchverhalten steuern |
+
+Eine vimrc legt Verhalten fest; sie sollte nicht beim Speichern ungefragt komplette Dateien umformatieren. Solche Eingriffe getrennt pro Projekt einrichten und ihre Diffs prüfen. [Einfügen und Einrücken](https://vimhelp.org/insert.txt.html), [Einstellungsbeispiele](https://vimhelp.org/usr_05.txt.html).
+
+## Mappings und Leader
+
+`<Leader>` wird **bei Definition des Mappings** durch den damaligen Wert von `mapleader` ersetzt. Ohne eigene Festlegung ist der Leader gewöhnlich der Backslash. Nach einem Wechsel des Leaders Vim neu starten; bereits vorhandene Mappings wechseln nicht nachträglich ihren Präfix.
+
+| Befehl | Gültigkeit |
+|---|---|
+| `nnoremap` | Normalmodus |
+| `inoremap` | Einfügemodus |
+| `xnoremap` | Visueller Modus |
+| `cnoremap` | Befehlszeile |
+| `<buffer>` | Mapping auf diesen Buffer beschränken |
+| `<silent>` | Anzeige des ausgeführten Mappings unterdrücken |
+
+`noremap`-Varianten vermeiden normalerweise das erneute Interpretieren der rechten Seite als Benutzermapping. Unbeabsichtigte Mapping-Ketten werden damit seltener.
+
+```vim
+" Nur im Normalmodus: aktuelle Datei speichern.
+nnoremap <Leader>w :write<CR>
+
+" Ergebnisliste schliessen.
+nnoremap <silent> <Leader>c :cclose<CR>
+
+" Bereits vorhandenes Mapping und seine Herkunft anzeigen.
+:verbose nmap <Leader>w
+```
+
+Kommentare vor Mappings auf eine eigene Zeile setzen: Angehängter Text kann sonst Teil der rechten Seite werden. Unterscheide `<CR>` als ausgeschriebenes Tastensymbol von einem tatsächlichen Zeilenumbruch. `timeoutlen` beeinflusst die Wartezeit auf eine vollständige Tastenkombination. [Mapping-Referenz](https://vimhelp.org/map.txt.html), [eigene Befehle und Tastenkürzel](https://vimhelp.org/usr_40.txt.html).
+
+## Dateitypen und Autocommands
+
+Die Basis verwendet `FileType`, weil die Regel den **erkannten Dateityp** betrifft. Ein Dateityp ist kein Dateiname: Das Muster `python` gehört zu `FileType`; `*.py` passt zu Dateiereignissen wie `BufRead`.
+
+```vim
+:filetype
+:setlocal filetype?
+:verbose setlocal expandtab? shiftwidth? softtabstop? tabstop?
+:autocmd UserVimrc
+```
+
+Die Kombination aus benannter Gruppe und `autocmd!` ersetzt beim Neuladen ausschließlich die eigenen Ereignisregeln. `autocmd!` nicht wahllos außerhalb dieser Gruppe verwenden. Eine neu definierte `FileType`-Regel wird durch `:source` allein noch nicht auf alle bereits geöffneten Buffer angewandt. [Autocommands](https://vimhelp.org/autocmd.txt.html), [Dateityperkennung](https://vimhelp.org/filetype.txt.html).
+
+### Größere Regeln in after/ftplugin auslagern
+
+| Datei bei üblichem Unix-Aufbau | Zweck |
+|---|---|
+| `~/.vim/after/ftplugin/python.vim` | Eigene Python-Ergänzungen |
+| `~/.vim/after/ftplugin/yaml.vim` | Eigene YAML-Ergänzungen |
+| `~/.vim/after/ftplugin/make.vim` | Eigene Make-Ergänzungen |
+
+Unter nativem Windows entsprechend `~/vimfiles/after/ftplugin/` verwenden; bei anderen Layouts `:set runtimepath?` prüfen.
+
+Beispiel für `after/ftplugin/python.vim`:
+
+```vim
+setlocal expandtab
+setlocal shiftwidth=4
+setlocal softtabstop=4
+setlocal tabstop=8
+setlocal textwidth=88
+
+let b:undo_ftplugin = get(b:, 'undo_ftplugin', '')
+      \ . '|setlocal expandtab< shiftwidth< softtabstop< tabstop< textwidth<'
+```
+
+`b:undo_ftplugin` ergänzt das Aufräumen, wenn der Dateityp desselben Buffers später wechselt. Vorhandene Aufräumbefehle bleiben erhalten. Die entsprechende Python-Autocommand-Regel aus der Basis dann durch diese Datei ersetzen, damit es eine klare zuständige Stelle gibt. Die Breite `88` ist eine Beispielentscheidung. [Filetype-Plugins schreiben und zurücksetzen](https://vimhelp.org/usr_43.txt.html#filetype-plugin).
+
+## Swap, Backup und persistentes Undo
+
+Diese Mechanismen lösen unterschiedliche Probleme:
+
+| Mechanismus | Zweck | Verhalten der Basis |
+|---|---|---|
+| Swap | Wiederherstellung nach einem Absturz; Hinweise auf paralleles Bearbeiten | `swapfile` bleibt an |
+| Schreibbackup | Vorherigen Dateiinhalt während des Schreibens absichern | `writebackup` bleibt an |
+| Dauerhaftes Backup | Vorherige Dateifassung nach erfolgreichem Schreiben behalten | `backup` ist aus |
+| Persistentes Undo | Bearbeitungsschritte auch nach einem Neustart zurücknehmen | Wird optional ergänzt |
+| Viminfo | Unter anderem Verlauf, Register und Positionen über Sitzungen behalten | Keine eigene Vorgabe |
+
+`nobackup writebackup` ist somit eine sinnvolle Kombination: kein dauerhaftes Sicherungsexemplar nach erfolgreichem Schreiben, aber ein temporärer Schutz beim Schreibvorgang. [Dateisicherungen](https://vimhelp.org/usr_07.txt.html), [Swap-Wiederherstellung](https://vimhelp.org/recover.txt.html), [Undo-Persistenz](https://vimhelp.org/undo.txt.html#undo-persistence), [Sitzungsdaten](https://vimhelp.org/usr_21.txt.html).
+
+### Optionale Erweiterung: persönliche Zustandsverzeichnisse
+
+Diesen Block bei Bedarf **zusätzlich** in die vimrc übernehmen. Er legt Verzeichnisse an und aktiviert persistentes Undo, wenn vorhanden:
+
+```vim
+let s:state_dir = has('win32') || has('win64')
+      \ ? expand('~/vimfiles/state')
+      \ : expand('~/.vim/state')
+
+for s:kind in ['swap', 'backup', 'undo']
+  call mkdir(s:state_dir . '/' . s:kind, 'p', 0700)
+endfor
+
+" Bei :let muessen Leerzeichen nicht wie bei :set maskiert werden.
+" Kommas bleiben Trennzeichen der Verzeichnisliste und werden maskiert.
+let &directory = escape(s:state_dir . '/swap', ',') . '//'
+let &backupdir = escape(s:state_dir . '/backup', ',') . '//'
+
+if has('persistent_undo')
+  let &undodir = escape(s:state_dir . '/undo', ',')
+  set undofile
+endif
+```
+
+Das abschließende `//` erzeugt für Swap und Backup Namen aus dem vollständigen Dateipfad und vermeidet Namenskollisionen. Bei `undodir` außerhalb des Dateiverzeichnisses verwendet Vim bereits vollständige Pfadinformationen.
+
+`0700` betrifft unter Unix neu erstellte Verzeichnisse; bestehende Rechte werden nicht repariert. Unter Windows gelten die tatsächlichen ACLs. Bei fehlenden Rechten eine konkrete Fehlermeldung beheben, statt Wiederherstellung pauschal abzuschalten. Persönlicher Swap macht außerdem nicht zwangsläufig die Bearbeitung desselben Dokuments durch **andere Benutzer oder Rechner** sichtbar. [Verzeichnisoptionen](https://vimhelp.org/options.txt.html#'directory'), [Verzeichnisse anlegen](https://vimhelp.org/builtin.txt.html#mkdir()).
+
+Prüfen:
+
+```vim
+:set directory? backupdir? backup? writebackup?
+:echo has('persistent_undo')
+:set undofile? undodir?
+:undolist
+```
+
+Die beiden `undo`-Optionsabfragen setzen das entsprechende Buildmerkmal voraus.
+
+> [!warning] Gespeicherte Textreste
+> Swap, Backup und Undo können frühere oder inzwischen gelöschte Inhalte enthalten. `set noundofile` entfernt bestehende Undo-Dateien nicht. Speicherorte, Sicherungsprogramme und Zugriffsrechte bei vertraulichen Dokumenten bewusst wählen; die vimrc allein ersetzt kein Schutzkonzept für solche Dateien.
+
+## Zwischenablage gezielt anbinden
+
+Vim-Register, Betriebssystem-Zwischenablage und Terminal-Einfügen sind getrennte Wege. Die Basis verändert `clipboard` nicht.
+
+```vim
+:version
+:echo has('clipboard')
+:echo has('unnamedplus')
+:echo exists('+clipmethod')
+:echo exists('v:clipproviders')
+```
+
+Auf unterstützten Systemen spricht `"+y` im visuellen Modus die Zwischenablage an, `"+p` fügt daraus ein. `"*` kann unter X11 die primäre Auswahl ansprechen; native Windows-Implementierungen behandeln die Register anders. [Auswahlregister](https://vimhelp.org/gui.txt.html#clipboard), [X11-Auswahl](https://vimhelp.org/gui_x11.txt.html#x11-selection).
+
+Optional alle normalen Kopier-, Lösch- und Einfügevorgänge anbinden:
+
+```vim
+" Erst nach Einrichtung eines eventuell benoetigten Providers auswerten.
+if has('unnamedplus')
+  set clipboard^=unnamedplus
+elseif has('clipboard')
+  set clipboard^=unnamed
+endif
+```
+
+`^=` fügt vorn ein, sodass ein vorhandener `exclude:`-Eintrag nicht verschoben werden muss. Diese Umleitung betrifft auch `d` und `c`; dadurch kann ein Löschvorgang die System-Zwischenablage ersetzen.
+
+Neuere Vim-Builds können Clipboard-Provider anbieten, die `"+` und `"*` auch ohne klassisches `+clipboard` bereitstellen. Daher entscheidet nicht allein `has('clipboard')` über sämtliche Möglichkeiten. Provider-API und `clipmethod` nur verwenden, wenn der installierte Build sie kennt; die lokale Hilfe `:help clipboard-providers` beschreibt deren Einrichtung. [Provider-Referenz](https://vimhelp.org/eval.txt.html#clipboard-providers), [Zwischenablageoption](https://vimhelp.org/options.txt.html#'clipboard').
+
+Ein positives Merkmal garantiert keine funktionierende Desktop-Verbindung. Unter Wayland, SSH, WSL und Multiplexern den tatsächlichen Übertragungsweg prüfen. Ein entferntes Vim erreicht nicht automatisch die Zwischenablage des lokalen Rechners. [Vim unter Wayland](https://vimhelp.org/wayland.txt.html).
+
+## Farben, Maus und Terminal
+
+### Farbschema und Truecolor
+
+```vim
+" Ein mitgeliefertes Farbschema als einfacher Ausgangspunkt.
+colorscheme default
+
+" Nur aktivieren, wenn die gesamte Terminalverbindung 24-Bit-Farben traegt.
+if exists('+termguicolors')
+  set termguicolors
+endif
+```
+
+Die Featureprüfung bestätigt die Vim-Option; sie prüft nicht Terminal, SSH-Strecke und Multiplexer. Bei falschen Farben zunächst `:set notermguicolors` ausprobieren. `background=dark` beschreibt den gewünschten Hintergrundmodus für Farbanpassungen; es erzeugt keinen schwarzen Terminalhintergrund. [Farbschemata](https://vimhelp.org/usr_06.txt.html), [Truecolor im Terminal](https://vimhelp.org/term.txt.html#xterm-true-color).
+
+### Maus und Einfügen
+
+```vim
+" Optional: Vim darf die Maus verwenden.
+if has('mouse')
+  set mouse=a
+endif
+```
+
+Mit aktiver Vim-Maus kann das Markieren durch das Terminal eine zusätzliche Taste erfordern; diese gehört zur Terminalkonfiguration. `:set mouse=` deaktiviert die Vim-Maus wieder.
+
+Wenn eingefügter Text unerwartet eingerückt wird, zuerst den verwendeten Einfügeweg prüfen. Für einen manuellen Sonderfall kann `:set paste` vor dem Einfügen und `:set nopaste` danach helfen. `paste` nicht dauerhaft aktivieren, weil es Bearbeitungsfunktionen verändert. Moderne Terminalpfade können Einfügen automatisch erkennen. [Erkanntes Terminal-Einfügen](https://vimhelp.org/term.txt.html#xterm-bracketed-paste), [Terminalsteuerung](https://vimhelp.org/term.txt.html).
+
+## Native Pakete und Plugins
+
+Vim kann Pakete ohne zusätzlichen Pluginmanager laden:
+
+| Lage bei üblichem Unix-Aufbau | Verhalten |
+|---|---|
+| `~/.vim/pack/vendor/start/paketname/` | Beim normalen Start automatisch laden |
+| `~/.vim/pack/vendor/opt/paketname/` | Bei Bedarf mit `:packadd paketname` laden |
+
+`vendor` ist ein frei gewählter Gruppierungsname. Unter Windows gewöhnlich `~/vimfiles/pack/` verwenden; entscheidend ist `:set packpath?`.
+
+Die Distribution kann optionale Pakete mitbringen. Beispiel für das vorhandene Paket `matchit`:
+
+```vim
+" In der vimrc: zur spaeteren normalen Plugin-Ladephase vormerken.
+packadd! matchit
+```
+
+Zum direkten Ausprobieren während einer laufenden Sitzung:
+
+```vim
+:packadd matchit
+:help matchit
+```
+
+`packadd!` ergänzt den Runtime-Pfad, lädt die Plugin-Dateien aber nicht sofort. Die normale Startphase übernimmt das Laden und respektiert `--noplugin`. Nach einem bloßen Neuladen der vimrc ist deshalb nicht jeder neu ergänzte Paketbefehl bereits aktiv. Fehlt das Paket, meldet Vim den fehlenden Namen; dessen Bereitstellung zunächst klären.
+
+Externe Pakete bewusst installieren, Version oder Commit dokumentieren und Updates einzeln prüfen. Ein Pluginmanager kann diesen Ablauf organisieren, ist für die Basis aber nicht nötig. [Native Pakete](https://vimhelp.org/repeat.txt.html#packages), [mitgelieferte Pakete](https://vimhelp.org/usr_05.txt.html#add-package).
+
+## Konfiguration aufteilen
+
+Eine große Datei lässt sich später nach Verantwortung zerlegen:
+
+| Eigene Datei | Inhalt |
+|---|---|
+| `~/.vim/config/options.vim` | Allgemeine Optionen |
+| `~/.vim/config/maps.vim` | Tastenkürzel |
+| `~/.vim/config/autocmds.vim` | Eigene benannte Gruppen |
+| `~/.vim/after/ftplugin/*.vim` | Dateitypregeln |
+| `~/.vim/pack/` | Pakete |
+
+Beispiel für eine bewusst gewählte, vorhandene Datei:
+
+```vim
+execute 'source ' . fnameescape(expand('~/.vim/config/options.vim'))
+```
+
+`fnameescape()` schützt Sonderzeichen des Dateinamens beim Aufbau des Ex-Befehls. Ein fehlendes benötigtes Modul sollte sichtbar fehlschlagen. Nur tatsächlich optionale Dateien vorher mit `filereadable()` prüfen. Eigene Konfiguration in Git dokumentieren; Swap, Undo, lokale Zustandsdaten und vertrauliche Werte ausnehmen. [Skripte laden](https://vimhelp.org/repeat.txt.html#%3Asource), [[Git-Cheatsheet]].
+
+## Neuladen und Fehleranalyse
+
+### Änderungen sicher ausprobieren
+
+Für einfache Einstellungen kann nach dem Speichern in der **geöffneten eigenen vimrc** Folgendes ausgeführt werden:
+
+```vim
+:write
+:source %
+:messages
+```
+
+`%` bezeichnet die aktuelle Datei. `:source` führt deren Inhalt aus; diesen Befehl nur in der beabsichtigten Konfiguration verwenden.
+
+Die benannte Augroup verhindert doppelte eigene Ereignisregeln. Ein Reload entfernt aber keine inzwischen aus der Datei gelöschten Mappings, macht Pluginzustände nicht rückgängig und setzt bereits geänderte Buffer nicht vollständig zurück. Nach strukturellen Änderungen neu starten. [Skriptausführung](https://vimhelp.org/repeat.txt.html#%3Asource), [Autocommand-Gruppen](https://vimhelp.org/autocmd.txt.html#autocmd-groups).
+
+### Vergleichsstarts
+
+Die folgenden Befehle gehören in das Terminal:
+
+```bash
+vim --clean beispiel.txt
+vim -N -u NONE -U NONE -i NONE beispiel.txt
+vim --noplugin beispiel.txt
+vim -u ./test-vimrc -U NONE -i NONE --noplugin beispiel.txt
+```
+
+| Start | Aussage |
+|---|---|
+| `--clean` | Saubere Umgebung mit `defaults.vim`, ohne persönliche Initialisierung und Viminfo |
+| `-N -u NONE -U NONE -i NONE` | Explizit Vim-Modus; keine vimrc, gvimrc, Plugins oder Viminfo; kein `defaults.vim` |
+| `--noplugin` | Eigene vimrc bleibt aktiv; automatische Plugin-Ladephase wird ausgelassen |
+| `-u ./test-vimrc …` | Gezielt diese Datei statt der regulären Konfiguration verwenden |
+
+`-u NONE` allein kann Vim im kompatiblen Modus belassen. Deshalb steht im minimalistischen Vergleich ausdrücklich `-N`. Ein `--noplugin` verhindert keine Plugin-Dateien, die die eigene vimrc ausdrücklich mit `source` oder `packadd` lädt. [Startoptionen](https://vimhelp.org/starting.txt.html#-u).
+
+### Diagnose nach Symptom
+
+| Problem | Prüfung und nächster Schritt |
+|---|---|
+| Einstellung hat keine Wirkung | `:verbose set optionsname?`; korrekte Datei und spätere Überschreibungen suchen |
+| Einrückung nur bei einer Sprache falsch | `:setlocal filetype?`, danach `:verbose setlocal shiftwidth? expandtab?` |
+| Mapping reagiert anders | `:verbose nmap <Leader>w`; Modus und tatsächlichen Leader prüfen |
+| Ereignis läuft mehrfach | `:autocmd UserVimrc`; doppelte Definitionen oder andere Gruppen prüfen |
+| `E518`: unbekannte Option | Schreibweise, `:version` und installierte Hilfe prüfen |
+| `E492`: unbekannter Befehl | Falsche Skriptsprache, fehlendes Paket oder fehlendes Buildmerkmal prüfen |
+| `E185`: Farbschema fehlt | Namen, Runtime-Pfad und Paketbereitstellung prüfen |
+| `E303` oder `E739` | Swap- beziehungsweise Verzeichniszugriff prüfen |
+| Problem nur mit der vollständigen Konfiguration | Eigene Blöcke schrittweise halbieren, bis ein kleiner reproduzierbarer Fall bleibt |
+
+Für die Startzeit:
+
+```bash
+vim --startuptime vim-startup.log -c 'quit'
+```
+
+Eine bestehende Logdatei wird ergänzt. Bei schwer erkennbaren Startfehlern kann `vim -V1vim-debug.log` helfen; Diagnoseprotokolle können persönliche Pfade enthalten. [Startzeit und Verbose-Modus](https://vimhelp.org/starting.txt.html#--startuptime), [Meldungen](https://vimhelp.org/message.txt.html#%3Amessages).
+
+## Konfigurationscode und Vertrauen
+
+Eine vimrc und ihre Plugins sind ausführbarer Code mit den Rechten des gestarteten Prozesses. Die Basis setzt deshalb `noexrc`: Projektverzeichnisse sollen nicht automatisch eigene `.vimrc`- oder `.exrc`-Dateien ausführen.
+
+Modelines sind dagegen Einstellungszeilen innerhalb bearbeiteter Dokumente. Die Basis deaktiviert sie mit `nomodeline` und erlaubt keine Modeline-Ausdrücke. Neuere Builds können zusätzliche Beschränkungen wie `modelinestrict` besitzen; solche Optionen nur nach Prüfung der lokalen Hilfe verwenden.
+
+`secure` ist kein allgemeiner Schutzkasten für sämtliche Skripte. Insbesondere kann eine frisch heruntergeladene Projektdatei bereits dem eigenen Benutzer gehören. Projektabhängige Regeln besser ausdrücklich in der eigenen geprüften Konfiguration verwalten. [Projekt-vimrc und Sicherheitsgrenzen](https://vimhelp.org/starting.txt.html#trojan-horse), [Modelines](https://vimhelp.org/options.txt.html#modeline).
+
+## Quellen
+
+**Recherche und redaktioneller Stand: 12. Oktober 2026.** Die verlinkten Vim-Hilfen werden fortlaufend aktualisiert. Lokale `:help` und `:version` beschreiben die tatsächlich installierte Version.
+
+| Thema | Offizielle Vim-Dokumentation |
+|---|---|
+| Einstellungen und Basisdatei | [usr_05.txt](https://vimhelp.org/usr_05.txt.html) |
+| Start, Pfade und Diagnoseargumente | [starting.txt](https://vimhelp.org/starting.txt.html) |
+| Optionen und Gültigkeit | [options.txt](https://vimhelp.org/options.txt.html) |
+| Mappings | [map.txt](https://vimhelp.org/map.txt.html) |
+| Autocommands | [autocmd.txt](https://vimhelp.org/autocmd.txt.html) |
+| Dateityperkennung | [filetype.txt](https://vimhelp.org/filetype.txt.html) |
+| Eigene Filetype-Plugins | [usr_43.txt](https://vimhelp.org/usr_43.txt.html) |
+| Vimscript und Funktionen | [usr_41.txt](https://vimhelp.org/usr_41.txt.html), [builtin.txt](https://vimhelp.org/builtin.txt.html) |
+| Vim9-Sprache | [vim9.txt](https://vimhelp.org/vim9.txt.html) |
+| Pakete und Skripte | [repeat.txt](https://vimhelp.org/repeat.txt.html) |
+| Undo und Wiederherstellung | [undo.txt](https://vimhelp.org/undo.txt.html), [recover.txt](https://vimhelp.org/recover.txt.html) |
+| Clipboard-Provider | [eval.txt](https://vimhelp.org/eval.txt.html#clipboard-providers) |
+| Terminal und Wayland | [term.txt](https://vimhelp.org/term.txt.html), [wayland.txt](https://vimhelp.org/wayland.txt.html) |
+| Offizieller Runtime-Quelltext | [vim/vim](https://github.com/vim/vim) |
+
+## Verwandte Notizen
+
+- [[Vim-Cheatsheet|Vim – Bedienung, Bewegungen und Arbeitsabläufe]]
+- [[Neovim-Cheatsheet|Neovim – eigener Editor und Funktionsumfang]]
+- [[Neovim-Konfiguration-und-Plugins-Cheatsheet|Neovim – Lua-Konfiguration und Plugins]]
+- [[Neovim-Shortcuts-und-Bewegungen|Verwandte Bewegungen und Textobjekte]]
+- [[Git-Cheatsheet|Konfiguration nachvollziehbar versionieren]]
+- [[Make-und-Source-Builds-Cheatsheet|Makefiles und Buildsysteme]]
+- [[02-Versionierung-Entwicklung/INDEX|Versionierung, Entwicklung & Editoren]]
