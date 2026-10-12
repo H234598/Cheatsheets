@@ -11,13 +11,15 @@ tags:
   - infrastructure-as-code
   - github-pages
 type: plan
-status: in-bearbeitung
+status: fertig
 date: '2026-10-12'
 created: '2026-10-12'
 modified: '2026-10-12'
 updates:
   - date: '2026-10-12'
     change: "Aktuellen main geprüft und detaillierten Plan vor der Inhaltsimplementierung angelegt."
+  - date: '2026-10-12'
+    change: "Terraform-Seite vollständig erstellt, geprüft und mit PR #26 veröffentlicht; erfolgreiche Validate- und Pages-Läufe samt vollständigem Prüfnachweis ergänzt."
 repository: "H234598/Cheatsheets"
 base_commit: "0d9539153ab52f62a42afeb41cdd607007c10bb7"
 ---
@@ -52,7 +54,7 @@ Projektregeln: [Contentmodell](../../WEB-CONTENTMODELL.md), [Webbuild](../../WEB
 
 Die unmittelbar vorherige Veröffentlichung war erfolgreich. Bei der abschließenden Browserprüfung blockierte die vorgeschaltete Cloudflare-Verarbeitung die Prüfzugriffe ausdrücklich. Die bekannte Ray-ID ist `a4950c08ab37258c`; andere begrenzte HTTP-Prüfungen trafen auf eine wiederholte relative Weiterleitung zu `awsas.de/403-page.html`.
 
-Diese Einschränkung wird als bestehende Grenze der Liveprüfung berücksichtigt. Sie verhindert nicht die autorisierte Erstellung, fachliche Prüfung, Integration oder Veröffentlichung über GitHub. Cloudflare-Schutzregeln werden für diese Inhaltsaufgabe nicht verändert oder umgangen. Ein erfolgreiches Pages-Deployment und eine erfolgreiche Auslieferung bis zum Browser werden im Abschluss getrennt belegt.
+Diese Einschränkung wird als bestehende Grenze der Liveprüfung berücksichtigt. Sie verhindert nicht die autorisierte Erstellung, fachliche Prüfung, Integration oder Veröffentlichung über GitHub. Cloudflare-Schutzregeln werden für diese Inhaltsaufgabe nicht verändert oder umgangen. Das erfolgreiche Pages-Deployment wird im Abschluss belegt; die Auslieferung bis zum Browser bleibt aus dieser Prüfungsumgebung unbestätigt.
 
 ## Inhaltlicher Entwurf
 
@@ -148,13 +150,13 @@ Bei der abschließenden Downloadprüfung vor der entsprechenden Codeänderung fe
 
 ### M4 – Veröffentlichung
 
-- [ ] Geprüften Branch und Commit auf GitHub bereitstellen; Remote-Baum mit lokalem Baum vergleichen.
-- [ ] Pull Request mit konkretem Zweck, Inhalt und Nachweisen eröffnen.
-- [ ] CI und eingereichte Reviews prüfen; relevante neue Funde bearbeiten.
-- [ ] Den geprüften PR im Rahmen des Veröffentlichungsauftrags zusammenführen.
-- [ ] Validate und Pages auf dem resultierenden `main` bis zum Abschluss verfolgen.
-- [ ] Veröffentlichte Route und Artefakte nachweisen; bekannte Cloudflare-Grenze bei der Liveprüfung ausdrücklich dokumentieren.
-- [ ] Vollständigen Abschlussnachweis und Fachartikel zum Download bereitstellen.
+- [x] Geprüften Branch und Commit auf GitHub bereitstellen; Remote-Baum mit lokalem Baum vergleichen.
+- [x] Pull Request mit konkretem Zweck, Inhalt und Nachweisen eröffnen.
+- [x] CI und eingereichte Reviews prüfen; relevante neue Funde bearbeiten.
+- [x] Den geprüften PR im Rahmen des Veröffentlichungsauftrags zusammenführen.
+- [x] Validate und Pages auf dem resultierenden `main` bis zum Abschluss verfolgen.
+- [x] Veröffentlichte Route und Artefakte nachweisen; bekannte Cloudflare-Grenze bei der Liveprüfung ausdrücklich dokumentieren.
+- [x] Vollständigen Abschlussnachweis und Fachartikel zur Download-Übergabe fertigstellen.
 
 ## Prüfstrategie und Erfolgskriterien
 
@@ -172,7 +174,7 @@ Bei der abschließenden Downloadprüfung vor der entsprechenden Codeänderung fe
 
 ## Fortschritt und Nachweise
 
-Dieser Abschnitt enthält tatsächlich beobachtete Ergebnisse. Veröffentlichung und nachgelagerte CI werden nach ihrem Abschluss ergänzt.
+Dieser Abschnitt enthält tatsächlich beobachtete Ergebnisse einschließlich der erfolgreichen Veröffentlichung und der nachgelagerten CI auf dem Mergecommit.
 
 ### Inhalt und Review
 
@@ -359,7 +361,7 @@ Der gelesene lokale State enthielt anschließend ausschließlich `terraform_data
 - Sicherheitsvalidierung: keine blockierenden Befunde.
 - Vollständige Python-Test-Suite: **132 bestanden**.
 - Die beiden Generatoren ergänzen jetzt die Pflichtfelder auch in `MANIFEST.md` und im automatisch erzeugten Markdown-Gesamtband. Der Gesamtband übernimmt bestehende Obsidian-Eigenschaften des kanonischen Dokuments; der Quellen- und Codefence-Schutz bleibt erhalten.
-- Strict-Build und Artefaktprüfung erfolgreich; die Remote-CI folgt mit dem Pull Request.
+- Strict-Build und Artefaktprüfung erfolgreich; die Remote-CI ist sowohl auf dem Pull Request als auch auf dem Mergecommit erfolgreich abgeschlossen.
 
 
 ### Abschließender Build und Downloads
@@ -371,16 +373,42 @@ Der gelesene lokale State enthielt anschließend ausschließlich `terraform_data
 - **27 Codeblöcke** sind in Online-HTML, Offline-HTML und dem neu erzeugten Markdown-Gesamtband inhaltlich unverändert. Der Gesamtband führt außerdem den passenden Quell-SHA-256 des Artikels.
 - Das Quellarchiv enthält `02-Versionierung-Entwicklung/Terraform-Cheatsheet.md` bytegleich zur Quelle; das Offlinearchiv enthält `02-Versionierung-Entwicklung/Terraform-Cheatsheet.html`.
 - Der Quelllink auf GitHub und die bestehende Downloadzentrale sind verknüpft. Das Quellarchiv und der Gesamtband sind über die Downloadzentrale erreichbar; es wird kein zusätzlicher Einzeldatei-Download auf der Fachseite behauptet.
-- Offlinepaket unabhängig geprüft: **187 Dateien**, **38,441 lokale Referenzen**, Baum-SHA-256 `06ce7afb32cd7261d5fae732f0251bea83df8669eaade778266eee583ff20823`.
+- Offlinepaket unabhängig geprüft: **187 Dateien**, **38.441 lokale Referenzen**, Baum-SHA-256 `06ce7afb32cd7261d5fae732f0251bea83df8669eaade778266eee583ff20823`.
 - Pages-Artefakt: **186 Dateien**, **42.015.540 Bytes**, Baum-SHA-256 `d8de39fb9a8d03498ae0b62171a77afe1b0845f0563df7a7bbd005a3df24a689`.
 - Webbudgets eingehalten: **116 HTML-Dateien**, JavaScript **9.067 Gzip-Bytes**, CSS **2.325 Gzip-Bytes**, keine externen Laufzeitassets.
 - Zusätzlicher unabhängiger Generatorreview: gesamter Gesamtband-Text nach Frontmatter unverändert; bisherige Kopfzeilen samt Quotierung erhalten; vorhandene Obsidian-Eigenschaften vollständig übernommen; zwei Renderdurchläufe bytegleich.
-- Die lokalen Artefakte wurden vor dem Commit erzeugt; ihr Provenienzheader benennt deshalb noch den Ausgangscommit. Die GitHub-CI erzeugt die veröffentlichten Artefakte anschließend neu aus dem tatsächlichen Veröffentlichungscommit.
-- Die Browser-/Mobil-/Accessibility-Prüfung erfolgt in der regulären GitHub-CI. Der lokale Chromium-Download war bereits in der vorangegangenen Aufgabe fehlgeschlagen; ein lokaler Browser-Test wird nicht als bestanden ausgegeben.
+- Die lokalen Artefakte wurden vor dem Commit erzeugt; ihr Provenienzheader benennt deshalb noch den Ausgangscommit. Die GitHub-CI hat die veröffentlichten Artefakte aus dem tatsächlichen Veröffentlichungscommit neu erzeugt; deren Nachweise stehen im folgenden Abschnitt.
+- Die Browser-/Mobil-/Accessibility-Prüfung wurde in der regulären GitHub-CI mit **9 bestandenen Tests** abgeschlossen. Der lokale Chromium-Download war bereits in der vorangegangenen Aufgabe fehlgeschlagen; ein lokaler Browser-Test wird nicht als bestanden ausgegeben.
 
 ### Veröffentlichung
 
-Pull Request, Quellcommit und abgeschlossene CI-/Pages-Läufe werden hier nach tatsächlichem Abschluss eingetragen. Die bereits bekannte Cloudflare-Sperre begrenzt weiterhin die unabhängige Liveprüfung aus der Prüfungsumgebung.
+- Pull Request: [#26 – HashiCorp Terraform als vollständige Fachseite ergänzen](https://github.com/H234598/Cheatsheets/pull/26).
+- Geprüfter PR-Quellcommit: [`fae183f`](https://github.com/H234598/Cheatsheets/commit/fae183f4e85bfdf4a14702a814f328e3b8e04f36).
+- Der GitHub-Git-Baum `115188064ae0683f396e33682e2bfb9a7a59760f` stimmt exakt mit dem lokal geprüften Baum überein; der Remote-Branch wurde anschließend gefetcht und ohne Inhaltsdifferenz übernommen.
+- PR-Validierung: [Validate 38233305798](https://github.com/H234598/Cheatsheets/actions/runs/38233305798), **abgeschlossen und erfolgreich** auf dem geprüften PR-Quellcommit. **132 Python-Tests und 9 Browser-, Mobil- und Accessibility-Tests bestanden**; alle 26 Jobschritte erfolgreich.
+- Die Qlty-Prüfung war vor dem Merge erfolgreich. CodeRabbit stand zu diesem Zeitpunkt noch auf `pending`; es waren keine Reviews oder Review-Threads eingereicht. Für diesen Branch bestand kein verpflichtendes CodeRabbit-Gate. Der oben dokumentierte unabhängige fachliche und technische Review war abgeschlossen, seine beiden Befunde waren korrigiert.
+- PR #26 wurde im Rahmen des ausdrücklich erteilten Veröffentlichungsauftrags per Squash zusammengeführt. Mergecommit: [`07402749b31eb93cd53316d43b597de60b4f5e2d`](https://github.com/H234598/Cheatsheets/commit/07402749b31eb93cd53316d43b597de60b4f5e2d).
+- Der gefetchte Mergecommit hat denselben Git-Baum `115188064ae0683f396e33682e2bfb9a7a59760f` wie der geprüfte PR-Commit. Die Integration hat den geprüften Inhalt nicht verändert.
+
+| Nachweis auf dem veröffentlichten Mergecommit | Ergebnis |
+|---|---|
+| [Validate 38233681818](https://github.com/H234598/Cheatsheets/actions/runs/38233681818) | `completed / success`; 132 Python-Tests und 9 Browser-, Mobil- und Accessibility-Tests bestanden |
+| Inhalts- und Linkprüfung | 89 Fachseiten in 12 Kategorien, jeweils 0 Fehler und 0 Warnungen |
+| Strict-Build | 108 HTML-Quellseiten erfolgreich gebaut |
+| [Pages 38233681768](https://github.com/H234598/Cheatsheets/actions/runs/38233681768) | `completed / success`; Build und produktives Deployment erfolgreich |
+| Produktives Pages-Artefakt | 186 Dateien, 42.012.899 Bytes, Baum-SHA-256 `31b92a20b8859effd7bbc9f743edf201aa578f5a4b168702a5f237846a6324dc` |
+| Artefakt-Upload | [github-pages, ID 11739916119](https://github.com/H234598/Cheatsheets/actions/runs/38233681768/artifacts/11739916119); Upload-SHA256 `9502c622ac58c2beda007ceb4f879a36e644fa642cf5569990c503425ae54ad8` |
+| Deployment-Protokoll | `pages_build_version` und Deployment-ID zeigen auf `07402749b31eb93cd53316d43b597de60b4f5e2d`; GitHub meldete `Reported success!` am 12.10.2026 um 10:03:37 UTC |
+| Neue Fachseite | [Terraform – Cheatsheet](https://cheatsheets.telacore.org/02-Versionierung-Entwicklung/Terraform-Cheatsheet/) |
+| GitHub-Quelle | [Terraform-Cheatsheet.md](https://github.com/H234598/Cheatsheets/blob/main/02-Versionierung-Entwicklung/Terraform-Cheatsheet.md) |
+
+Der Validate-Build mit dem Project-Page-Testpfad und der produktive Pages-Build verwenden unterschiedliche Website-Basis-URLs. Ihre Artefaktgrößen und Baum-Prüfsummen unterscheiden sich dadurch erwartungsgemäß. Das produktiv hochgeladene und erfolgreich ausgerollte Artefakt stammt aus dem oben verlinkten Pages-Lauf.
+
+**Ergebnis:** Terraform ist als 89. Fachseite in Inhaltsversion **2.3.0** integriert und über den vorhandenen Pages-Prozess veröffentlicht. Navigation, Gesamtband, Manifest, Prüfsummen sowie Online-, Offline- und Quell-Downloads enthalten den neuen Artikel. Die vorhandenen 88 Fachseiten und die bisherige Dokumenthistorie wurden erhalten.
+
+**Grenze der Liveprüfung:** Der erfolgreiche GitHub-Pages-Rollout ist belegt. Wegen der bereits ausdrücklich beobachteten Cloudflare-Sperre wurde kein weiterer automatisierter Zugriff auf die neue öffentliche Route versucht. Die Auslieferung der Terraform-Seite bis zum Browser dieser Prüfungsumgebung wird deshalb nicht als geprüft behauptet. Es wurden keine Cloudflare-Regeln verändert und keine Sperren umgangen.
+
+Dieser Abschlussnachweis dokumentiert die ursprüngliche Inhaltsveröffentlichung. Seine anschließende Ablage auf `main` ist eine reine Dokumentationsergänzung; sie verändert den Fachartikel nicht. Die dadurch erneut gestarteten regulären Workflows werden vor der Übergabe ebenfalls bis zum erfolgreichen Abschluss verfolgt.
 
 ## Primärquellen für die Umsetzung
 
