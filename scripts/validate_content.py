@@ -20,7 +20,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--strict", action="store_true")
     parser.add_argument("--verbose", action="store_true")
     parser.add_argument("--report", type=Path)
-    parser.add_argument("--expected-reference-pages", type=int, default=86)
+    parser.add_argument("--expected-reference-pages", type=int, default=88)
     parser.add_argument("--expected-categories", type=int, default=12)
     return parser
 

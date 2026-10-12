@@ -18,70 +18,72 @@ nr,bereich,title,path,lines,bytes,sha256,origin,status
 17,"Versionierung, Entwicklung & Editoren",Python 3 – Cheatsheet,02-Versionierung-Entwicklung/Python-3-Cheatsheet.md,672,13873,c09927e4caad2a812a9476b392d697b21c45d440995c9ba4fe66bd40bbd75901,,fertig
 18,"Versionierung, Entwicklung & Editoren",Ruby on Rails – Cheatsheet,02-Versionierung-Entwicklung/Ruby-on-Rails-Cheatsheet.md,510,11135,652184f0cc798c54e808d0f973eb41e15add513e0be1fefd9ef4f577df3853f8,,fertig
 19,"Versionierung, Entwicklung & Editoren",Rust – Cheatsheet,02-Versionierung-Entwicklung/Rust-Cheatsheet.md,759,14527,9bd42815f32ddf618fe9166eafb59abb834482620b5e03cc333f1a1bf3f0d08b,,fertig
-20,"Linux-, Unix- & Paketverwaltung",APT – Cheatsheet,03-Linux-Administration/apt-Cheatsheet.md,354,7479,26d97525db899648b97996bc8098eab13622f3022df758c0033fd82da59b6324,,fertig
-21,"Linux-, Unix- & Paketverwaltung",Chocolatey – Cheatsheet,03-Linux-Administration/Chocolatey-Cheatsheet.md,325,7941,443f357c9e1b7697c6cc4a2913d3e448c95178c21852c0503d8fb7ac11b7cd8b,,fertig
-22,"Linux-, Unix- & Paketverwaltung",Cinnamon – Cheatsheet,03-Linux-Administration/Cinnamon-Cheatsheet.md,360,7533,edb7b385437bbc64bdd9b84dad59141c7996f308fc128e39355793b25b6eb165,,fertig
-23,"Linux-, Unix- & Paketverwaltung",Dateikompression unter Linux – Cheatsheet,03-Linux-Administration/Dateikompression-unter-Linux-Cheatsheet.md,426,8680,faefb4c3f534959fdf29fd42fa21d08e582b3d1015df722f9fefeca01308173e,,fertig
-24,"Linux-, Unix- & Paketverwaltung",dmesg – Cheatsheet,03-Linux-Administration/dmesg-Cheatsheet.md,281,6437,eb4374c775790508826d4ddc6fa94eaa51c83fefa8b6512a05dbd5e56e43d606,,fertig
-25,"Linux-, Unix- & Paketverwaltung",DNF – Cheatsheet,03-Linux-Administration/dnf-Cheatsheet.md,385,7605,fde64b72f0d8c6998a7224daf8b83ded9319c67b70d49036aec99854dbf5d401,,fertig
-26,"Linux-, Unix- & Paketverwaltung",fdisk und Partitionierung – Cheatsheet,03-Linux-Administration/fdisk-Cheatsheet.md,401,8731,ca6caca4e34d370f2abb64c30fde1775b7035a40937f932974ee3c7cd137d4eb,,fertig
-27,"Linux-, Unix- & Paketverwaltung",Fedora und RHEL – Eigenheiten und Cheatsheet,03-Linux-Administration/Fedora-RHEL-Cheatsheet.md,521,12567,4d7cf0c505dc6dd9dc4cd62400b72b67ab404ad4f8064cd819e17a129d33d7c1,,fertig
-28,"Linux-, Unix- & Paketverwaltung",Fedora/RHEL – Shortcuts und Kommandos,03-Linux-Administration/Fedora-RHEL-Shortcuts-und-Kommandos.md,299,4950,48817d462f8fdbea153c9915c32b5f851443499043d88c5094887ae468ff68f0,,fertig
-29,"Linux-, Unix- & Paketverwaltung",firewalld – Cheatsheet,03-Linux-Administration/firewalld-Cheatsheet.md,394,9456,440cad5d0a22f5d188d8fbcbafd7ad9e2e3452a81ee0644cb21ad6a8bee371d3,,fertig
-30,"Linux-, Unix- & Paketverwaltung",FreeBSD pkg – Cheatsheet,03-Linux-Administration/FreeBSD-pkg-Cheatsheet.md,304,5805,5b577c37bc87612d552a94400193f5e05e63ddad219652be50f9263f205409dd,,fertig
-31,"Linux-, Unix- & Paketverwaltung",GNU Screen – Cheatsheet,03-Linux-Administration/GNU-Screen-Cheatsheet.md,632,12105,b6733fe05bc91e9c0dd96f2c3ec9a5ca788121d7881ccd8b01d8621c97c3520f,Cheatsheet I – vollständig überarbeitet,fertig
-32,"Linux-, Unix- & Paketverwaltung",grep – Cheatsheet,03-Linux-Administration/grep-Cheatsheet.md,309,7687,6f75799c4a2ec68d402cc18b3f16a6841a1fe47ee234831bc74756523790db96,,fertig
-33,"Linux-, Unix- & Paketverwaltung",Linux Benutzer- und Gruppenmanagement – Cheatsheet,03-Linux-Administration/Linux-Benutzer-und-Gruppenmanagement-Cheatsheet.md,477,9315,7884b785d3dd24104ee33038eb559c7678893f9f08b97d9b37f8e51f9c9e466d,,fertig
-34,"Linux-, Unix- & Paketverwaltung",ls-Familie und Hardwareinventar – Cheatsheet,03-Linux-Administration/ls-Familie-und-Hardwareinventar-Cheatsheet.md,379,6787,da754a1370614886812e384b9cbef6d0bff714f4adc4f0fe347011063c5e527f,,fertig
-35,"Linux-, Unix- & Paketverwaltung",Manpages – Cheatsheet,03-Linux-Administration/Manpages-Cheatsheet.md,319,6029,cf6bbfc1ee80e342caaa25e8616fc2c5a775cc13f2f295582724e46036b5ea0d,,fertig
-36,"Linux-, Unix- & Paketverwaltung",Paketmanager – Vergleich und Cheatsheet,03-Linux-Administration/Paketmanager-Cheatsheet.md,277,8075,b383517706fa9b6cbb0637bb2bcbdccc8e48d78ac165b85d209ce5b97464ab7b,,fertig
-37,"Linux-, Unix- & Paketverwaltung",POSIX ACL – getfacl und setfacl Cheatsheet,03-Linux-Administration/POSIX-ACL-Cheatsheet.md,394,7982,369e6caa0737977bd6aae1b511121ca7fe5167a28c0470caad3a8fb5618c63e7,,fertig
-38,"Linux-, Unix- & Paketverwaltung",RPM – Cheatsheet,03-Linux-Administration/RPM-Cheatsheet.md,379,7019,a180af4434f482b3b01f16ef24960a647173444b04d7f104319ade431b3c702d,,fertig
-39,"Linux-, Unix- & Paketverwaltung",rsync – Cheatsheet,03-Linux-Administration/rsync-Cheatsheet.md,472,9923,79d6a93861860e779c92a789be3b3cce7552bfce515c0e3a3220a33db5e6d630,,fertig
-40,"Linux-, Unix- & Paketverwaltung",SELinux – Cheatsheet,03-Linux-Administration/SELinux-Cheatsheet.md,426,8824,5ec30fc9be607fd8806cf08a71e2608bc0d6062f5da5231b0ef5bb81de359f26,,fertig
-41,"Linux-, Unix- & Paketverwaltung",SSH – Cheatsheet,03-Linux-Administration/SSH-Cheatsheet.md,616,12625,f6aa201f29a85d04d0c0fa9add34d5d1fdb2ff0d2e3b09cf3e9a5a2b686b1922,,fertig
-42,"Linux-, Unix- & Paketverwaltung",systemd – Cheatsheet,03-Linux-Administration/Systemd-Cheatsheet.md,511,10654,ba3a071b7185208498b554f1b4079d7abaa0e1a780d8d5263d643cfc0d55b7b9,,fertig
-43,"Linux-, Unix- & Paketverwaltung",X11 – Cheatsheet,03-Linux-Administration/X11-Cheatsheet.md,351,6813,3a6d5c7ae85450d562fe2b6adcb981e157ef245776ad40c4983ffc5bb4a1fdeb,,fertig
-44,"Linux-, Unix- & Paketverwaltung","Zeitmanagement unter Linux – timedatectl, NTP und RTC",03-Linux-Administration/Timemanagement-unter-Linux-Cheatsheet.md,403,8156,ce439662898b0719ea0af8261052b90d3d64bc87ad39c6276852d666557b2bb0,,fertig
-45,Webserver,Apache HTTP Server – Cheatsheet,04-Webserver/Apache-HTTP-Server-Cheatsheet.md,635,13233,e453f087611a3e1d9cbdf909fe43cdd83d77307ac98a971a0e3215a67c42a64d,,fertig
-46,Webserver,nginx – Cheatsheet,04-Webserver/nginx-Cheatsheet.md,703,14967,af3ec59486f8e84e753647fc093177502367de6fa0c78779a19442f1b55f838f,,fertig
-47,Netzwerk & Firewalls,BSD-Netzwerk – Cheatsheet,05-Netzwerk-Sicherheit/BSD-Netzwerk-Cheatsheet.md,554,8702,99cda23ec6511064193f9b0e7fff720734f1be9c5cf4566b62b58978a65d927f,,fertig
-48,Netzwerk & Firewalls,Linux-Netzwerk – Cheatsheet,05-Netzwerk-Sicherheit/Linux-Netzwerk-Cheatsheet.md,835,15911,192953c8fafa5cff285d9fba0766a4d672e4781774ed60a05e95f393e9df9afa,,fertig
-49,Netzwerk & Firewalls,Netzwerk-Konfiguration – Cheatsheet,05-Netzwerk-Sicherheit/Netzwerk-Konfiguration-Cheatsheet.md,308,8647,322f886206c9906be074326b3234e38977de679c97832a8e2b0315415f9e327b,,fertig
-50,Netzwerk & Firewalls,Netzwerk-Stacktypen – Cheatsheet,05-Netzwerk-Sicherheit/Netzwerk-Stacktypen-Cheatsheet.md,285,7539,64c1de88616a65cce84b60a91105601d278b2e28fba3f9f8a5771706766a0681,,fertig
-51,Netzwerk & Firewalls,OPNsense – Cheatsheet,05-Netzwerk-Sicherheit/OPNsense-Cheatsheet.md,583,12695,362f53505966c28118430c80b822bd4c3f5935a70d810d2bf794e0bc7f0f849c,,fertig
-52,Netzwerk & Firewalls,pfSense – Cheatsheet,05-Netzwerk-Sicherheit/pfSense-Cheatsheet.md,595,13397,3aff6f57e9126a20d6e2f9778fbca988dbdb1709c0f789b0f17a48d0ce4714c3,,fertig
-53,Netzwerk & Firewalls,Windows-Netzwerk – Cheatsheet,05-Netzwerk-Sicherheit/Windows-Netzwerk-Cheatsheet.md,567,11407,909ea51cf4540754eedb7b1b7e8a5fcae15f10ae5ed94b50d102382db62382fd,,fertig
-54,Netzwerk & Firewalls,Wireshark – Cheatsheet,05-Netzwerk-Sicherheit/Wireshark-Cheatsheet.md,841,17632,4a4a25d6866a8e1d7c0472410bf20e729b88f76f6fa7efdd291931f7ea858387,,fertig
-55,"Storage, Dateisysteme & Synchronisation",Btrfs – Cheatsheet,06-Storage-Sync/Btrfs-Cheatsheet.md,536,10982,2997f8741f0bc7f4deeb6da70c942c47bba07f913653f45438ae8e597a24e18f,,fertig
-56,"Storage, Dateisysteme & Synchronisation",Dateisysteme – Cheatsheet,06-Storage-Sync/Dateisysteme-Cheatsheet.md,407,10768,5c4ed93e089469a22ead3ed4822386ef8e95f6df808f3eb2e52bb6a7c331351e,,fertig
-57,"Storage, Dateisysteme & Synchronisation",ext4 – Cheatsheet,06-Storage-Sync/ext4-Cheatsheet.md,383,7580,f3d0f731e5186b45372169a7565db40507f5af676f5fa5926217c59776a66f71,,fertig
-58,"Storage, Dateisysteme & Synchronisation",rclone – Cheatsheet,06-Storage-Sync/rclone-Cheatsheet.md,832,17083,6f5644fcd785417e413d591788e7fbf62f925bb03865f8505306b8b1c44bbeb5,,fertig
-59,"Storage, Dateisysteme & Synchronisation",Syncthing – Cheatsheet,06-Storage-Sync/Syncthing-Cheatsheet.md,560,14856,bcfffd9cd0c72413721bea3df1ea0b49e12d17b0ca71b3536e915040080ade4a,,fertig
-60,"Storage, Dateisysteme & Synchronisation",TrueNAS – Cheatsheet,06-Storage-Sync/TrueNAS-Cheatsheet.md,713,19263,3cee9c95b20bfb3327a01ce9f86a81b3158fccdc0af8cb0238cc3670110c41df,,fertig
-61,"Storage, Dateisysteme & Synchronisation",Weitere Dateisysteme – Cheatsheet,06-Storage-Sync/Weitere-Dateisysteme-Cheatsheet.md,352,7187,ee4418116b9898b581d5e8a20d194d2bb16ed5e5b9a82b6807e7d88ca8839e97,,fertig
-62,"Storage, Dateisysteme & Synchronisation",XFS – Cheatsheet,06-Storage-Sync/XFS-Cheatsheet.md,410,7928,17969c4642025a65201224ea582bfb7681d142452d1981021241cc502d2ce72c,,fertig
-63,"Storage, Dateisysteme & Synchronisation",ZFS – Cheatsheet,06-Storage-Sync/ZFS-Cheatsheet.md,743,15179,6ed41aa15cb859b187f3bc5c3d0f30014d55df9a73075a44c5ff2a98d9dc5757,,fertig
-64,Android,Haven – Android SSH Client – Cheatsheet,07-Android/Haven-Android-SSH-Client-Cheatsheet.md,594,15448,537233a8ed37ca6938a689ee30263807fe8368389638fc2e03f736ee9fda0417,,fertig
-65,Android,Magisk – Cheatsheet,07-Android/Magisk-Cheatsheet.md,607,16918,f63d5806ce4ee520308b294573b69b2958df4dba81a2bf16a29bd6f8dbe0be79,,fertig
-66,Android,Termux – Cheatsheet,07-Android/Termux-Cheatsheet.md,821,17345,d757edc3288d5904b7bbf78697afb8a7e8043fb6a8215d04e6c6484c7edf5c4d,Cheatsheet I – vollständig überarbeitet,fertig
-67,Android,USB-Debugging und ADB – Cheatsheet,07-Android/USB-Debugging-und-ADB-Cheatsheet.md,718,14966,be036c290cc584fd32d2d3c36a770d1488854da359eb4b341284b28fd11dfbd2,,fertig
-68,Künstliche Intelligenz,Anthropic Claude – Cheatsheet,08-KI/Claude-Cheatsheet.md,610,16583,a53b60ce67f00c1f92a3393448d7ca18a0784998770ea2d9dcae0e470693e4b4,,fertig
-69,Künstliche Intelligenz,Google Gemini – Cheatsheet,08-KI/Gemini-Cheatsheet.md,510,14864,20a2afba9df3d9da4aac44b4da2e80abee432022764cdb78ad96ceba6d033cd6,,fertig
-70,Künstliche Intelligenz,KI-Flottenmanagement – Cheatsheet,08-KI/KI-Flottenmanagement-Cheatsheet.md,701,16249,b9175cbd49ccdc079cc316d6051dcb0a89eab15e74d1bfd05a8fab1125c2938f,,fertig
-71,Künstliche Intelligenz,KI-Prompts – Cheatsheet,08-KI/KI-Prompts-Cheatsheet.md,703,17230,f048b0ca59866c09debcae4f4fa4ba576d1461e2a93f1befa346bd42ac3085bf,,fertig
-72,Künstliche Intelligenz,KI-Token sparen – Cheatsheet,08-KI/KI-Token-sparen-Cheatsheet.md,596,14019,6e03744fd3a9d8cd4e4b1cc40f9b7429d31e8b5e82c2424e0c9cf14a1ae1a8a9,,fertig
-73,Künstliche Intelligenz,OpenAI Codex – Cheatsheet,08-KI/Codex-Cheatsheet.md,698,18890,27ef111cd4e651cc5c061402f774a12f1edd3361f370844422758210325bcca4,,fertig
-74,Führung & Kommunikation,Umgang mit Managern – Cheatsheet,09-Fuehrung-Kommunikation/Umgang-mit-Managern-Cheatsheet.md,537,13508,ebce2355f64dc959173d9e7ee5a32d1b567d2bca89e9da69c8d18cd12519bde3,,fertig
-75,Führung & Kommunikation,Umgang mit Teamleitern – Cheatsheet,09-Fuehrung-Kommunikation/Umgang-mit-Teamleitern-Cheatsheet.md,506,14565,a78cf369b03d3c0de8101fb79f31d75f46313cf01cc2a59529410f2689248115,,fertig
-76,Sicherheit & PKI,HashiCorp Vault – Cheatsheet,10-Sicherheit-PKI/HashiCorp-Vault-Cheatsheet.md,644,15111,1c01f411dc37dd235afaaae0203a3a825ed27db2a989123222dce2617574062c,Cheatsheet I – vollständig überarbeitet,fertig
-77,Sicherheit & PKI,Keytool – Cheatsheet für Java-Keystores,10-Sicherheit-PKI/Keytool-Cheatsheet.md,531,12003,b43cb9f7beb7738d3aca96aa6982ba06d62eb75c5046554fbac59272fb84ae40,Cheatsheet I – vollständig überarbeitet,fertig
-78,Sicherheit & PKI,OpenBao – Cheatsheet,10-Sicherheit-PKI/OpenBao-Cheatsheet.md,460,10724,13c56e1ea35631d202e5a973fc8dff788e55cca23a63aa2321e9cfd9e27de0ad,Cheatsheet I – vollständig überarbeitet,fertig
-79,Sicherheit & PKI,OpenSSL – Cheatsheet,10-Sicherheit-PKI/OpenSSL-Cheatsheet.md,571,14057,35c5fe9cf4fa9751ab74eb7e7c1d28bded3c11a9400f41e2a8806e34e643d4d8,Cheatsheet I – vollständig überarbeitet,fertig
-80,Sicherheit & PKI,Thales Luna Network HSM A750 – Cheatsheet,10-Sicherheit-PKI/Thales-Luna-Network-HSM-A750-Cheatsheet.md,1414,42337,3c7470b7230edba84eb12ed1d777d95a05ba700ad25ed9377fb74b0e9a23b7c8,Cheatsheet II – Ergänzung 2.1.0,fertig
-81,Wissensmanagement,Obsidian-Markdown – Cheatsheet,11-Wissensmanagement/Obsidian-Markdown-Cheatsheet.md,752,14734,ab6f9c607b94ad0d8e49b89878937756a99a3c5d3e57a4c659a7ffb7a198bb28,Cheatsheet I – vollständig überarbeitet,fertig
-82,Hardware & Prozessoren,AMD-Prozessorhistorie – Cheatsheet,12-Hardware-Prozessoren/AMD-Prozessorhistorie-Cheatsheet.md,482,17666,4e20b30ff49770a5ae93c2dec1752327d4d18fba2c99b791aa456c8992e7ba29,,fertig
-83,Hardware & Prozessoren,Arm-Prozessorhistorie – Cheatsheet,12-Hardware-Prozessoren/Arm-Prozessorhistorie-Cheatsheet.md,565,19322,3c9c4b5f3119c9342f2e69901f8d8ae4caa20df8834305f264a8b957d1667be4,,fertig
-84,Hardware & Prozessoren,CPU-Benchmarks und Vergleichbarkeit – Cheatsheet,12-Hardware-Prozessoren/CPU-Benchmarks-und-Vergleichbarkeit-Cheatsheet.md,828,21397,b016c1a33674441ea391cec32684269b835444d3f2939b6255b82ff2445eb6a5,,fertig
-85,Hardware & Prozessoren,Intel-Prozessorhistorie – Cheatsheet,12-Hardware-Prozessoren/Intel-Prozessorhistorie-Cheatsheet.md,403,13084,5b0a031dcc49fc2a1cf4736244e6843c371da3b08509900cc3403387625b647c,,fertig
-86,Hardware & Prozessoren,"Prozessorhistorie Intel, AMD und Arm – Cheatsheet",12-Hardware-Prozessoren/Prozessorhistorie-Intel-AMD-Arm-Cheatsheet.md,609,21930,a40e56bc6bdc546eab4eb9c44bdc96fe123df1cd9f196256fedacfbfc80b033f,,fertig
+20,"Versionierung, Entwicklung & Editoren",Vim – Cheatsheet,02-Versionierung-Entwicklung/Vim-Cheatsheet.md,580,30518,2d07231a0fedbf7cc82107172c281136cc498933942e4a2133da4e8c8f1c4830,,fertig
+21,"Versionierung, Entwicklung & Editoren",.vimrc – Konfiguration und Praxis,02-Versionierung-Entwicklung/Vimrc-Konfiguration-Cheatsheet.md,584,30254,16d6565d7b0cbd4f93bb0a355ee6fb01b58b360f3827fea6bb6ef012cb2d23bb,,fertig
+22,"Linux-, Unix- & Paketverwaltung",APT – Cheatsheet,03-Linux-Administration/apt-Cheatsheet.md,354,7479,26d97525db899648b97996bc8098eab13622f3022df758c0033fd82da59b6324,,fertig
+23,"Linux-, Unix- & Paketverwaltung",Chocolatey – Cheatsheet,03-Linux-Administration/Chocolatey-Cheatsheet.md,325,7941,443f357c9e1b7697c6cc4a2913d3e448c95178c21852c0503d8fb7ac11b7cd8b,,fertig
+24,"Linux-, Unix- & Paketverwaltung",Cinnamon – Cheatsheet,03-Linux-Administration/Cinnamon-Cheatsheet.md,360,7533,edb7b385437bbc64bdd9b84dad59141c7996f308fc128e39355793b25b6eb165,,fertig
+25,"Linux-, Unix- & Paketverwaltung",Dateikompression unter Linux – Cheatsheet,03-Linux-Administration/Dateikompression-unter-Linux-Cheatsheet.md,426,8680,faefb4c3f534959fdf29fd42fa21d08e582b3d1015df722f9fefeca01308173e,,fertig
+26,"Linux-, Unix- & Paketverwaltung",dmesg – Cheatsheet,03-Linux-Administration/dmesg-Cheatsheet.md,281,6437,eb4374c775790508826d4ddc6fa94eaa51c83fefa8b6512a05dbd5e56e43d606,,fertig
+27,"Linux-, Unix- & Paketverwaltung",DNF – Cheatsheet,03-Linux-Administration/dnf-Cheatsheet.md,385,7605,fde64b72f0d8c6998a7224daf8b83ded9319c67b70d49036aec99854dbf5d401,,fertig
+28,"Linux-, Unix- & Paketverwaltung",fdisk und Partitionierung – Cheatsheet,03-Linux-Administration/fdisk-Cheatsheet.md,401,8731,ca6caca4e34d370f2abb64c30fde1775b7035a40937f932974ee3c7cd137d4eb,,fertig
+29,"Linux-, Unix- & Paketverwaltung",Fedora und RHEL – Eigenheiten und Cheatsheet,03-Linux-Administration/Fedora-RHEL-Cheatsheet.md,521,12567,4d7cf0c505dc6dd9dc4cd62400b72b67ab404ad4f8064cd819e17a129d33d7c1,,fertig
+30,"Linux-, Unix- & Paketverwaltung",Fedora/RHEL – Shortcuts und Kommandos,03-Linux-Administration/Fedora-RHEL-Shortcuts-und-Kommandos.md,299,4950,48817d462f8fdbea153c9915c32b5f851443499043d88c5094887ae468ff68f0,,fertig
+31,"Linux-, Unix- & Paketverwaltung",firewalld – Cheatsheet,03-Linux-Administration/firewalld-Cheatsheet.md,394,9456,440cad5d0a22f5d188d8fbcbafd7ad9e2e3452a81ee0644cb21ad6a8bee371d3,,fertig
+32,"Linux-, Unix- & Paketverwaltung",FreeBSD pkg – Cheatsheet,03-Linux-Administration/FreeBSD-pkg-Cheatsheet.md,304,5805,5b577c37bc87612d552a94400193f5e05e63ddad219652be50f9263f205409dd,,fertig
+33,"Linux-, Unix- & Paketverwaltung",GNU Screen – Cheatsheet,03-Linux-Administration/GNU-Screen-Cheatsheet.md,632,12105,b6733fe05bc91e9c0dd96f2c3ec9a5ca788121d7881ccd8b01d8621c97c3520f,Cheatsheet I – vollständig überarbeitet,fertig
+34,"Linux-, Unix- & Paketverwaltung",grep – Cheatsheet,03-Linux-Administration/grep-Cheatsheet.md,309,7687,6f75799c4a2ec68d402cc18b3f16a6841a1fe47ee234831bc74756523790db96,,fertig
+35,"Linux-, Unix- & Paketverwaltung",Linux Benutzer- und Gruppenmanagement – Cheatsheet,03-Linux-Administration/Linux-Benutzer-und-Gruppenmanagement-Cheatsheet.md,477,9315,7884b785d3dd24104ee33038eb559c7678893f9f08b97d9b37f8e51f9c9e466d,,fertig
+36,"Linux-, Unix- & Paketverwaltung",ls-Familie und Hardwareinventar – Cheatsheet,03-Linux-Administration/ls-Familie-und-Hardwareinventar-Cheatsheet.md,379,6787,da754a1370614886812e384b9cbef6d0bff714f4adc4f0fe347011063c5e527f,,fertig
+37,"Linux-, Unix- & Paketverwaltung",Manpages – Cheatsheet,03-Linux-Administration/Manpages-Cheatsheet.md,319,6029,cf6bbfc1ee80e342caaa25e8616fc2c5a775cc13f2f295582724e46036b5ea0d,,fertig
+38,"Linux-, Unix- & Paketverwaltung",Paketmanager – Vergleich und Cheatsheet,03-Linux-Administration/Paketmanager-Cheatsheet.md,277,8075,b383517706fa9b6cbb0637bb2bcbdccc8e48d78ac165b85d209ce5b97464ab7b,,fertig
+39,"Linux-, Unix- & Paketverwaltung",POSIX ACL – getfacl und setfacl Cheatsheet,03-Linux-Administration/POSIX-ACL-Cheatsheet.md,394,7982,369e6caa0737977bd6aae1b511121ca7fe5167a28c0470caad3a8fb5618c63e7,,fertig
+40,"Linux-, Unix- & Paketverwaltung",RPM – Cheatsheet,03-Linux-Administration/RPM-Cheatsheet.md,379,7019,a180af4434f482b3b01f16ef24960a647173444b04d7f104319ade431b3c702d,,fertig
+41,"Linux-, Unix- & Paketverwaltung",rsync – Cheatsheet,03-Linux-Administration/rsync-Cheatsheet.md,472,9923,79d6a93861860e779c92a789be3b3cce7552bfce515c0e3a3220a33db5e6d630,,fertig
+42,"Linux-, Unix- & Paketverwaltung",SELinux – Cheatsheet,03-Linux-Administration/SELinux-Cheatsheet.md,426,8824,5ec30fc9be607fd8806cf08a71e2608bc0d6062f5da5231b0ef5bb81de359f26,,fertig
+43,"Linux-, Unix- & Paketverwaltung",SSH – Cheatsheet,03-Linux-Administration/SSH-Cheatsheet.md,616,12625,f6aa201f29a85d04d0c0fa9add34d5d1fdb2ff0d2e3b09cf3e9a5a2b686b1922,,fertig
+44,"Linux-, Unix- & Paketverwaltung",systemd – Cheatsheet,03-Linux-Administration/Systemd-Cheatsheet.md,511,10654,ba3a071b7185208498b554f1b4079d7abaa0e1a780d8d5263d643cfc0d55b7b9,,fertig
+45,"Linux-, Unix- & Paketverwaltung",X11 – Cheatsheet,03-Linux-Administration/X11-Cheatsheet.md,351,6813,3a6d5c7ae85450d562fe2b6adcb981e157ef245776ad40c4983ffc5bb4a1fdeb,,fertig
+46,"Linux-, Unix- & Paketverwaltung","Zeitmanagement unter Linux – timedatectl, NTP und RTC",03-Linux-Administration/Timemanagement-unter-Linux-Cheatsheet.md,403,8156,ce439662898b0719ea0af8261052b90d3d64bc87ad39c6276852d666557b2bb0,,fertig
+47,Webserver,Apache HTTP Server – Cheatsheet,04-Webserver/Apache-HTTP-Server-Cheatsheet.md,635,13233,e453f087611a3e1d9cbdf909fe43cdd83d77307ac98a971a0e3215a67c42a64d,,fertig
+48,Webserver,nginx – Cheatsheet,04-Webserver/nginx-Cheatsheet.md,703,14967,af3ec59486f8e84e753647fc093177502367de6fa0c78779a19442f1b55f838f,,fertig
+49,Netzwerk & Firewalls,BSD-Netzwerk – Cheatsheet,05-Netzwerk-Sicherheit/BSD-Netzwerk-Cheatsheet.md,554,8702,99cda23ec6511064193f9b0e7fff720734f1be9c5cf4566b62b58978a65d927f,,fertig
+50,Netzwerk & Firewalls,Linux-Netzwerk – Cheatsheet,05-Netzwerk-Sicherheit/Linux-Netzwerk-Cheatsheet.md,835,15911,192953c8fafa5cff285d9fba0766a4d672e4781774ed60a05e95f393e9df9afa,,fertig
+51,Netzwerk & Firewalls,Netzwerk-Konfiguration – Cheatsheet,05-Netzwerk-Sicherheit/Netzwerk-Konfiguration-Cheatsheet.md,308,8647,322f886206c9906be074326b3234e38977de679c97832a8e2b0315415f9e327b,,fertig
+52,Netzwerk & Firewalls,Netzwerk-Stacktypen – Cheatsheet,05-Netzwerk-Sicherheit/Netzwerk-Stacktypen-Cheatsheet.md,285,7539,64c1de88616a65cce84b60a91105601d278b2e28fba3f9f8a5771706766a0681,,fertig
+53,Netzwerk & Firewalls,OPNsense – Cheatsheet,05-Netzwerk-Sicherheit/OPNsense-Cheatsheet.md,583,12695,362f53505966c28118430c80b822bd4c3f5935a70d810d2bf794e0bc7f0f849c,,fertig
+54,Netzwerk & Firewalls,pfSense – Cheatsheet,05-Netzwerk-Sicherheit/pfSense-Cheatsheet.md,595,13397,3aff6f57e9126a20d6e2f9778fbca988dbdb1709c0f789b0f17a48d0ce4714c3,,fertig
+55,Netzwerk & Firewalls,Windows-Netzwerk – Cheatsheet,05-Netzwerk-Sicherheit/Windows-Netzwerk-Cheatsheet.md,567,11407,909ea51cf4540754eedb7b1b7e8a5fcae15f10ae5ed94b50d102382db62382fd,,fertig
+56,Netzwerk & Firewalls,Wireshark – Cheatsheet,05-Netzwerk-Sicherheit/Wireshark-Cheatsheet.md,841,17632,4a4a25d6866a8e1d7c0472410bf20e729b88f76f6fa7efdd291931f7ea858387,,fertig
+57,"Storage, Dateisysteme & Synchronisation",Btrfs – Cheatsheet,06-Storage-Sync/Btrfs-Cheatsheet.md,536,10982,2997f8741f0bc7f4deeb6da70c942c47bba07f913653f45438ae8e597a24e18f,,fertig
+58,"Storage, Dateisysteme & Synchronisation",Dateisysteme – Cheatsheet,06-Storage-Sync/Dateisysteme-Cheatsheet.md,407,10768,5c4ed93e089469a22ead3ed4822386ef8e95f6df808f3eb2e52bb6a7c331351e,,fertig
+59,"Storage, Dateisysteme & Synchronisation",ext4 – Cheatsheet,06-Storage-Sync/ext4-Cheatsheet.md,383,7580,f3d0f731e5186b45372169a7565db40507f5af676f5fa5926217c59776a66f71,,fertig
+60,"Storage, Dateisysteme & Synchronisation",rclone – Cheatsheet,06-Storage-Sync/rclone-Cheatsheet.md,832,17083,6f5644fcd785417e413d591788e7fbf62f925bb03865f8505306b8b1c44bbeb5,,fertig
+61,"Storage, Dateisysteme & Synchronisation",Syncthing – Cheatsheet,06-Storage-Sync/Syncthing-Cheatsheet.md,560,14856,bcfffd9cd0c72413721bea3df1ea0b49e12d17b0ca71b3536e915040080ade4a,,fertig
+62,"Storage, Dateisysteme & Synchronisation",TrueNAS – Cheatsheet,06-Storage-Sync/TrueNAS-Cheatsheet.md,713,19263,3cee9c95b20bfb3327a01ce9f86a81b3158fccdc0af8cb0238cc3670110c41df,,fertig
+63,"Storage, Dateisysteme & Synchronisation",Weitere Dateisysteme – Cheatsheet,06-Storage-Sync/Weitere-Dateisysteme-Cheatsheet.md,352,7187,ee4418116b9898b581d5e8a20d194d2bb16ed5e5b9a82b6807e7d88ca8839e97,,fertig
+64,"Storage, Dateisysteme & Synchronisation",XFS – Cheatsheet,06-Storage-Sync/XFS-Cheatsheet.md,410,7928,17969c4642025a65201224ea582bfb7681d142452d1981021241cc502d2ce72c,,fertig
+65,"Storage, Dateisysteme & Synchronisation",ZFS – Cheatsheet,06-Storage-Sync/ZFS-Cheatsheet.md,743,15179,6ed41aa15cb859b187f3bc5c3d0f30014d55df9a73075a44c5ff2a98d9dc5757,,fertig
+66,Android,Haven – Android SSH Client – Cheatsheet,07-Android/Haven-Android-SSH-Client-Cheatsheet.md,594,15448,537233a8ed37ca6938a689ee30263807fe8368389638fc2e03f736ee9fda0417,,fertig
+67,Android,Magisk – Cheatsheet,07-Android/Magisk-Cheatsheet.md,607,16918,f63d5806ce4ee520308b294573b69b2958df4dba81a2bf16a29bd6f8dbe0be79,,fertig
+68,Android,Termux – Cheatsheet,07-Android/Termux-Cheatsheet.md,821,17345,d757edc3288d5904b7bbf78697afb8a7e8043fb6a8215d04e6c6484c7edf5c4d,Cheatsheet I – vollständig überarbeitet,fertig
+69,Android,USB-Debugging und ADB – Cheatsheet,07-Android/USB-Debugging-und-ADB-Cheatsheet.md,718,14966,be036c290cc584fd32d2d3c36a770d1488854da359eb4b341284b28fd11dfbd2,,fertig
+70,Künstliche Intelligenz,Anthropic Claude – Cheatsheet,08-KI/Claude-Cheatsheet.md,610,16583,a53b60ce67f00c1f92a3393448d7ca18a0784998770ea2d9dcae0e470693e4b4,,fertig
+71,Künstliche Intelligenz,Google Gemini – Cheatsheet,08-KI/Gemini-Cheatsheet.md,510,14864,20a2afba9df3d9da4aac44b4da2e80abee432022764cdb78ad96ceba6d033cd6,,fertig
+72,Künstliche Intelligenz,KI-Flottenmanagement – Cheatsheet,08-KI/KI-Flottenmanagement-Cheatsheet.md,701,16249,b9175cbd49ccdc079cc316d6051dcb0a89eab15e74d1bfd05a8fab1125c2938f,,fertig
+73,Künstliche Intelligenz,KI-Prompts – Cheatsheet,08-KI/KI-Prompts-Cheatsheet.md,703,17230,f048b0ca59866c09debcae4f4fa4ba576d1461e2a93f1befa346bd42ac3085bf,,fertig
+74,Künstliche Intelligenz,KI-Token sparen – Cheatsheet,08-KI/KI-Token-sparen-Cheatsheet.md,596,14019,6e03744fd3a9d8cd4e4b1cc40f9b7429d31e8b5e82c2424e0c9cf14a1ae1a8a9,,fertig
+75,Künstliche Intelligenz,OpenAI Codex – Cheatsheet,08-KI/Codex-Cheatsheet.md,698,18890,27ef111cd4e651cc5c061402f774a12f1edd3361f370844422758210325bcca4,,fertig
+76,Führung & Kommunikation,Umgang mit Managern – Cheatsheet,09-Fuehrung-Kommunikation/Umgang-mit-Managern-Cheatsheet.md,537,13508,ebce2355f64dc959173d9e7ee5a32d1b567d2bca89e9da69c8d18cd12519bde3,,fertig
+77,Führung & Kommunikation,Umgang mit Teamleitern – Cheatsheet,09-Fuehrung-Kommunikation/Umgang-mit-Teamleitern-Cheatsheet.md,506,14565,a78cf369b03d3c0de8101fb79f31d75f46313cf01cc2a59529410f2689248115,,fertig
+78,Sicherheit & PKI,HashiCorp Vault – Cheatsheet,10-Sicherheit-PKI/HashiCorp-Vault-Cheatsheet.md,644,15111,1c01f411dc37dd235afaaae0203a3a825ed27db2a989123222dce2617574062c,Cheatsheet I – vollständig überarbeitet,fertig
+79,Sicherheit & PKI,Keytool – Cheatsheet für Java-Keystores,10-Sicherheit-PKI/Keytool-Cheatsheet.md,531,12003,b43cb9f7beb7738d3aca96aa6982ba06d62eb75c5046554fbac59272fb84ae40,Cheatsheet I – vollständig überarbeitet,fertig
+80,Sicherheit & PKI,OpenBao – Cheatsheet,10-Sicherheit-PKI/OpenBao-Cheatsheet.md,460,10724,13c56e1ea35631d202e5a973fc8dff788e55cca23a63aa2321e9cfd9e27de0ad,Cheatsheet I – vollständig überarbeitet,fertig
+81,Sicherheit & PKI,OpenSSL – Cheatsheet,10-Sicherheit-PKI/OpenSSL-Cheatsheet.md,571,14057,35c5fe9cf4fa9751ab74eb7e7c1d28bded3c11a9400f41e2a8806e34e643d4d8,Cheatsheet I – vollständig überarbeitet,fertig
+82,Sicherheit & PKI,Thales Luna Network HSM A750 – Cheatsheet,10-Sicherheit-PKI/Thales-Luna-Network-HSM-A750-Cheatsheet.md,1414,42337,3c7470b7230edba84eb12ed1d777d95a05ba700ad25ed9377fb74b0e9a23b7c8,Cheatsheet II – Ergänzung 2.1.0,fertig
+83,Wissensmanagement,Obsidian-Markdown – Cheatsheet,11-Wissensmanagement/Obsidian-Markdown-Cheatsheet.md,752,14734,ab6f9c607b94ad0d8e49b89878937756a99a3c5d3e57a4c659a7ffb7a198bb28,Cheatsheet I – vollständig überarbeitet,fertig
+84,Hardware & Prozessoren,AMD-Prozessorhistorie – Cheatsheet,12-Hardware-Prozessoren/AMD-Prozessorhistorie-Cheatsheet.md,482,17666,4e20b30ff49770a5ae93c2dec1752327d4d18fba2c99b791aa456c8992e7ba29,,fertig
+85,Hardware & Prozessoren,Arm-Prozessorhistorie – Cheatsheet,12-Hardware-Prozessoren/Arm-Prozessorhistorie-Cheatsheet.md,565,19322,3c9c4b5f3119c9342f2e69901f8d8ae4caa20df8834305f264a8b957d1667be4,,fertig
+86,Hardware & Prozessoren,CPU-Benchmarks und Vergleichbarkeit – Cheatsheet,12-Hardware-Prozessoren/CPU-Benchmarks-und-Vergleichbarkeit-Cheatsheet.md,828,21397,b016c1a33674441ea391cec32684269b835444d3f2939b6255b82ff2445eb6a5,,fertig
+87,Hardware & Prozessoren,Intel-Prozessorhistorie – Cheatsheet,12-Hardware-Prozessoren/Intel-Prozessorhistorie-Cheatsheet.md,403,13084,5b0a031dcc49fc2a1cf4736244e6843c371da3b08509900cc3403387625b647c,,fertig
+88,Hardware & Prozessoren,"Prozessorhistorie Intel, AMD und Arm – Cheatsheet",12-Hardware-Prozessoren/Prozessorhistorie-Intel-AMD-Arm-Cheatsheet.md,609,21930,a40e56bc6bdc546eab4eb9c44bdc96fe123df1cd9f196256fedacfbfc80b033f,,fertig

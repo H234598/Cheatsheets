@@ -3,17 +3,31 @@ title: Cheatsheet – Changelog
 aliases:
 - Cheatsheet Änderungsprotokoll
 created: '2026-07-17'
-modified: '2026-07-17'
+modified: '2026-10-12'
 type: changelog
 status: fertig
 tags:
 - changelog
 - cheatsheet
-version: 2.1.0
+version: '2.2.0'
+date: '2026-10-12'
+updates:
+- date: '2026-10-12'
+  change: 'Vim und .vimrc ergänzt; Umfang und Verweise aktualisiert.'
 ---
 # Changelog
 
 [[00-START-HIER|← Startseite]]
+
+## 2.2.0 – 12. Oktober 2026
+
+### Vim und .vimrc
+
+- [[02-Versionierung-Entwicklung/Vim-Cheatsheet|Vim – Cheatsheet]] ergänzt: Bedienung, Bewegungen und Textobjekte, Register, Suche, Makros, Fenster, Quickfix, Diff und Wiederherstellung.
+- [[02-Versionierung-Entwicklung/Vimrc-Konfiguration-Cheatsheet|.vimrc – Konfiguration und Praxis]] ergänzt: Pfade, Startreihenfolge, klassische Vimscript-Basisdatei, Optionen, Mappings, Dateitypregeln, Plugins und Diagnose.
+- Beide Seiten gegenseitig und mit bestehenden Fachseiten verlinkt; offizielle Vim-Quellen und vollständige Obsidian-Dokumenteneigenschaften aufgenommen.
+- Kategorieindex, Gesamtindex, Startseite, README, vollständiger Gesamtband und kanonische Metadaten auf 88 Fachseiten aktualisiert.
+- Der bestehende Webbuild bindet beide Seiten in Navigation, Suche, Markdown-Downloads und Offline-HTML ein.
 
 ## 2.1.0 – 17. Juli 2026
 
