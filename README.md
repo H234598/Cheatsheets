@@ -4,7 +4,7 @@ aliases:
 - Cheatsheet
 - Cheatsheets README
 created: '2026-07-17'
-modified: '2026-10-12'
+modified: '2026-10-17'
 type: readme
 status: fertig
 tags:
@@ -12,18 +12,20 @@ tags:
 - cheatsheet
 - obsidian
 - Cheatsheets
-version: '2.3.0'
-pages: 89
-date: '2026-10-12'
+version: '2.4.0'
+pages: 90
+date: '2026-10-17'
 updates:
 - date: '2026-10-12'
   change: 'Vim und .vimrc ergänzt; Umfang und Verweise aktualisiert.'
 - date: '2026-10-12'
   change: 'HashiCorp Terraform ergänzt; Umfang, Navigation und Downloads aktualisiert.'
+- date: '2026-10-17'
+  change: 'Morsecode ergänzt; Umfang, Navigation, Gesamtband und Downloads aktualisiert.'
 ---
 # Cheatsheets
 
-Diese Sammlung ist ein Obsidian-kompatibler IT-Referenz-Vault mit **89 Fachseiten in 12 Kategorien**. Die Fachseiten umfassen **47,087 Zeilen** beziehungsweise **1146.4 KiB Markdown**.
+Diese Sammlung ist ein Obsidian-kompatibler IT-Referenz-Vault mit **90 Fachseiten in 12 Kategorien**. Die Fachseiten umfassen **47,436 Zeilen** beziehungsweise **1167.3 KiB Markdown**.
 
 ## Einstieg
 
@@ -34,6 +36,10 @@ Diese Sammlung ist ein Obsidian-kompatibler IT-Referenz-Vault mit **89 Fachseite
 - [[MANIFEST|Manifest]]
 - [[QUALITAETSPRUEFUNG|Qualitätsprüfung]]
 - [[CHANGELOG|Changelog]]
+
+## Neu: Morsecode
+
+- [[05-Netzwerk-Sicherheit/Morsecode-Cheatsheet|Morsecode – Cheatsheet]] – Alphabet, Ziffern, Satzzeichen, Timing, Betriebszeichen, CW-Praxis und Übungen mit Lösungen.
 
 ## Neu: HashiCorp Terraform
 

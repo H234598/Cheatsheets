@@ -3,23 +3,34 @@ title: Cheatsheet – Changelog
 aliases:
 - Cheatsheet Änderungsprotokoll
 created: '2026-07-17'
-modified: '2026-10-12'
+modified: '2026-10-17'
 type: changelog
 status: fertig
 tags:
 - changelog
 - cheatsheet
-version: '2.3.0'
-date: '2026-10-12'
+version: '2.4.0'
+date: '2026-10-17'
 updates:
 - date: '2026-10-12'
   change: 'Vim und .vimrc ergänzt; Umfang und Verweise aktualisiert.'
 - date: '2026-10-12'
   change: 'HashiCorp Terraform ergänzt; Umfang, Navigation und Downloads aktualisiert.'
+- date: '2026-10-17'
+  change: 'Morsecode ergänzt; Umfang, Navigation, Gesamtband und Downloads aktualisiert.'
 ---
 # Changelog
 
 [[00-START-HIER|← Startseite]]
+
+## 2.4.0 – 17. Oktober 2026
+
+### Morsecode
+
+- [[05-Netzwerk-Sicherheit/Morsecode-Cheatsheet|Morsecode – Cheatsheet]] ergänzt: internationales Alphabet, Ziffern, Satzzeichen, Zeitverhältnisse und PARIS-Geschwindigkeit.
+- Betriebszeichen, zusammenhängendes SOS-Signal, Q-Gruppen und deutsche Umschrift voneinander abgegrenzt; Primärquellen bei den jeweiligen Themen verlinkt.
+- Codier- und Leseübungen mit Lösungen sowie Hinweise zum Hör- und Gebetraining aufgenommen.
+- Navigation, Startseite, README, Gesamtband und kanonische Metadaten auf 90 Fachseiten aktualisiert; bestehende Fachseiten und Dokumenthistorien erhalten.
 
 ## 2.3.0 – 12. Oktober 2026
 

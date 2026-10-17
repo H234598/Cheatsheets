@@ -50,41 +50,42 @@ nr,bereich,title,path,lines,bytes,sha256,origin,status
 49,Webserver,nginx – Cheatsheet,04-Webserver/nginx-Cheatsheet.md,703,14967,af3ec59486f8e84e753647fc093177502367de6fa0c78779a19442f1b55f838f,,fertig
 50,Netzwerk & Firewalls,BSD-Netzwerk – Cheatsheet,05-Netzwerk-Sicherheit/BSD-Netzwerk-Cheatsheet.md,554,8702,99cda23ec6511064193f9b0e7fff720734f1be9c5cf4566b62b58978a65d927f,,fertig
 51,Netzwerk & Firewalls,Linux-Netzwerk – Cheatsheet,05-Netzwerk-Sicherheit/Linux-Netzwerk-Cheatsheet.md,835,15911,192953c8fafa5cff285d9fba0766a4d672e4781774ed60a05e95f393e9df9afa,,fertig
-52,Netzwerk & Firewalls,Netzwerk-Konfiguration – Cheatsheet,05-Netzwerk-Sicherheit/Netzwerk-Konfiguration-Cheatsheet.md,308,8647,322f886206c9906be074326b3234e38977de679c97832a8e2b0315415f9e327b,,fertig
-53,Netzwerk & Firewalls,Netzwerk-Stacktypen – Cheatsheet,05-Netzwerk-Sicherheit/Netzwerk-Stacktypen-Cheatsheet.md,285,7539,64c1de88616a65cce84b60a91105601d278b2e28fba3f9f8a5771706766a0681,,fertig
-54,Netzwerk & Firewalls,OPNsense – Cheatsheet,05-Netzwerk-Sicherheit/OPNsense-Cheatsheet.md,583,12695,362f53505966c28118430c80b822bd4c3f5935a70d810d2bf794e0bc7f0f849c,,fertig
-55,Netzwerk & Firewalls,pfSense – Cheatsheet,05-Netzwerk-Sicherheit/pfSense-Cheatsheet.md,595,13397,3aff6f57e9126a20d6e2f9778fbca988dbdb1709c0f789b0f17a48d0ce4714c3,,fertig
-56,Netzwerk & Firewalls,Windows-Netzwerk – Cheatsheet,05-Netzwerk-Sicherheit/Windows-Netzwerk-Cheatsheet.md,567,11407,909ea51cf4540754eedb7b1b7e8a5fcae15f10ae5ed94b50d102382db62382fd,,fertig
-57,Netzwerk & Firewalls,Wireshark – Cheatsheet,05-Netzwerk-Sicherheit/Wireshark-Cheatsheet.md,841,17632,4a4a25d6866a8e1d7c0472410bf20e729b88f76f6fa7efdd291931f7ea858387,,fertig
-58,"Storage, Dateisysteme & Synchronisation",Btrfs – Cheatsheet,06-Storage-Sync/Btrfs-Cheatsheet.md,536,10982,2997f8741f0bc7f4deeb6da70c942c47bba07f913653f45438ae8e597a24e18f,,fertig
-59,"Storage, Dateisysteme & Synchronisation",Dateisysteme – Cheatsheet,06-Storage-Sync/Dateisysteme-Cheatsheet.md,407,10768,5c4ed93e089469a22ead3ed4822386ef8e95f6df808f3eb2e52bb6a7c331351e,,fertig
-60,"Storage, Dateisysteme & Synchronisation",ext4 – Cheatsheet,06-Storage-Sync/ext4-Cheatsheet.md,383,7580,f3d0f731e5186b45372169a7565db40507f5af676f5fa5926217c59776a66f71,,fertig
-61,"Storage, Dateisysteme & Synchronisation",rclone – Cheatsheet,06-Storage-Sync/rclone-Cheatsheet.md,832,17083,6f5644fcd785417e413d591788e7fbf62f925bb03865f8505306b8b1c44bbeb5,,fertig
-62,"Storage, Dateisysteme & Synchronisation",Syncthing – Cheatsheet,06-Storage-Sync/Syncthing-Cheatsheet.md,560,14856,bcfffd9cd0c72413721bea3df1ea0b49e12d17b0ca71b3536e915040080ade4a,,fertig
-63,"Storage, Dateisysteme & Synchronisation",TrueNAS – Cheatsheet,06-Storage-Sync/TrueNAS-Cheatsheet.md,713,19263,3cee9c95b20bfb3327a01ce9f86a81b3158fccdc0af8cb0238cc3670110c41df,,fertig
-64,"Storage, Dateisysteme & Synchronisation",Weitere Dateisysteme – Cheatsheet,06-Storage-Sync/Weitere-Dateisysteme-Cheatsheet.md,352,7187,ee4418116b9898b581d5e8a20d194d2bb16ed5e5b9a82b6807e7d88ca8839e97,,fertig
-65,"Storage, Dateisysteme & Synchronisation",XFS – Cheatsheet,06-Storage-Sync/XFS-Cheatsheet.md,410,7928,17969c4642025a65201224ea582bfb7681d142452d1981021241cc502d2ce72c,,fertig
-66,"Storage, Dateisysteme & Synchronisation",ZFS – Cheatsheet,06-Storage-Sync/ZFS-Cheatsheet.md,743,15179,6ed41aa15cb859b187f3bc5c3d0f30014d55df9a73075a44c5ff2a98d9dc5757,,fertig
-67,Android,Haven – Android SSH Client – Cheatsheet,07-Android/Haven-Android-SSH-Client-Cheatsheet.md,594,15448,537233a8ed37ca6938a689ee30263807fe8368389638fc2e03f736ee9fda0417,,fertig
-68,Android,Magisk – Cheatsheet,07-Android/Magisk-Cheatsheet.md,607,16918,f63d5806ce4ee520308b294573b69b2958df4dba81a2bf16a29bd6f8dbe0be79,,fertig
-69,Android,Termux – Cheatsheet,07-Android/Termux-Cheatsheet.md,821,17345,d757edc3288d5904b7bbf78697afb8a7e8043fb6a8215d04e6c6484c7edf5c4d,Cheatsheet I – vollständig überarbeitet,fertig
-70,Android,USB-Debugging und ADB – Cheatsheet,07-Android/USB-Debugging-und-ADB-Cheatsheet.md,718,14966,be036c290cc584fd32d2d3c36a770d1488854da359eb4b341284b28fd11dfbd2,,fertig
-71,Künstliche Intelligenz,Anthropic Claude – Cheatsheet,08-KI/Claude-Cheatsheet.md,610,16583,a53b60ce67f00c1f92a3393448d7ca18a0784998770ea2d9dcae0e470693e4b4,,fertig
-72,Künstliche Intelligenz,Google Gemini – Cheatsheet,08-KI/Gemini-Cheatsheet.md,510,14864,20a2afba9df3d9da4aac44b4da2e80abee432022764cdb78ad96ceba6d033cd6,,fertig
-73,Künstliche Intelligenz,KI-Flottenmanagement – Cheatsheet,08-KI/KI-Flottenmanagement-Cheatsheet.md,701,16249,b9175cbd49ccdc079cc316d6051dcb0a89eab15e74d1bfd05a8fab1125c2938f,,fertig
-74,Künstliche Intelligenz,KI-Prompts – Cheatsheet,08-KI/KI-Prompts-Cheatsheet.md,703,17230,f048b0ca59866c09debcae4f4fa4ba576d1461e2a93f1befa346bd42ac3085bf,,fertig
-75,Künstliche Intelligenz,KI-Token sparen – Cheatsheet,08-KI/KI-Token-sparen-Cheatsheet.md,596,14019,6e03744fd3a9d8cd4e4b1cc40f9b7429d31e8b5e82c2424e0c9cf14a1ae1a8a9,,fertig
-76,Künstliche Intelligenz,OpenAI Codex – Cheatsheet,08-KI/Codex-Cheatsheet.md,698,18890,27ef111cd4e651cc5c061402f774a12f1edd3361f370844422758210325bcca4,,fertig
-77,Führung & Kommunikation,Umgang mit Managern – Cheatsheet,09-Fuehrung-Kommunikation/Umgang-mit-Managern-Cheatsheet.md,537,13508,ebce2355f64dc959173d9e7ee5a32d1b567d2bca89e9da69c8d18cd12519bde3,,fertig
-78,Führung & Kommunikation,Umgang mit Teamleitern – Cheatsheet,09-Fuehrung-Kommunikation/Umgang-mit-Teamleitern-Cheatsheet.md,506,14565,a78cf369b03d3c0de8101fb79f31d75f46313cf01cc2a59529410f2689248115,,fertig
-79,Sicherheit & PKI,HashiCorp Vault – Cheatsheet,10-Sicherheit-PKI/HashiCorp-Vault-Cheatsheet.md,644,15111,1c01f411dc37dd235afaaae0203a3a825ed27db2a989123222dce2617574062c,Cheatsheet I – vollständig überarbeitet,fertig
-80,Sicherheit & PKI,Keytool – Cheatsheet für Java-Keystores,10-Sicherheit-PKI/Keytool-Cheatsheet.md,531,12003,b43cb9f7beb7738d3aca96aa6982ba06d62eb75c5046554fbac59272fb84ae40,Cheatsheet I – vollständig überarbeitet,fertig
-81,Sicherheit & PKI,OpenBao – Cheatsheet,10-Sicherheit-PKI/OpenBao-Cheatsheet.md,460,10724,13c56e1ea35631d202e5a973fc8dff788e55cca23a63aa2321e9cfd9e27de0ad,Cheatsheet I – vollständig überarbeitet,fertig
-82,Sicherheit & PKI,OpenSSL – Cheatsheet,10-Sicherheit-PKI/OpenSSL-Cheatsheet.md,571,14057,35c5fe9cf4fa9751ab74eb7e7c1d28bded3c11a9400f41e2a8806e34e643d4d8,Cheatsheet I – vollständig überarbeitet,fertig
-83,Sicherheit & PKI,Thales Luna Network HSM A750 – Cheatsheet,10-Sicherheit-PKI/Thales-Luna-Network-HSM-A750-Cheatsheet.md,1414,42337,3c7470b7230edba84eb12ed1d777d95a05ba700ad25ed9377fb74b0e9a23b7c8,Cheatsheet II – Ergänzung 2.1.0,fertig
-84,Wissensmanagement,Obsidian-Markdown – Cheatsheet,11-Wissensmanagement/Obsidian-Markdown-Cheatsheet.md,752,14734,ab6f9c607b94ad0d8e49b89878937756a99a3c5d3e57a4c659a7ffb7a198bb28,Cheatsheet I – vollständig überarbeitet,fertig
-85,Hardware & Prozessoren,AMD-Prozessorhistorie – Cheatsheet,12-Hardware-Prozessoren/AMD-Prozessorhistorie-Cheatsheet.md,482,17666,4e20b30ff49770a5ae93c2dec1752327d4d18fba2c99b791aa456c8992e7ba29,,fertig
-86,Hardware & Prozessoren,Arm-Prozessorhistorie – Cheatsheet,12-Hardware-Prozessoren/Arm-Prozessorhistorie-Cheatsheet.md,565,19322,3c9c4b5f3119c9342f2e69901f8d8ae4caa20df8834305f264a8b957d1667be4,,fertig
-87,Hardware & Prozessoren,CPU-Benchmarks und Vergleichbarkeit – Cheatsheet,12-Hardware-Prozessoren/CPU-Benchmarks-und-Vergleichbarkeit-Cheatsheet.md,828,21397,b016c1a33674441ea391cec32684269b835444d3f2939b6255b82ff2445eb6a5,,fertig
-88,Hardware & Prozessoren,Intel-Prozessorhistorie – Cheatsheet,12-Hardware-Prozessoren/Intel-Prozessorhistorie-Cheatsheet.md,403,13084,5b0a031dcc49fc2a1cf4736244e6843c371da3b08509900cc3403387625b647c,,fertig
-89,Hardware & Prozessoren,"Prozessorhistorie Intel, AMD und Arm – Cheatsheet",12-Hardware-Prozessoren/Prozessorhistorie-Intel-AMD-Arm-Cheatsheet.md,609,21930,a40e56bc6bdc546eab4eb9c44bdc96fe123df1cd9f196256fedacfbfc80b033f,,fertig
+52,Netzwerk & Firewalls,Morsecode – Cheatsheet,05-Netzwerk-Sicherheit/Morsecode-Cheatsheet.md,349,21346,aac1d69e926dbb240ec842ca961d53d83087f6277a79cc88248718fc4f771ba6,,fertig
+53,Netzwerk & Firewalls,Netzwerk-Konfiguration – Cheatsheet,05-Netzwerk-Sicherheit/Netzwerk-Konfiguration-Cheatsheet.md,308,8647,322f886206c9906be074326b3234e38977de679c97832a8e2b0315415f9e327b,,fertig
+54,Netzwerk & Firewalls,Netzwerk-Stacktypen – Cheatsheet,05-Netzwerk-Sicherheit/Netzwerk-Stacktypen-Cheatsheet.md,285,7539,64c1de88616a65cce84b60a91105601d278b2e28fba3f9f8a5771706766a0681,,fertig
+55,Netzwerk & Firewalls,OPNsense – Cheatsheet,05-Netzwerk-Sicherheit/OPNsense-Cheatsheet.md,583,12695,362f53505966c28118430c80b822bd4c3f5935a70d810d2bf794e0bc7f0f849c,,fertig
+56,Netzwerk & Firewalls,pfSense – Cheatsheet,05-Netzwerk-Sicherheit/pfSense-Cheatsheet.md,595,13397,3aff6f57e9126a20d6e2f9778fbca988dbdb1709c0f789b0f17a48d0ce4714c3,,fertig
+57,Netzwerk & Firewalls,Windows-Netzwerk – Cheatsheet,05-Netzwerk-Sicherheit/Windows-Netzwerk-Cheatsheet.md,567,11407,909ea51cf4540754eedb7b1b7e8a5fcae15f10ae5ed94b50d102382db62382fd,,fertig
+58,Netzwerk & Firewalls,Wireshark – Cheatsheet,05-Netzwerk-Sicherheit/Wireshark-Cheatsheet.md,841,17632,4a4a25d6866a8e1d7c0472410bf20e729b88f76f6fa7efdd291931f7ea858387,,fertig
+59,"Storage, Dateisysteme & Synchronisation",Btrfs – Cheatsheet,06-Storage-Sync/Btrfs-Cheatsheet.md,536,10982,2997f8741f0bc7f4deeb6da70c942c47bba07f913653f45438ae8e597a24e18f,,fertig
+60,"Storage, Dateisysteme & Synchronisation",Dateisysteme – Cheatsheet,06-Storage-Sync/Dateisysteme-Cheatsheet.md,407,10768,5c4ed93e089469a22ead3ed4822386ef8e95f6df808f3eb2e52bb6a7c331351e,,fertig
+61,"Storage, Dateisysteme & Synchronisation",ext4 – Cheatsheet,06-Storage-Sync/ext4-Cheatsheet.md,383,7580,f3d0f731e5186b45372169a7565db40507f5af676f5fa5926217c59776a66f71,,fertig
+62,"Storage, Dateisysteme & Synchronisation",rclone – Cheatsheet,06-Storage-Sync/rclone-Cheatsheet.md,832,17083,6f5644fcd785417e413d591788e7fbf62f925bb03865f8505306b8b1c44bbeb5,,fertig
+63,"Storage, Dateisysteme & Synchronisation",Syncthing – Cheatsheet,06-Storage-Sync/Syncthing-Cheatsheet.md,560,14856,bcfffd9cd0c72413721bea3df1ea0b49e12d17b0ca71b3536e915040080ade4a,,fertig
+64,"Storage, Dateisysteme & Synchronisation",TrueNAS – Cheatsheet,06-Storage-Sync/TrueNAS-Cheatsheet.md,713,19263,3cee9c95b20bfb3327a01ce9f86a81b3158fccdc0af8cb0238cc3670110c41df,,fertig
+65,"Storage, Dateisysteme & Synchronisation",Weitere Dateisysteme – Cheatsheet,06-Storage-Sync/Weitere-Dateisysteme-Cheatsheet.md,352,7187,ee4418116b9898b581d5e8a20d194d2bb16ed5e5b9a82b6807e7d88ca8839e97,,fertig
+66,"Storage, Dateisysteme & Synchronisation",XFS – Cheatsheet,06-Storage-Sync/XFS-Cheatsheet.md,410,7928,17969c4642025a65201224ea582bfb7681d142452d1981021241cc502d2ce72c,,fertig
+67,"Storage, Dateisysteme & Synchronisation",ZFS – Cheatsheet,06-Storage-Sync/ZFS-Cheatsheet.md,743,15179,6ed41aa15cb859b187f3bc5c3d0f30014d55df9a73075a44c5ff2a98d9dc5757,,fertig
+68,Android,Haven – Android SSH Client – Cheatsheet,07-Android/Haven-Android-SSH-Client-Cheatsheet.md,594,15448,537233a8ed37ca6938a689ee30263807fe8368389638fc2e03f736ee9fda0417,,fertig
+69,Android,Magisk – Cheatsheet,07-Android/Magisk-Cheatsheet.md,607,16918,f63d5806ce4ee520308b294573b69b2958df4dba81a2bf16a29bd6f8dbe0be79,,fertig
+70,Android,Termux – Cheatsheet,07-Android/Termux-Cheatsheet.md,821,17345,d757edc3288d5904b7bbf78697afb8a7e8043fb6a8215d04e6c6484c7edf5c4d,Cheatsheet I – vollständig überarbeitet,fertig
+71,Android,USB-Debugging und ADB – Cheatsheet,07-Android/USB-Debugging-und-ADB-Cheatsheet.md,718,14966,be036c290cc584fd32d2d3c36a770d1488854da359eb4b341284b28fd11dfbd2,,fertig
+72,Künstliche Intelligenz,Anthropic Claude – Cheatsheet,08-KI/Claude-Cheatsheet.md,610,16583,a53b60ce67f00c1f92a3393448d7ca18a0784998770ea2d9dcae0e470693e4b4,,fertig
+73,Künstliche Intelligenz,Google Gemini – Cheatsheet,08-KI/Gemini-Cheatsheet.md,510,14864,20a2afba9df3d9da4aac44b4da2e80abee432022764cdb78ad96ceba6d033cd6,,fertig
+74,Künstliche Intelligenz,KI-Flottenmanagement – Cheatsheet,08-KI/KI-Flottenmanagement-Cheatsheet.md,701,16249,b9175cbd49ccdc079cc316d6051dcb0a89eab15e74d1bfd05a8fab1125c2938f,,fertig
+75,Künstliche Intelligenz,KI-Prompts – Cheatsheet,08-KI/KI-Prompts-Cheatsheet.md,703,17230,f048b0ca59866c09debcae4f4fa4ba576d1461e2a93f1befa346bd42ac3085bf,,fertig
+76,Künstliche Intelligenz,KI-Token sparen – Cheatsheet,08-KI/KI-Token-sparen-Cheatsheet.md,596,14019,6e03744fd3a9d8cd4e4b1cc40f9b7429d31e8b5e82c2424e0c9cf14a1ae1a8a9,,fertig
+77,Künstliche Intelligenz,OpenAI Codex – Cheatsheet,08-KI/Codex-Cheatsheet.md,698,18890,27ef111cd4e651cc5c061402f774a12f1edd3361f370844422758210325bcca4,,fertig
+78,Führung & Kommunikation,Umgang mit Managern – Cheatsheet,09-Fuehrung-Kommunikation/Umgang-mit-Managern-Cheatsheet.md,537,13508,ebce2355f64dc959173d9e7ee5a32d1b567d2bca89e9da69c8d18cd12519bde3,,fertig
+79,Führung & Kommunikation,Umgang mit Teamleitern – Cheatsheet,09-Fuehrung-Kommunikation/Umgang-mit-Teamleitern-Cheatsheet.md,506,14565,a78cf369b03d3c0de8101fb79f31d75f46313cf01cc2a59529410f2689248115,,fertig
+80,Sicherheit & PKI,HashiCorp Vault – Cheatsheet,10-Sicherheit-PKI/HashiCorp-Vault-Cheatsheet.md,644,15111,1c01f411dc37dd235afaaae0203a3a825ed27db2a989123222dce2617574062c,Cheatsheet I – vollständig überarbeitet,fertig
+81,Sicherheit & PKI,Keytool – Cheatsheet für Java-Keystores,10-Sicherheit-PKI/Keytool-Cheatsheet.md,531,12003,b43cb9f7beb7738d3aca96aa6982ba06d62eb75c5046554fbac59272fb84ae40,Cheatsheet I – vollständig überarbeitet,fertig
+82,Sicherheit & PKI,OpenBao – Cheatsheet,10-Sicherheit-PKI/OpenBao-Cheatsheet.md,460,10724,13c56e1ea35631d202e5a973fc8dff788e55cca23a63aa2321e9cfd9e27de0ad,Cheatsheet I – vollständig überarbeitet,fertig
+83,Sicherheit & PKI,OpenSSL – Cheatsheet,10-Sicherheit-PKI/OpenSSL-Cheatsheet.md,571,14057,35c5fe9cf4fa9751ab74eb7e7c1d28bded3c11a9400f41e2a8806e34e643d4d8,Cheatsheet I – vollständig überarbeitet,fertig
+84,Sicherheit & PKI,Thales Luna Network HSM A750 – Cheatsheet,10-Sicherheit-PKI/Thales-Luna-Network-HSM-A750-Cheatsheet.md,1414,42337,3c7470b7230edba84eb12ed1d777d95a05ba700ad25ed9377fb74b0e9a23b7c8,Cheatsheet II – Ergänzung 2.1.0,fertig
+85,Wissensmanagement,Obsidian-Markdown – Cheatsheet,11-Wissensmanagement/Obsidian-Markdown-Cheatsheet.md,752,14734,ab6f9c607b94ad0d8e49b89878937756a99a3c5d3e57a4c659a7ffb7a198bb28,Cheatsheet I – vollständig überarbeitet,fertig
+86,Hardware & Prozessoren,AMD-Prozessorhistorie – Cheatsheet,12-Hardware-Prozessoren/AMD-Prozessorhistorie-Cheatsheet.md,482,17666,4e20b30ff49770a5ae93c2dec1752327d4d18fba2c99b791aa456c8992e7ba29,,fertig
+87,Hardware & Prozessoren,Arm-Prozessorhistorie – Cheatsheet,12-Hardware-Prozessoren/Arm-Prozessorhistorie-Cheatsheet.md,565,19322,3c9c4b5f3119c9342f2e69901f8d8ae4caa20df8834305f264a8b957d1667be4,,fertig
+88,Hardware & Prozessoren,CPU-Benchmarks und Vergleichbarkeit – Cheatsheet,12-Hardware-Prozessoren/CPU-Benchmarks-und-Vergleichbarkeit-Cheatsheet.md,828,21397,b016c1a33674441ea391cec32684269b835444d3f2939b6255b82ff2445eb6a5,,fertig
+89,Hardware & Prozessoren,Intel-Prozessorhistorie – Cheatsheet,12-Hardware-Prozessoren/Intel-Prozessorhistorie-Cheatsheet.md,403,13084,5b0a031dcc49fc2a1cf4736244e6843c371da3b08509900cc3403387625b647c,,fertig
+90,Hardware & Prozessoren,"Prozessorhistorie Intel, AMD und Arm – Cheatsheet",12-Hardware-Prozessoren/Prozessorhistorie-Intel-AMD-Arm-Cheatsheet.md,609,21930,a40e56bc6bdc546eab4eb9c44bdc96fe123df1cd9f196256fedacfbfc80b033f,,fertig
