@@ -1,18 +1,18 @@
 schema_version: 1
-content_date: '2026-10-12'
-content_fingerprint_sha256: e4ed84537211e67c3d025348641c8422817dfe282b0b88eca4e1af75879a9803
+content_date: '2026-10-17'
+content_fingerprint_sha256: 14fd43b92e6a99207f9593193a9e8f10478d26b3719cf8650a5d8502fd452b87
 categories: 12
-reference_pages: 89
-total_lines: 47087
-total_bytes: 1173921
+reference_pages: 90
+total_lines: 47436
+total_bytes: 1195267
 statuses:
-  fertig: 89
+  fertig: 90
 category_pages:
   Enterprise & Windows: 7
   Versionierung, Entwicklung & Editoren: 15
   Linux-, Unix- & Paketverwaltung: 25
   Webserver: 2
-  Netzwerk & Firewalls: 8
+  Netzwerk & Firewalls: 9
   Storage, Dateisysteme & Synchronisation: 9
   Android: 4
   Künstliche Intelligenz: 6

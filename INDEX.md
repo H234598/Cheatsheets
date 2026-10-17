@@ -4,28 +4,30 @@ aliases:
 - Alle Cheatsheet
 - Cheatsheet Index
 created: '2026-07-17'
-modified: '2026-10-12'
+modified: '2026-10-17'
 type: index
 status: fertig
 tags:
 - index
 - cheatsheet
 - alphabetisch
-pages: 89
-version: '2.3.0'
-date: '2026-10-12'
+pages: 90
+version: '2.4.0'
+date: '2026-10-17'
 updates:
 - date: '2026-10-12'
   change: 'Vim und .vimrc ergänzt; Umfang und Verweise aktualisiert.'
 - date: '2026-10-12'
   change: 'HashiCorp Terraform ergänzt; Umfang, Navigation und Downloads aktualisiert.'
+- date: '2026-10-17'
+  change: 'Morsecode ergänzt; Umfang, Navigation, Gesamtband und Downloads aktualisiert.'
 ---
 # Gesamtindex
 
 [[00-START-HIER|← Startseite]] · [[Cheatsheet-Gesamtband|Gesamtband]] · [[MANIFEST|Manifest]]
 
 > [!summary] Umfang
-> **89 Fachseiten** in **12 Themenbereichen**. Stand: 2026-10-12, Version 2.3.0.
+> **90 Fachseiten** in **12 Themenbereichen**. Stand: 2026-10-17, Version 2.4.0.
 
 ## Nach Themenbereich
 
@@ -53,11 +55,11 @@ nginx und Apache HTTP Server mit TLS, Reverse Proxy, Härtung und Diagnose.
 
 [[04-Webserver/Apache-HTTP-Server-Cheatsheet|Apache HTTP Server – Cheatsheet]] · [[04-Webserver/nginx-Cheatsheet|nginx – Cheatsheet]]
 
-### [[05-Netzwerk-Sicherheit/INDEX|Netzwerk & Firewalls]] (8)
+### [[05-Netzwerk-Sicherheit/INDEX|Netzwerk & Firewalls]] (9)
 
-Client- und Serverkonfiguration unter Linux, Windows und BSD sowie Wireshark, pfSense und OPNsense.
+Client- und Serverkonfiguration unter Linux, Windows und BSD, Wireshark, pfSense, OPNsense und Morsecode.
 
-[[05-Netzwerk-Sicherheit/BSD-Netzwerk-Cheatsheet|BSD-Netzwerk – Cheatsheet]] · [[05-Netzwerk-Sicherheit/Linux-Netzwerk-Cheatsheet|Linux-Netzwerk – Cheatsheet]] · [[05-Netzwerk-Sicherheit/Netzwerk-Konfiguration-Cheatsheet|Netzwerk-Konfiguration – Cheatsheet]] · [[05-Netzwerk-Sicherheit/Netzwerk-Stacktypen-Cheatsheet|Netzwerk-Stacktypen – Cheatsheet]] · [[05-Netzwerk-Sicherheit/OPNsense-Cheatsheet|OPNsense – Cheatsheet]] · [[05-Netzwerk-Sicherheit/pfSense-Cheatsheet|pfSense – Cheatsheet]] · [[05-Netzwerk-Sicherheit/Windows-Netzwerk-Cheatsheet|Windows-Netzwerk – Cheatsheet]] · [[05-Netzwerk-Sicherheit/Wireshark-Cheatsheet|Wireshark – Cheatsheet]]
+[[05-Netzwerk-Sicherheit/BSD-Netzwerk-Cheatsheet|BSD-Netzwerk – Cheatsheet]] · [[05-Netzwerk-Sicherheit/Linux-Netzwerk-Cheatsheet|Linux-Netzwerk – Cheatsheet]] · [[05-Netzwerk-Sicherheit/Morsecode-Cheatsheet|Morsecode – Cheatsheet]] · [[05-Netzwerk-Sicherheit/Netzwerk-Konfiguration-Cheatsheet|Netzwerk-Konfiguration – Cheatsheet]] · [[05-Netzwerk-Sicherheit/Netzwerk-Stacktypen-Cheatsheet|Netzwerk-Stacktypen – Cheatsheet]] · [[05-Netzwerk-Sicherheit/OPNsense-Cheatsheet|OPNsense – Cheatsheet]] · [[05-Netzwerk-Sicherheit/pfSense-Cheatsheet|pfSense – Cheatsheet]] · [[05-Netzwerk-Sicherheit/Windows-Netzwerk-Cheatsheet|Windows-Netzwerk – Cheatsheet]] · [[05-Netzwerk-Sicherheit/Wireshark-Cheatsheet|Wireshark – Cheatsheet]]
 
 ### [[06-Storage-Sync/INDEX|Storage, Dateisysteme & Synchronisation]] (9)
 
@@ -172,6 +174,7 @@ Historie und Einordnung von Intel-, AMD- und Arm-Prozessoren sowie Benchmarkmeth
 - [[01-Enterprise-Windows/MS-RPC-Verbindungen-Cheatsheet|Microsoft RPC-Verbindungen – Cheatsheet]] — *Enterprise & Windows*
 - [[01-Enterprise-Windows/Microsoft-Visio-Cheatsheet|Microsoft Visio – Cheatsheet]] — *Enterprise & Windows*
 - [[01-Enterprise-Windows/Microsoft-Word-Cheatsheet|Microsoft Word – Cheatsheet]] — *Enterprise & Windows*
+- [[05-Netzwerk-Sicherheit/Morsecode-Cheatsheet|Morsecode – Cheatsheet]] — *Netzwerk & Firewalls*
 ### N
 
 - [[02-Versionierung-Entwicklung/Neovim-Konfiguration-und-Plugins-Cheatsheet|Neovim – Konfiguration und Plugins]] — *Versionierung, Entwicklung & Editoren*

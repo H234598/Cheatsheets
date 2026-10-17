@@ -9,22 +9,22 @@ tags:
 - manifest
 type: index
 status: fertig
-date: '2026-10-12'
+date: '2026-10-17'
 created: '2026-07-17'
-modified: '2026-10-12'
+modified: '2026-10-17'
 updates:
-- date: '2026-10-12'
+- date: '2026-10-17'
   change: Aus dem dokumentierten Inhaltsstand deterministisch erzeugt.
-pages: 89
+pages: 90
 ---
 
 # Manifest
 
 Diese Datei wird deterministisch aus den realen Fachseiten, ihren Kategorieindizes und dem strukturierten Frontmatter erzeugt.
 
-- **Fachseiten:** 89
-- **Zeilen:** 47087
-- **Bytes:** 1173921
+- **Fachseiten:** 90
+- **Zeilen:** 47436
+- **Bytes:** 1195267
 
 | Nr. | Bereich | Titel | Pfad | Zeilen | Bytes | Status |
 |---:|---|---|---|---:|---:|---|
@@ -79,41 +79,42 @@ Diese Datei wird deterministisch aus den realen Fachseiten, ihren Kategorieindiz
 | 49 | Webserver | nginx – Cheatsheet | `04-Webserver/nginx-Cheatsheet.md` | 703 | 14967 | fertig |
 | 50 | Netzwerk & Firewalls | BSD-Netzwerk – Cheatsheet | `05-Netzwerk-Sicherheit/BSD-Netzwerk-Cheatsheet.md` | 554 | 8702 | fertig |
 | 51 | Netzwerk & Firewalls | Linux-Netzwerk – Cheatsheet | `05-Netzwerk-Sicherheit/Linux-Netzwerk-Cheatsheet.md` | 835 | 15911 | fertig |
-| 52 | Netzwerk & Firewalls | Netzwerk-Konfiguration – Cheatsheet | `05-Netzwerk-Sicherheit/Netzwerk-Konfiguration-Cheatsheet.md` | 308 | 8647 | fertig |
-| 53 | Netzwerk & Firewalls | Netzwerk-Stacktypen – Cheatsheet | `05-Netzwerk-Sicherheit/Netzwerk-Stacktypen-Cheatsheet.md` | 285 | 7539 | fertig |
-| 54 | Netzwerk & Firewalls | OPNsense – Cheatsheet | `05-Netzwerk-Sicherheit/OPNsense-Cheatsheet.md` | 583 | 12695 | fertig |
-| 55 | Netzwerk & Firewalls | pfSense – Cheatsheet | `05-Netzwerk-Sicherheit/pfSense-Cheatsheet.md` | 595 | 13397 | fertig |
-| 56 | Netzwerk & Firewalls | Windows-Netzwerk – Cheatsheet | `05-Netzwerk-Sicherheit/Windows-Netzwerk-Cheatsheet.md` | 567 | 11407 | fertig |
-| 57 | Netzwerk & Firewalls | Wireshark – Cheatsheet | `05-Netzwerk-Sicherheit/Wireshark-Cheatsheet.md` | 841 | 17632 | fertig |
-| 58 | Storage, Dateisysteme & Synchronisation | Btrfs – Cheatsheet | `06-Storage-Sync/Btrfs-Cheatsheet.md` | 536 | 10982 | fertig |
-| 59 | Storage, Dateisysteme & Synchronisation | Dateisysteme – Cheatsheet | `06-Storage-Sync/Dateisysteme-Cheatsheet.md` | 407 | 10768 | fertig |
-| 60 | Storage, Dateisysteme & Synchronisation | ext4 – Cheatsheet | `06-Storage-Sync/ext4-Cheatsheet.md` | 383 | 7580 | fertig |
-| 61 | Storage, Dateisysteme & Synchronisation | rclone – Cheatsheet | `06-Storage-Sync/rclone-Cheatsheet.md` | 832 | 17083 | fertig |
-| 62 | Storage, Dateisysteme & Synchronisation | Syncthing – Cheatsheet | `06-Storage-Sync/Syncthing-Cheatsheet.md` | 560 | 14856 | fertig |
-| 63 | Storage, Dateisysteme & Synchronisation | TrueNAS – Cheatsheet | `06-Storage-Sync/TrueNAS-Cheatsheet.md` | 713 | 19263 | fertig |
-| 64 | Storage, Dateisysteme & Synchronisation | Weitere Dateisysteme – Cheatsheet | `06-Storage-Sync/Weitere-Dateisysteme-Cheatsheet.md` | 352 | 7187 | fertig |
-| 65 | Storage, Dateisysteme & Synchronisation | XFS – Cheatsheet | `06-Storage-Sync/XFS-Cheatsheet.md` | 410 | 7928 | fertig |
-| 66 | Storage, Dateisysteme & Synchronisation | ZFS – Cheatsheet | `06-Storage-Sync/ZFS-Cheatsheet.md` | 743 | 15179 | fertig |
-| 67 | Android | Haven – Android SSH Client – Cheatsheet | `07-Android/Haven-Android-SSH-Client-Cheatsheet.md` | 594 | 15448 | fertig |
-| 68 | Android | Magisk – Cheatsheet | `07-Android/Magisk-Cheatsheet.md` | 607 | 16918 | fertig |
-| 69 | Android | Termux – Cheatsheet | `07-Android/Termux-Cheatsheet.md` | 821 | 17345 | fertig |
-| 70 | Android | USB-Debugging und ADB – Cheatsheet | `07-Android/USB-Debugging-und-ADB-Cheatsheet.md` | 718 | 14966 | fertig |
-| 71 | Künstliche Intelligenz | Anthropic Claude – Cheatsheet | `08-KI/Claude-Cheatsheet.md` | 610 | 16583 | fertig |
-| 72 | Künstliche Intelligenz | Google Gemini – Cheatsheet | `08-KI/Gemini-Cheatsheet.md` | 510 | 14864 | fertig |
-| 73 | Künstliche Intelligenz | KI-Flottenmanagement – Cheatsheet | `08-KI/KI-Flottenmanagement-Cheatsheet.md` | 701 | 16249 | fertig |
-| 74 | Künstliche Intelligenz | KI-Prompts – Cheatsheet | `08-KI/KI-Prompts-Cheatsheet.md` | 703 | 17230 | fertig |
-| 75 | Künstliche Intelligenz | KI-Token sparen – Cheatsheet | `08-KI/KI-Token-sparen-Cheatsheet.md` | 596 | 14019 | fertig |
-| 76 | Künstliche Intelligenz | OpenAI Codex – Cheatsheet | `08-KI/Codex-Cheatsheet.md` | 698 | 18890 | fertig |
-| 77 | Führung & Kommunikation | Umgang mit Managern – Cheatsheet | `09-Fuehrung-Kommunikation/Umgang-mit-Managern-Cheatsheet.md` | 537 | 13508 | fertig |
-| 78 | Führung & Kommunikation | Umgang mit Teamleitern – Cheatsheet | `09-Fuehrung-Kommunikation/Umgang-mit-Teamleitern-Cheatsheet.md` | 506 | 14565 | fertig |
-| 79 | Sicherheit & PKI | HashiCorp Vault – Cheatsheet | `10-Sicherheit-PKI/HashiCorp-Vault-Cheatsheet.md` | 644 | 15111 | fertig |
-| 80 | Sicherheit & PKI | Keytool – Cheatsheet für Java-Keystores | `10-Sicherheit-PKI/Keytool-Cheatsheet.md` | 531 | 12003 | fertig |
-| 81 | Sicherheit & PKI | OpenBao – Cheatsheet | `10-Sicherheit-PKI/OpenBao-Cheatsheet.md` | 460 | 10724 | fertig |
-| 82 | Sicherheit & PKI | OpenSSL – Cheatsheet | `10-Sicherheit-PKI/OpenSSL-Cheatsheet.md` | 571 | 14057 | fertig |
-| 83 | Sicherheit & PKI | Thales Luna Network HSM A750 – Cheatsheet | `10-Sicherheit-PKI/Thales-Luna-Network-HSM-A750-Cheatsheet.md` | 1414 | 42337 | fertig |
-| 84 | Wissensmanagement | Obsidian-Markdown – Cheatsheet | `11-Wissensmanagement/Obsidian-Markdown-Cheatsheet.md` | 752 | 14734 | fertig |
-| 85 | Hardware & Prozessoren | AMD-Prozessorhistorie – Cheatsheet | `12-Hardware-Prozessoren/AMD-Prozessorhistorie-Cheatsheet.md` | 482 | 17666 | fertig |
-| 86 | Hardware & Prozessoren | Arm-Prozessorhistorie – Cheatsheet | `12-Hardware-Prozessoren/Arm-Prozessorhistorie-Cheatsheet.md` | 565 | 19322 | fertig |
-| 87 | Hardware & Prozessoren | CPU-Benchmarks und Vergleichbarkeit – Cheatsheet | `12-Hardware-Prozessoren/CPU-Benchmarks-und-Vergleichbarkeit-Cheatsheet.md` | 828 | 21397 | fertig |
-| 88 | Hardware & Prozessoren | Intel-Prozessorhistorie – Cheatsheet | `12-Hardware-Prozessoren/Intel-Prozessorhistorie-Cheatsheet.md` | 403 | 13084 | fertig |
-| 89 | Hardware & Prozessoren | Prozessorhistorie Intel, AMD und Arm – Cheatsheet | `12-Hardware-Prozessoren/Prozessorhistorie-Intel-AMD-Arm-Cheatsheet.md` | 609 | 21930 | fertig |
+| 52 | Netzwerk & Firewalls | Morsecode – Cheatsheet | `05-Netzwerk-Sicherheit/Morsecode-Cheatsheet.md` | 349 | 21346 | fertig |
+| 53 | Netzwerk & Firewalls | Netzwerk-Konfiguration – Cheatsheet | `05-Netzwerk-Sicherheit/Netzwerk-Konfiguration-Cheatsheet.md` | 308 | 8647 | fertig |
+| 54 | Netzwerk & Firewalls | Netzwerk-Stacktypen – Cheatsheet | `05-Netzwerk-Sicherheit/Netzwerk-Stacktypen-Cheatsheet.md` | 285 | 7539 | fertig |
+| 55 | Netzwerk & Firewalls | OPNsense – Cheatsheet | `05-Netzwerk-Sicherheit/OPNsense-Cheatsheet.md` | 583 | 12695 | fertig |
+| 56 | Netzwerk & Firewalls | pfSense – Cheatsheet | `05-Netzwerk-Sicherheit/pfSense-Cheatsheet.md` | 595 | 13397 | fertig |
+| 57 | Netzwerk & Firewalls | Windows-Netzwerk – Cheatsheet | `05-Netzwerk-Sicherheit/Windows-Netzwerk-Cheatsheet.md` | 567 | 11407 | fertig |
+| 58 | Netzwerk & Firewalls | Wireshark – Cheatsheet | `05-Netzwerk-Sicherheit/Wireshark-Cheatsheet.md` | 841 | 17632 | fertig |
+| 59 | Storage, Dateisysteme & Synchronisation | Btrfs – Cheatsheet | `06-Storage-Sync/Btrfs-Cheatsheet.md` | 536 | 10982 | fertig |
+| 60 | Storage, Dateisysteme & Synchronisation | Dateisysteme – Cheatsheet | `06-Storage-Sync/Dateisysteme-Cheatsheet.md` | 407 | 10768 | fertig |
+| 61 | Storage, Dateisysteme & Synchronisation | ext4 – Cheatsheet | `06-Storage-Sync/ext4-Cheatsheet.md` | 383 | 7580 | fertig |
+| 62 | Storage, Dateisysteme & Synchronisation | rclone – Cheatsheet | `06-Storage-Sync/rclone-Cheatsheet.md` | 832 | 17083 | fertig |
+| 63 | Storage, Dateisysteme & Synchronisation | Syncthing – Cheatsheet | `06-Storage-Sync/Syncthing-Cheatsheet.md` | 560 | 14856 | fertig |
+| 64 | Storage, Dateisysteme & Synchronisation | TrueNAS – Cheatsheet | `06-Storage-Sync/TrueNAS-Cheatsheet.md` | 713 | 19263 | fertig |
+| 65 | Storage, Dateisysteme & Synchronisation | Weitere Dateisysteme – Cheatsheet | `06-Storage-Sync/Weitere-Dateisysteme-Cheatsheet.md` | 352 | 7187 | fertig |
+| 66 | Storage, Dateisysteme & Synchronisation | XFS – Cheatsheet | `06-Storage-Sync/XFS-Cheatsheet.md` | 410 | 7928 | fertig |
+| 67 | Storage, Dateisysteme & Synchronisation | ZFS – Cheatsheet | `06-Storage-Sync/ZFS-Cheatsheet.md` | 743 | 15179 | fertig |
+| 68 | Android | Haven – Android SSH Client – Cheatsheet | `07-Android/Haven-Android-SSH-Client-Cheatsheet.md` | 594 | 15448 | fertig |
+| 69 | Android | Magisk – Cheatsheet | `07-Android/Magisk-Cheatsheet.md` | 607 | 16918 | fertig |
+| 70 | Android | Termux – Cheatsheet | `07-Android/Termux-Cheatsheet.md` | 821 | 17345 | fertig |
+| 71 | Android | USB-Debugging und ADB – Cheatsheet | `07-Android/USB-Debugging-und-ADB-Cheatsheet.md` | 718 | 14966 | fertig |
+| 72 | Künstliche Intelligenz | Anthropic Claude – Cheatsheet | `08-KI/Claude-Cheatsheet.md` | 610 | 16583 | fertig |
+| 73 | Künstliche Intelligenz | Google Gemini – Cheatsheet | `08-KI/Gemini-Cheatsheet.md` | 510 | 14864 | fertig |
+| 74 | Künstliche Intelligenz | KI-Flottenmanagement – Cheatsheet | `08-KI/KI-Flottenmanagement-Cheatsheet.md` | 701 | 16249 | fertig |
+| 75 | Künstliche Intelligenz | KI-Prompts – Cheatsheet | `08-KI/KI-Prompts-Cheatsheet.md` | 703 | 17230 | fertig |
+| 76 | Künstliche Intelligenz | KI-Token sparen – Cheatsheet | `08-KI/KI-Token-sparen-Cheatsheet.md` | 596 | 14019 | fertig |
+| 77 | Künstliche Intelligenz | OpenAI Codex – Cheatsheet | `08-KI/Codex-Cheatsheet.md` | 698 | 18890 | fertig |
+| 78 | Führung & Kommunikation | Umgang mit Managern – Cheatsheet | `09-Fuehrung-Kommunikation/Umgang-mit-Managern-Cheatsheet.md` | 537 | 13508 | fertig |
+| 79 | Führung & Kommunikation | Umgang mit Teamleitern – Cheatsheet | `09-Fuehrung-Kommunikation/Umgang-mit-Teamleitern-Cheatsheet.md` | 506 | 14565 | fertig |
+| 80 | Sicherheit & PKI | HashiCorp Vault – Cheatsheet | `10-Sicherheit-PKI/HashiCorp-Vault-Cheatsheet.md` | 644 | 15111 | fertig |
+| 81 | Sicherheit & PKI | Keytool – Cheatsheet für Java-Keystores | `10-Sicherheit-PKI/Keytool-Cheatsheet.md` | 531 | 12003 | fertig |
+| 82 | Sicherheit & PKI | OpenBao – Cheatsheet | `10-Sicherheit-PKI/OpenBao-Cheatsheet.md` | 460 | 10724 | fertig |
+| 83 | Sicherheit & PKI | OpenSSL – Cheatsheet | `10-Sicherheit-PKI/OpenSSL-Cheatsheet.md` | 571 | 14057 | fertig |
+| 84 | Sicherheit & PKI | Thales Luna Network HSM A750 – Cheatsheet | `10-Sicherheit-PKI/Thales-Luna-Network-HSM-A750-Cheatsheet.md` | 1414 | 42337 | fertig |
+| 85 | Wissensmanagement | Obsidian-Markdown – Cheatsheet | `11-Wissensmanagement/Obsidian-Markdown-Cheatsheet.md` | 752 | 14734 | fertig |
+| 86 | Hardware & Prozessoren | AMD-Prozessorhistorie – Cheatsheet | `12-Hardware-Prozessoren/AMD-Prozessorhistorie-Cheatsheet.md` | 482 | 17666 | fertig |
+| 87 | Hardware & Prozessoren | Arm-Prozessorhistorie – Cheatsheet | `12-Hardware-Prozessoren/Arm-Prozessorhistorie-Cheatsheet.md` | 565 | 19322 | fertig |
+| 88 | Hardware & Prozessoren | CPU-Benchmarks und Vergleichbarkeit – Cheatsheet | `12-Hardware-Prozessoren/CPU-Benchmarks-und-Vergleichbarkeit-Cheatsheet.md` | 828 | 21397 | fertig |
+| 89 | Hardware & Prozessoren | Intel-Prozessorhistorie – Cheatsheet | `12-Hardware-Prozessoren/Intel-Prozessorhistorie-Cheatsheet.md` | 403 | 13084 | fertig |
+| 90 | Hardware & Prozessoren | Prozessorhistorie Intel, AMD und Arm – Cheatsheet | `12-Hardware-Prozessoren/Prozessorhistorie-Intel-AMD-Arm-Cheatsheet.md` | 609 | 21930 | fertig |

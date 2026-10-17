@@ -4,27 +4,33 @@ aliases:
 - Netzwerk & Firewalls Index
 - 05-Netzwerk-Sicherheit
 created: '2026-07-17'
-modified: '2026-07-17'
+modified: '2026-10-17'
 type: index
 status: fertig
 tags:
 - index
 - cheatsheet
 - 05-netzwerk-sicherheit
-pages: 8
+pages: 9
+date: '2026-10-17'
+updates:
+- date: '2026-10-17'
+  change: 'Morsecode ergänzt und Kategorienumfang aktualisiert.'
 ---
 # Netzwerk & Firewalls
 
 > [!abstract] Bereich
-> Client- und Serverkonfiguration unter Linux, Windows und BSD sowie Wireshark, pfSense und OPNsense.
+> Client- und Serverkonfiguration unter Linux, Windows und BSD, Wireshark, pfSense, OPNsense und Morsecode.
 
-**Umfang:** 8 Spickzettel · 94.1 KiB Quelltext  
+**Umfang:** 9 Spickzettel · 114.5 KiB Quelltext
+
 [[00-START-HIER|← Startseite]] · [[/INDEX|Gesamtindex]]
 
 ## Seiten
 
 - [[05-Netzwerk-Sicherheit/BSD-Netzwerk-Cheatsheet|BSD-Netzwerk – Cheatsheet]] — 554 Zeilen · 8.6 KiB · `#bsd`, `#freebsd`, `#openbsd`, `#network`, `#ifconfig`
 - [[05-Netzwerk-Sicherheit/Linux-Netzwerk-Cheatsheet|Linux-Netzwerk – Cheatsheet]] — 835 Zeilen · 15.6 KiB · `#linux`, `#network`, `#iproute2`, `#networkmanager`, `#wpa-supplicant`
+- [[05-Netzwerk-Sicherheit/Morsecode-Cheatsheet|Morsecode – Cheatsheet]] — 349 Zeilen · 20.8 KiB · `#morsecode`, `#morsealphabet`, `#telegrafie`, `#kommunikation`, `#amateurfunk`
 - [[05-Netzwerk-Sicherheit/Netzwerk-Konfiguration-Cheatsheet|Netzwerk-Konfiguration – Cheatsheet]] — 308 Zeilen · 8.5 KiB · `#network`, `#linux`, `#windows`, `#bsd`, `#tcp-ip`
 - [[05-Netzwerk-Sicherheit/Netzwerk-Stacktypen-Cheatsheet|Netzwerk-Stacktypen – Cheatsheet]] — 285 Zeilen · 7.4 KiB · `#network`, `#ipv4`, `#ipv6`, `#dual-stack`, `#nat64`
 - [[05-Netzwerk-Sicherheit/OPNsense-Cheatsheet|OPNsense – Cheatsheet]] — 583 Zeilen · 12.5 KiB · `#opnsense`, `#firewall`, `#freebsd`, `#routing`, `#nat`
