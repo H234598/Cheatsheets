@@ -85,6 +85,9 @@ jobs:
           node --check tests/web/site.spec.mjs
           node --check tests/web/offline.spec.mjs
 
+      - name: CI-Mutationssicherheit prüfen
+        run: python scripts/validate_ci_mutation_safety.py
+
       - name: Unit- und Integrationstests
         run: >-
           python -m pytest -q
