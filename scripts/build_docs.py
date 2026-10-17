@@ -17,6 +17,7 @@ from pathlib import Path
 import shutil
 from typing import Iterable
 
+from build_graph import GraphBuildError, GraphBuildResult, write_graph_outputs
 from build_navigation import (
     NavigationResult,
     load_publication_config,
@@ -262,6 +263,7 @@ def build_docs(
     allowed_root = output.parent.resolve()
     asset_count = 0
     navigation_result: NavigationResult | None = None
+    graph_result: GraphBuildResult | None = None
     with staged_directory(output, allowed_root=allowed_root, force=force) as staging:
         for page in pages:
             target = staging / page.generated_path.as_posix()
@@ -281,16 +283,22 @@ def build_docs(
             source_commit=source_commit,
         )
         try:
+            graph_result = write_graph_outputs(
+                staging,
+                index,
+                site_url=site_url,
+                source_commit=source_commit,
+            )
             write_ui_data(staging, root, index)
-        except UIConfigError as exc:
-            raise BuildDocsError(f"UI-Konfiguration ist ungültig: {exc}") from exc
+        except (GraphBuildError, UIConfigError) as exc:
+            raise BuildDocsError(f"Generierte Webdaten sind ungültig: {exc}") from exc
         mark_generated_root(staging)
 
     after = source_tree_hashes(root)
     if before != after:
         raise BuildDocsError("Der Build hat kanonische Quelldateien verändert")
-    if navigation_result is None:
-        raise BuildDocsError("Navigation und Suchmetadaten wurden nicht erzeugt")
+    if navigation_result is None or graph_result is None:
+        raise BuildDocsError("Navigation, Graph und Suchmetadaten wurden nicht erzeugt")
 
     return BuildDocsResult(
         output=output,
@@ -298,6 +306,8 @@ def build_docs(
         assets=asset_count,
         source_hashes=before,
         navigation=navigation_result.nav,
-        generated_markdown_pages=navigation_result.generated_markdown_pages,
-        data_files=navigation_result.data_files + 1,
+        generated_markdown_pages=(
+            navigation_result.generated_markdown_pages + graph_result.markdown_pages
+        ),
+        data_files=navigation_result.data_files + graph_result.data_files + 1,
     )

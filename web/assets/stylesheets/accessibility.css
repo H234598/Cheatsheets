@@ -37,6 +37,11 @@
   white-space: nowrap;
 }
 
+.cheat-graph-node.is-hidden,
+.cheat-graph-edge.is-hidden {
+  display: none;
+}
+
 [data-md-color-scheme="default"] .md-typeset .highlight :is(
     .c,
     .c1,

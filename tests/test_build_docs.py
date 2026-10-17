@@ -144,8 +144,8 @@ def test_build_docs_transforms_only_generated_copy(
 
     assert result.pages == 5
     assert result.assets == 1
-    assert result.generated_markdown_pages == 6
-    assert result.data_files == 5
+    assert result.generated_markdown_pages == 7
+    assert result.data_files == 6
     assert result.navigation[0] == {"Start hier": "index.md"}
     assert (output / BUILD_SENTINEL).is_file()
     assert (output / "index.md").is_file()
@@ -163,17 +163,24 @@ def test_build_docs_transforms_only_generated_copy(
         "index/tags.md",
         "downloads/index.md",
         "intern/buildinformationen.md",
+        "wissensgraph/index.md",
         "data/pages.json",
         "data/categories.json",
         "data/tags.json",
         "data/build-info.json",
         "data/page-id-aliases.json",
+        "data/knowledge-graph.json",
     ):
         assert (output / relative).is_file(), relative
 
     build_info = json.loads((output / "data" / "build-info.json").read_text(encoding="utf-8"))
     assert build_info["source_commit"] == "fixture-commit"
     assert build_info["site_url"] == "https://example.invalid/Cheatsheets/"
+    graph = json.loads(
+        (output / "data" / "knowledge-graph.json").read_text(encoding="utf-8")
+    )
+    assert graph["source_commit"] == "fixture-commit"
+    assert graph["stats"]["nodes_by_type"]["page"] == 2
     alias_data = json.loads(
         (output / "data" / "page-id-aliases.json").read_text(encoding="utf-8")
     )
@@ -267,6 +274,7 @@ def test_build_site_runs_online_and_offline_mkdocs_with_verified_downloads(
     assert online_config["nav"][0] == {"Start hier": "index.md"}
     assert (tmp_path / "build" / "docs" / "data" / "pages.json").is_file()
     assert (tmp_path / "build" / "docs" / "data" / "page-id-aliases.json").is_file()
+    assert (tmp_path / "build" / "docs" / "data" / "knowledge-graph.json").is_file()
     assert (tmp_path / "build" / "offline-info.json").is_file()
     assert (tmp_path / "site" / "index.html").is_file()
     assert (tmp_path / "site" / "404.html").is_file()

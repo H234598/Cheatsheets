@@ -84,6 +84,13 @@ jobs:
             --strict \
             --site-url "${SITE_URL%/}/"
 
+      - name: Wissensgraph unabhängig prüfen
+        run: >-
+          python scripts/validate_graph.py
+          --graph build/docs/data/knowledge-graph.json
+          --site-dir site
+          --report build/reports/knowledge-graph.json
+
       - name: Offline-HTML unabhängig validieren
         run: >-
           python scripts/validate_offline_archive.py

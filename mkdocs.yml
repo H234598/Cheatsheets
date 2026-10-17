@@ -13,6 +13,7 @@ not_in_nav: |
   /downloads/**
   /index/quelle.md
   /intern/**
+  /wissensgraph/**
 
 theme:
   name: material
@@ -73,9 +74,12 @@ extra:
 extra_css:
   - assets/stylesheets/extra.css
   - assets/stylesheets/accessibility.css
+  - assets/stylesheets/knowledge-graph.css
 
 extra_javascript:
   - assets/javascripts/site-state.js
   - assets/javascripts/filters.js
   - assets/javascripts/accessibility.js
   - assets/javascripts/mermaid-loader.js
+  - assets/javascripts/graph-shortcut.js
+  - assets/javascripts/knowledge-graph.js
